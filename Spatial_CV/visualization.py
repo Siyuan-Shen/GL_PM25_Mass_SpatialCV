@@ -6,6 +6,7 @@ from sklearn.metrics import mean_squared_error,r2_score
 import math
 import os
 from Spatial_CV.Statistic_Func import linear_regression,linear_slope,regress2
+from Spatial_CV.utils import *
 import seaborn as sns
 ####################################################################
 ##                       Plotting Sets Variables                  ##
@@ -54,7 +55,7 @@ def regression_plot_ReducedAxisReduced(plot_obs_pm25:np.array,plot_pre_pm25:np.a
                     version:str, channel:int, special_name:str, area_name:str,beginyear:str,endyear:str, extentlim:int,
                     bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,
                     Log_PM25:bool):
-    fig_output_dir = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/figures/scatter_figures/v'+version+'/'
+    fig_output_dir = Scatter_plots_outdir + '{}/figures/scatter_figures/'.format(version)
     if not os.path.isdir(fig_output_dir):
         os.makedirs(fig_output_dir)
     if bias == True:

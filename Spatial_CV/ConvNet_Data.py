@@ -116,9 +116,8 @@ def normalize_Func(inputarray:np.array):
 
     return inputarray,input_mean,input_std
 
-def Normlize_Training_Datasets(train_input:np.array,channel_index:np.array,Met_Absolute):
-    if Met_Absolute == True:
-        train_input[:,27:29,:,:] = np.abs(train_input[:,27:29,:,:])
+def Normlize_Training_Datasets(train_input:np.array,channel_index:np.array,):
+
     #train_input = train_input[:, :, :, :]
     train_mean  = np.mean(train_input, axis=0)
     train_std   = np.std(train_input, axis=0)

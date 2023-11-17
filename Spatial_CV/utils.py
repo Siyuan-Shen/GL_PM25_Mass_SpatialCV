@@ -1,4 +1,84 @@
 import numpy as np
+import toml
+
+cfg = toml.load('./config.toml')
+
+
+#######################################################################################
+# Observation Path
+obs_dir = cfg['Pathway']['observations-dir']
+
+geophysical_species_data_dir = obs_dir['geophysical_species_data_dir']
+geophysical_biases_data_dir  = obs_dir['geophysical_biases_data_dir']
+ground_observation_data_dir  = obs_dir['ground_observation_data_dir']
+
+#######################################################################################
+# Training file Path
+Training_dir = cfg['Pathway']['TrainingModule-dir']
+
+training_infile = Training_dir['training_infile']
+model_outdir = Training_dir['model_outdir']
+
+#######################################################################################
+Config_outdir = cfg['Pathway']['Config-outdir']['Config_outdir']
+
+Scatter_plots_outdir = cfg['Pathway']['Figures-dir']['Scatter_plots_outdir']
+#######################################################################################
+# identity settings
+identity = cfg['Training-Settings']['identity']
+
+special_name = identity['special_name']
+version = identity['version']
+
+#######################################################################################
+# Hyperparameters settings
+HyperParameters = cfg['Training-Settings']['hyper-parameters']
+channel_index = HyperParameters['channel_index']
+channel_names = HyperParameters['channel_names']
+epoch = HyperParameters['epoch']
+batchsize = HyperParameters['batchsize']
+lr0 = HyperParameters['learning_rate']
+
+#######################################################################################
+# Learning Objectives Settings
+learning_objective = cfg['Training-Settings']['learning-objective']
+
+bias = learning_objective['bias']
+normalize_species = learning_objective['normalize_species']
+absolute_species = learning_objective['absolute_species']
+log_species = learning_objective['log_species']
+
+############################ Spatial Cross-Validation ################################
+Combine_with_geophysical = cfg['Spatial-CrossValidation']['Combine_with_geophysical']
+Spatial_CrossValidation_Switch = cfg['Spatial-CrossValidation']['Spatial_CrossValidation_Switch'] # On/Off for Spatial Crosss Validation
+Spatial_CV_LossAccuracy_plot_Switch = cfg['Spatial-CrossValidation']['Spatial_CV_LossAccuracy_plot_Switch']
+regression_plot_switch   = cfg['Spatial-CrossValidation']['Visualization_Settings']['regression_plot_switch']
+#######################################################################################
+# training Settings
+Spatial_Trainning_Settings = cfg['Spatial-CrossValidation']['Training_Settings']
+
+kfold = Spatial_Trainning_Settings['kfold']
+repeats = Spatial_Trainning_Settings['repeats']
+beginyears = Spatial_Trainning_Settings['beginyears']
+endyears = Spatial_Trainning_Settings['endyears']
+NA_beginyear = Spatial_Trainning_Settings['Area_beginyears']['NA']
+AS_beginyear = Spatial_Trainning_Settings['Area_beginyears']['AS']
+EU_beginyear = Spatial_Trainning_Settings['Area_beginyears']['EU']
+GL_beginyear = Spatial_Trainning_Settings['Area_beginyears']['GL']
+MultiyearForMultiAreasLists = Spatial_Trainning_Settings['MultiyearForMultiAreasList']
+#######################################################################################
+# Forced Slope Unity Settings
+ForcedSlopeUnityTable = cfg['Spatial-CrossValidation']['Forced-Slope-Unity']
+
+ForcedSlopeUnity = ForcedSlopeUnityTable['ForcedSlopeUnity']
+EachMonthForcedSlopeUnity = ForcedSlopeUnityTable['EachMonthForcedSlopeUnity']
+
+#######################################################################################
+# Training file Path
+results_dir = cfg['Pathway']['Results-dir'] 
+
+txt_outdir = results_dir['txt_outdir']
+
 
 
 def pretrained_regional_group(extent):

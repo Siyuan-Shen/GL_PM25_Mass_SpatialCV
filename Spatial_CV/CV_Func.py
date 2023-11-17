@@ -8,9 +8,9 @@ from sklearn.model_selection import RepeatedKFold
 from Spatial_CV.Model_Func import predict, train, weight_reset
 from Spatial_CV.Statistic_Func import linear_regression, regress2, Cal_RMSE, Calculate_PWA_PM25
 from Spatial_CV.Net_Construction import  ResNet, BasicBlock, Bottleneck, Net
-from .visualization import regression_plot, bias_regression_plot,PM25_histgram_distribution_plot,regression_plot_area_test_average,PM25_histgram_distribution_area_tests_plot,regression_plot_ReducedAxisReduced
-from .ConvNet_Data import normalize_Func, Normlize_Training_Datasets, Normlize_Testing_Datasets, Data_Augmentation, Get_GeophysicalPM25_Datasets
-from .utils import get_area_index,extent_table,get_coefficients,get_nearest_test_distance, load_GBD_area_index, get_test_index_inGBD_area
+from Spatial_CV.visualization import regression_plot, bias_regression_plot,PM25_histgram_distribution_plot,regression_plot_area_test_average,PM25_histgram_distribution_area_tests_plot,regression_plot_ReducedAxisReduced
+from Spatial_CV.ConvNet_Data import normalize_Func, Normlize_Training_Datasets, Normlize_Testing_Datasets, Data_Augmentation, Get_GeophysicalPM25_Datasets
+from Spatial_CV.utils import *
 from .Model_Func import MyLoss,initialize_weights_kaiming,weight_init_normal
 import random
 import csv
@@ -103,8 +103,8 @@ def GetAreaCVResults(Area_Name:str,version:str,special_name:str,Extent,test_inde
 def MultiyearAreaModelCrossValid(train_input, true_input,channel_index, kfold:int, repeats:int,
                          extent:np.array,num_epochs:int, batch_size:int, learning_rate:float,
                          Area:str,version:str,special_name:str,model_outdir:str,
-                         databeginyear:int,beginyear:np.array, endyear:np.array,augmentation:bool,Tranpose_Augmentation:bool,Flip_Augmentation:bool,AddNoise_Augmentation:bool, bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,
-                         Log_PM25:bool, WindSpeed_Abs:bool,GeophysicalPM25Enhenced:bool, GeoPM25Enhenced_Train_infile:str, GeoPM25Enhenced_True_infile:str, GeoPM25Enhenced_DataStartYear:int):
+                         databeginyear:int,beginyear:np.array, endyear:np.array, bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,
+                         Log_PM25:bool):
 
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
@@ -128,7 +128,7 @@ def MultiyearAreaModelCrossValid(train_input, true_input,channel_index, kfold:in
     rkf = RepeatedKFold(n_splits=kfold, n_repeats=repeats, random_state=seed)
     annual_final_dic, annual_obs_dic = Initialize_DataRecording_Dic(breakpoints=beginyear)
 
-    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index,Met_Absolute=WindSpeed_Abs)
+    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index)
     train_input = train_input[:,channel_index,:,:]
     GeoPM25_mean = train_mean[16,int((width-1)/2),int((width-1)/2)]
     GeoPM25_std  = train_std[16,int((width-1)/2),int((width-1)/2)]
@@ -162,15 +162,6 @@ def MultiyearAreaModelCrossValid(train_input, true_input,channel_index, kfold:in
 
             X_train, X_test = train_input[X_index, :, :, :], true_input[X_index]
             y_train, y_test = train_input[Y_index, :, :, :], true_input[Y_index]
-            
-            if GeophysicalPM25Enhenced == True:
-                    GeoPM25_TrainDatasets, GeoPM25_TrueDatasets = Get_GeophysicalPM25_Datasets(train_infile=GeoPM25Enhenced_Train_infile,
-                    true_infile=GeoPM25Enhenced_True_infile, train_mean=train_mean, train_std=train_std,channel_index=channel_index,extent=extent,
-                     GeoPM25databeginyear=GeoPM25Enhenced_DataStartYear,beginyear=beginyear[imodel],endyear=endyear[imodel],
-                     bias=bias,Normlized_PM25=Normlized_PM25,Absolute_PM25=Absolute_Pm25,Log_PM25=Log_PM25)
-                    X_train = np.append(X_train, GeoPM25_TrainDatasets, axis=0)
-                    X_test =  np.append(X_test, GeoPM25_TrueDatasets)
-            
 
             # *------------------------------------------------------------------------------*#
             ## Training Process.
@@ -184,17 +175,16 @@ def MultiyearAreaModelCrossValid(train_input, true_input,channel_index, kfold:in
             cnn_model.to(device)
             torch.manual_seed(21)
 
-            if augmentation == True:
-                X_train_aug, X_test_aug = Data_Augmentation(X_train=X_train,X_test=X_test,Tranpose_Augmentation=Tranpose_Augmentation,Flip_Augmentation=Flip_Augmentation,AddNoise_Augmentation=AddNoise_Augmentation)
-                train_loss, train_acc = train(cnn_model, X_train_aug, X_test_aug,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std)
-            else:
-                train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std)
+            
+            train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std)
             X_train_aug = []
             X_test_aug = []
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
             # *------------------------------------------------------------------------------*#
-            modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
+            if not os.path.isdir(model_outdir):
+                os.makedirs(model_outdir)
+            modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area + version + '_' + str(
                 nchannel) + 'Channel' + special_name + '_No' + str(count) + '.pt'
             torch.save(cnn_model, modelfile)
 
@@ -257,7 +247,7 @@ def MultiyearAreaModelCrossValid(train_input, true_input,channel_index, kfold:in
 
         count += 1
     
-    txt_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/results/' + Area +'/'+version+'/'
+    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_'+Area+'_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -296,8 +286,8 @@ def MultiyearAreaModelCrossValid(train_input, true_input,channel_index, kfold:in
 def MultiyearMultiAreasSpatialCrossValidation(train_input, true_input,channel_index, kfold:int, repeats:int,
                          extent,num_epochs:int, batch_size:int, learning_rate:float,
                          Area:str,version:str,special_name:str,model_outdir:str,
-                         databeginyear:int,beginyear:np.array, endyear:np.array,augmentation:bool,Tranpose_Augmentation:bool,Flip_Augmentation:bool,AddNoise_Augmentation:bool, bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,
-                         Log_PM25:bool, WindSpeed_Abs:bool,GeophysicalPM25Enhenced:bool, GeoPM25Enhenced_Train_infile:str, GeoPM25Enhenced_True_infile:str, GeoPM25Enhenced_DataStartYear:int):
+                         databeginyear:int,beginyear:np.array, endyear:np.array,bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,
+                         Log_PM25:bool):
 
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
@@ -313,8 +303,8 @@ def MultiyearMultiAreasSpatialCrossValidation(train_input, true_input,channel_in
     population_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/CoMonitors_Population_Data.npy')
     ### Initialize the CV R2 arrays for all datasets
     extent_dic = extent_table()
-    MultiyearForMultiAreasList = [['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
-    Area_beginyears = {'NA':2001,'EU':2010,'AS':2015,'GL':2015}
+    MultiyearForMultiAreasList = MultiyearForMultiAreasLists ## Each model test on which areas
+    Area_beginyears = {'NA':NA_beginyear,'EU':EU_beginyear,'AS':AS_beginyear,'GL':GL_beginyear}
     Areas = ['NA','EU','AS','GL']## Alltime areas names.
     CV_R2, annual_CV_R2, month_CV_R2,CV_slope, annual_CV_slope, month_CV_slope, CV_RMSE, annual_CV_RMSE, month_CV_RMSE,annual_CV_PWAModel,month_CV_PWAModel,annual_CV_PWAMonitor,month_CV_PWAMonitor = Initialize_multiareas_CV_Dic(kfold=kfold,repeats=repeats,breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
     # *------------------------------------------------------------------------------*#
@@ -324,7 +314,7 @@ def MultiyearMultiAreasSpatialCrossValidation(train_input, true_input,channel_in
     rkf = RepeatedKFold(n_splits=kfold, n_repeats=repeats, random_state=seed)
     annual_final_dic, annual_obs_dic = Initialize_DataRecording_MultiAreas_Dic(breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
 
-    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index,Met_Absolute=WindSpeed_Abs)
+    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index)
     
     GeoPM25_mean = train_mean[16,int((width-1)/2),int((width-1)/2)]
     GeoPM25_std  = train_std[16,int((width-1)/2),int((width-1)/2)]
@@ -380,13 +370,7 @@ def MultiyearMultiAreasSpatialCrossValidation(train_input, true_input,channel_in
             #X_test = true_input[X_index]
 
             X_train, X_test = train_input[X_index, :, :, :], true_input[X_index]
-            if GeophysicalPM25Enhenced == True:
-                    GeoPM25_TrainDatasets, GeoPM25_TrueDatasets = Get_GeophysicalPM25_Datasets(train_infile=GeoPM25Enhenced_Train_infile,
-                    true_infile=GeoPM25Enhenced_True_infile, train_mean=train_mean, train_std=train_std,channel_index=channel_index,extent=extent,
-                     GeoPM25databeginyear=GeoPM25Enhenced_DataStartYear,beginyear=beginyear[imodel],endyear=endyear[imodel],
-                     bias=bias,Normlized_PM25=Normlized_PM25,Absolute_PM25=Absolute_Pm25,Log_PM25=Log_PM25)
-                    X_train = np.append(X_train, GeoPM25_TrainDatasets, axis=0)
-                    X_test =  np.append(X_test, GeoPM25_TrueDatasets)
+            
             
 
             # *------------------------------------------------------------------------------*#
@@ -401,15 +385,13 @@ def MultiyearMultiAreasSpatialCrossValidation(train_input, true_input,channel_in
             cnn_model.to(device)
             torch.manual_seed(21)
 
-            if augmentation == True:
-                X_train_aug, X_test_aug = Data_Augmentation(X_train=X_train,X_test=X_test,Tranpose_Augmentation=Tranpose_Augmentation,Flip_Augmentation=Flip_Augmentation,AddNoise_Augmentation=AddNoise_Augmentation)
-                train_loss, train_acc = train(cnn_model, X_train_aug, X_test_aug,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std)
-            else:
-                train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std)
+            train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std)
                 
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
             # *------------------------------------------------------------------------------*#
+            if not os.path.isdir(model_outdir):
+                os.makedirs(model_outdir)
             modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
                 nchannel) + 'Channel' + special_name + '_No' + str(count) + '.pt'
             torch.save(cnn_model, modelfile)
@@ -527,7 +509,7 @@ def MultiyearMultiAreasSpatialCrossValidation(train_input, true_input,channel_in
             month_CV_PWAMonitor['Alltime'][Areas[iarea]][:, count] = month_PWA_monitor
 
         count += 1
-    txt_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/results/GL/'+version+'/'
+    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -591,9 +573,9 @@ def MultiyearMultiAreasSpatialCrossValidation(train_input, true_input,channel_in
 def EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input, true_input,channel_index, kfold:int, repeats:int,
                          extent,num_epochs:int, batch_size:int, learning_rate:float,
                          Area:str,version:str,special_name:str,model_outdir:str,
-                         databeginyear:int,beginyear:np.array, endyear:np.array,augmentation:bool,Tranpose_Augmentation:bool,Flip_Augmentation:bool,AddNoise_Augmentation:bool, bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
+                         databeginyear:int,beginyear:np.array, endyear:np.array, bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
                          EachAreaForcedSlopeUnity:bool,
-                         Log_PM25:bool, WindSpeed_Abs:bool,GeophysicalPM25Enhenced:bool, GeoPM25Enhenced_Train_infile:str, GeoPM25Enhenced_True_infile:str, GeoPM25Enhenced_DataStartYear:int):
+                         Log_PM25:bool, ):
 
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
@@ -610,8 +592,8 @@ def EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input, t
     ### Initialize the CV R2 arrays for all datasets
     extent_dic = extent_table()
     
-    MultiyearForMultiAreasList = [['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
-    Area_beginyears = {'NA':2001,'EU':2010,'AS':2015,'GL':2015}
+    MultiyearForMultiAreasList = MultiyearForMultiAreasLists ## Each model test on which areas
+    Area_beginyears = {'NA':NA_beginyear,'EU':EU_beginyear,'AS':AS_beginyear,'GL':GL_beginyear}
     #MultiyearForMultiAreasList = [['NA','EU','AS','GL']]## Each model test on which areas
     #Area_beginyears = {'NA':2015,'EU':2015,'AS':2015,'GL':2015}
     
@@ -624,7 +606,7 @@ def EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input, t
     rkf = RepeatedKFold(n_splits=kfold, n_repeats=repeats, random_state=seed)
     annual_final_dic, annual_obs_dic = Initialize_DataRecording_MultiAreas_Dic(breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
 
-    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index,Met_Absolute=WindSpeed_Abs)
+    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index)
     
     GeoPM25_mean = train_mean[16,int((width-1)/2),int((width-1)/2)]
     GeoPM25_std  = train_std[16,int((width-1)/2),int((width-1)/2)]
@@ -668,13 +650,7 @@ def EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input, t
             #X_test = true_input[X_index]
 
             X_train, X_test = train_input[X_index, :, :, :], true_input[X_index]
-            if GeophysicalPM25Enhenced == True:
-                    GeoPM25_TrainDatasets, GeoPM25_TrueDatasets = Get_GeophysicalPM25_Datasets(train_infile=GeoPM25Enhenced_Train_infile,
-                    true_infile=GeoPM25Enhenced_True_infile, train_mean=train_mean, train_std=train_std,channel_index=channel_index,extent=extent,
-                     GeoPM25databeginyear=GeoPM25Enhenced_DataStartYear,beginyear=beginyear[imodel],endyear=endyear[imodel],
-                     bias=bias,Normlized_PM25=Normlized_PM25,Absolute_PM25=Absolute_Pm25,Log_PM25=Log_PM25)
-                    X_train = np.append(X_train, GeoPM25_TrainDatasets, axis=0)
-                    X_test =  np.append(X_test, GeoPM25_TrueDatasets)
+            
             # *------------------------------------------------------------------------------*#
             ## Training Process.
             # *------------------------------------------------------------------------------*#
@@ -687,16 +663,14 @@ def EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input, t
             cnn_model.to(device)
             torch.manual_seed(21)
 
-            if augmentation == True:
-                X_train_aug, X_test_aug = Data_Augmentation(X_train=X_train,X_test=X_test,Tranpose_Augmentation=Tranpose_Augmentation,Flip_Augmentation=Flip_Augmentation,AddNoise_Augmentation=AddNoise_Augmentation)
-                train_loss, train_acc = train(cnn_model, X_train_aug, X_test_aug,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std)
-            else:
-                train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
+            train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
             X_train_aug = []
             X_test_aug = []
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
             # *------------------------------------------------------------------------------*#
+            if not os.path.isdir(model_outdir):
+                os.makedirs(model_outdir)
             modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
                 nchannel) + 'Channel' + special_name + '_No' + str(count) + '.pt'
             torch.save(cnn_model, modelfile)
@@ -825,7 +799,7 @@ def EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input, t
             month_CV_PWAMonitor['Alltime'][Areas[iarea]][:, count] = month_PWA_monitor
 
         count += 1
-    txt_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/results/GL/'+version+'/'
+    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -889,9 +863,9 @@ def EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input, t
 def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(train_input, true_input,channel_index, kfold:int, repeats:int,
                          extent,num_epochs:int, batch_size:int, learning_rate:float,
                          Area:str,version:str,special_name:str,model_outdir:str,
-                         databeginyear:int,beginyear:np.array, endyear:np.array,augmentation:bool,Tranpose_Augmentation:bool,Flip_Augmentation:bool,AddNoise_Augmentation:bool, bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
+                         databeginyear:int,beginyear:np.array, endyear:np.array,bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
                          EachAreaForcedSlopeUnity:bool,
-                         Log_PM25:bool, WindSpeed_Abs:bool,GeophysicalPM25Enhenced:bool, GeoPM25Enhenced_Train_infile:str, GeoPM25Enhenced_True_infile:str, GeoPM25Enhenced_DataStartYear:int):
+                         Log_PM25:bool):
 
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
@@ -909,9 +883,8 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
     extent_dic = extent_table()
     #MultiyearForMultiAreasList = [['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
     #Area_beginyears = {'NA':2001,'EU':2010,'AS':2015,'GL':2015}
-    MultiyearForMultiAreasList = [['NA','EU','AS','GL']]## Each model test on which areas
-    Area_beginyears = {'NA':2015,'EU':2015,'AS':2015,'GL':2015}
-   
+    MultiyearForMultiAreasList = MultiyearForMultiAreasLists ## Each model test on which areas
+    Area_beginyears = {'NA':NA_beginyear,'EU':EU_beginyear,'AS':AS_beginyear,'GL':GL_beginyear}
     Areas = ['NA','EU','AS','GL']## Alltime areas names.
     training_CV_R2, training_annual_CV_R2,training_month_CV_R2, CV_R2, annual_CV_R2, month_CV_R2, CV_slope, annual_CV_slope, month_CV_slope, CV_RMSE, annual_CV_RMSE, month_CV_RMSE,annual_CV_PWAModel,month_CV_PWAModel,annual_CV_PWAMonitor,month_CV_PWAMonitor = Initialize_multiareas_optimalModel_CV_Dic(kfold=kfold,repeats=repeats,breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
     # *------------------------------------------------------------------------------*#
@@ -922,7 +895,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
     annual_final_dic, annual_obs_dic = Initialize_DataRecording_MultiAreas_Dic(breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
     training_annual_final_dic, training_annual_obs_dic = Initialize_DataRecording_MultiAreas_Dic(breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
 
-    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index,Met_Absolute=WindSpeed_Abs)
+    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index)
     
     GeoPM25_mean = train_mean[16,int((width-1)/2),int((width-1)/2)]
     GeoPM25_std  = train_std[16,int((width-1)/2),int((width-1)/2)]
@@ -983,13 +956,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
             #X_test = true_input[X_index]
 
             X_train, X_test = train_input[X_index, :, :, :], true_input[X_index]
-            if GeophysicalPM25Enhenced == True:
-                    GeoPM25_TrainDatasets, GeoPM25_TrueDatasets = Get_GeophysicalPM25_Datasets(train_infile=GeoPM25Enhenced_Train_infile,
-                    true_infile=GeoPM25Enhenced_True_infile, train_mean=train_mean, train_std=train_std,channel_index=channel_index,extent=extent,
-                     GeoPM25databeginyear=GeoPM25Enhenced_DataStartYear,beginyear=beginyear[imodel],endyear=endyear[imodel],
-                     bias=bias,Normlized_PM25=Normlized_PM25,Absolute_PM25=Absolute_Pm25,Log_PM25=Log_PM25)
-                    X_train = np.append(X_train, GeoPM25_TrainDatasets, axis=0)
-                    X_test =  np.append(X_test, GeoPM25_TrueDatasets)
+            
             # *------------------------------------------------------------------------------*#
             ## Training Process.
             # *------------------------------------------------------------------------------*#
@@ -1002,16 +969,14 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
             cnn_model.to(device)
             torch.manual_seed(21)
 
-            if augmentation == True:
-                X_train_aug, X_test_aug = Data_Augmentation(X_train=X_train,X_test=X_test,Tranpose_Augmentation=Tranpose_Augmentation,Flip_Augmentation=Flip_Augmentation,AddNoise_Augmentation=AddNoise_Augmentation)
-                train_loss, train_acc = train(cnn_model, X_train_aug, X_test_aug,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std)
-            else:
-                train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
+            train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
             X_train_aug = []
             X_test_aug = []
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
             # *------------------------------------------------------------------------------*#
+            if not os.path.isdir(model_outdir):
+                os.makedirs(model_outdir)
             modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
                 nchannel) + 'Channel' + special_name + '_No' + str(count) + '.pt'
             torch.save(cnn_model, modelfile)
@@ -1195,7 +1160,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
             month_CV_PWAMonitor['Alltime'][Areas[iarea]][:, count] = month_PWA_monitor
 
         count += 1
-    txt_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/results/GL/'+version+'/'
+    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -1261,9 +1226,9 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
 def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_AllfoldsTogether_GBDAreas(train_input, true_input,channel_index, kfold:int, repeats:int,
                          extent,num_epochs:int, batch_size:int, learning_rate:float,
                          Area:str,version:str,special_name:str,model_outdir:str,
-                         databeginyear:int,beginyear:np.array, endyear:np.array,augmentation:bool,Tranpose_Augmentation:bool,Flip_Augmentation:bool,AddNoise_Augmentation:bool, bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
+                         databeginyear:int,beginyear:np.array, endyear:np.array,bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
                          EachAreaForcedSlopeUnity:bool,
-                         Log_PM25:bool, WindSpeed_Abs:bool,GeophysicalPM25Enhenced:bool, GeoPM25Enhenced_Train_infile:str, GeoPM25Enhenced_True_infile:str, GeoPM25Enhenced_DataStartYear:int):
+                         Log_PM25:bool):
 
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
@@ -1306,7 +1271,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_All
     annual_final_dic, annual_obs_dic = Initialize_DataRecording_MultiAreas_Dic(breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
     training_annual_final_dic, training_annual_obs_dic = Initialize_DataRecording_MultiAreas_Dic(breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
 
-    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index,Met_Absolute=WindSpeed_Abs)
+    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index)
     
     GeoPM25_mean = train_mean[16,int((width-1)/2),int((width-1)/2)]
     GeoPM25_std  = train_std[16,int((width-1)/2),int((width-1)/2)]
@@ -1354,13 +1319,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_All
             #X_test = true_input[X_index]
 
             X_train, X_test = train_input[X_index, :, :, :], true_input[X_index]
-            if GeophysicalPM25Enhenced == True:
-                    GeoPM25_TrainDatasets, GeoPM25_TrueDatasets = Get_GeophysicalPM25_Datasets(train_infile=GeoPM25Enhenced_Train_infile,
-                    true_infile=GeoPM25Enhenced_True_infile, train_mean=train_mean, train_std=train_std,channel_index=channel_index,extent=extent,
-                     GeoPM25databeginyear=GeoPM25Enhenced_DataStartYear,beginyear=beginyear[imodel],endyear=endyear[imodel],
-                     bias=bias,Normlized_PM25=Normlized_PM25,Absolute_PM25=Absolute_Pm25,Log_PM25=Log_PM25)
-                    X_train = np.append(X_train, GeoPM25_TrainDatasets, axis=0)
-                    X_test =  np.append(X_test, GeoPM25_TrueDatasets)
+            
             # *------------------------------------------------------------------------------*#
             ## Training Process.
             # *------------------------------------------------------------------------------*#
@@ -1373,17 +1332,15 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_All
             cnn_model.to(device)
             torch.manual_seed(21)
 
-            if augmentation == True:
-                X_train_aug, X_test_aug = Data_Augmentation(X_train=X_train,X_test=X_test,Tranpose_Augmentation=Tranpose_Augmentation,Flip_Augmentation=Flip_Augmentation,AddNoise_Augmentation=AddNoise_Augmentation)
-                train_loss, train_acc = train(cnn_model, X_train_aug, X_test_aug,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std)
-            else:
-                train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
+            train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
             
             X_train_aug = []
             X_test_aug = []
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
             # *------------------------------------------------------------------------------*#
+            if not os.path.isdir(model_outdir):
+                os.makedirs(model_outdir)
             modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
                 nchannel) + 'Channel' + special_name + '_No' + str(count) + '.pt'
             torch.save(cnn_model, modelfile)
@@ -1539,7 +1496,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_All
             
 
         count += 1
-    txt_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/results/GL/'+version+'/'
+    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -1571,9 +1528,9 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_All
 def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBDAreas(train_input, true_input,channel_index, kfold:int, repeats:int,
                          extent,num_epochs:int, batch_size:int, learning_rate:float,
                          Area:str,version:str,special_name:str,model_outdir:str,
-                         databeginyear:int,beginyear:np.array, endyear:np.array,augmentation:bool,Tranpose_Augmentation:bool,Flip_Augmentation:bool,AddNoise_Augmentation:bool, bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
+                         databeginyear:int,beginyear:np.array, endyear:np.array,bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
                          EachAreaForcedSlopeUnity:bool,
-                         Log_PM25:bool, WindSpeed_Abs:bool,GeophysicalPM25Enhenced:bool, GeoPM25Enhenced_Train_infile:str, GeoPM25Enhenced_True_infile:str, GeoPM25Enhenced_DataStartYear:int):
+                         Log_PM25:bool):
 
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
@@ -1629,7 +1586,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
     annual_final_dic, annual_obs_dic = Initialize_DataRecording_MultiAreas_Dic(breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
     training_annual_final_dic, training_annual_obs_dic = Initialize_DataRecording_MultiAreas_Dic(breakpoints=beginyear,MultiyearsForAreas=MultiyearForMultiAreasList)
 
-    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index,Met_Absolute=WindSpeed_Abs)
+    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index)
     
     GeoPM25_mean = train_mean[16,int((width-1)/2),int((width-1)/2)]
     GeoPM25_std  = train_std[16,int((width-1)/2),int((width-1)/2)]
@@ -1686,13 +1643,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
             #X_test = true_input[X_index]
 
             X_train, X_test = train_input[X_index, :, :, :], true_input[X_index]
-            if GeophysicalPM25Enhenced == True:
-                    GeoPM25_TrainDatasets, GeoPM25_TrueDatasets = Get_GeophysicalPM25_Datasets(train_infile=GeoPM25Enhenced_Train_infile,
-                    true_infile=GeoPM25Enhenced_True_infile, train_mean=train_mean, train_std=train_std,channel_index=channel_index,extent=extent,
-                     GeoPM25databeginyear=GeoPM25Enhenced_DataStartYear,beginyear=beginyear[imodel],endyear=endyear[imodel],
-                     bias=bias,Normlized_PM25=Normlized_PM25,Absolute_PM25=Absolute_Pm25,Log_PM25=Log_PM25)
-                    X_train = np.append(X_train, GeoPM25_TrainDatasets, axis=0)
-                    X_test =  np.append(X_test, GeoPM25_TrueDatasets)
+            
             # *------------------------------------------------------------------------------*#
             ## Training Process.
             # *------------------------------------------------------------------------------*#
@@ -1705,16 +1656,14 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
             cnn_model.to(device)
             torch.manual_seed(21)
 
-            if augmentation == True:
-                X_train_aug, X_test_aug = Data_Augmentation(X_train=X_train,X_test=X_test,Tranpose_Augmentation=Tranpose_Augmentation,Flip_Augmentation=Flip_Augmentation,AddNoise_Augmentation=AddNoise_Augmentation)
-                train_loss, train_acc = train(cnn_model, X_train_aug, X_test_aug,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std)
-            else:
-                train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
+            train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
             X_train_aug = []
             X_test_aug = []
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
             # *------------------------------------------------------------------------------*#
+            if not os.path.isdir(model_outdir):
+                os.makedirs(model_outdir)
             modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
                 nchannel) + 'Channel' + special_name + '_No' + str(count) + '.pt'
             torch.save(cnn_model, modelfile)
@@ -1880,7 +1829,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
     # *------------------------------------------------------------------------------*#
     ## Calculate the correlation R2 for all models for all folds
     # *------------------------------------------------------------------------------*#
-    txt_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/results/GL/'+version+'/'
+    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -1980,19 +1929,19 @@ def Output_Text(outfile:str,status:str,CV_R2,annual_CV_R2,month_CV_R2,CV_slope,a
     with open(outfile,status) as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow([Area,'Area ','Time Period: ', beginyear,' ', endyear])
-        writer.writerow(['R2 for monthly validation','Max: ',str(np.round(np.max(CV_R2),4)),'Min: ',str(np.round(np.min(CV_R2),4)),
-                         'Avg: ',str(np.round(CV_R2[-1],4)),'Slope for monthly validation','Max: ',str(np.round(np.max(CV_slope),4)),'Min: ',str(np.round(np.min(CV_slope),4)),
-                         'Avg: ',str(np.round(CV_slope[-1],4)),'RMSE for monthly validation','Max: ',str(np.round(np.max(CV_RMSE),4)),'Min: ',str(np.round(np.min(CV_RMSE),4)),
+        writer.writerow(['R2 for monthly validation','\nMax: ',str(np.round(np.max(CV_R2),4)),'Min: ',str(np.round(np.min(CV_R2),4)),
+                         'Avg: ',str(np.round(CV_R2[-1],4)),'\nSlope for monthly validation','Max: ',str(np.round(np.max(CV_slope),4)),'Min: ',str(np.round(np.min(CV_slope),4)),
+                         'Avg: ',str(np.round(CV_slope[-1],4)),'\nRMSE for monthly validation','Max: ',str(np.round(np.max(CV_RMSE),4)),'Min: ',str(np.round(np.min(CV_RMSE),4)),
                          'Avg: ',str(np.round(CV_RMSE[-1],4))])
-        writer.writerow(['R2 for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_R2), 4)), 'Min: ',
+        writer.writerow(['#####################   Annual average validation ####################','\nR2 Max: ', str(np.round(np.max(annual_CV_R2), 4)), 'Min: ',
                          str(np.round(np.min(annual_CV_R2), 4)),
-                         'Avg: ', str(np.round(annual_CV_R2[-1], 4)),' Slope for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_slope), 4)), 'Min: ',
+                         'Avg: ', str(np.round(annual_CV_R2[-1], 4)),' \nSlope for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_slope), 4)), 'Min: ',
                          str(np.round(np.min(annual_CV_slope), 4)),
-                         'Avg: ', str(np.round(annual_CV_slope[-1], 4)),' RMSE for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_RMSE), 4)), 'Min: ',
+                         'Avg: ', str(np.round(annual_CV_slope[-1], 4)),' \nRMSE for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_RMSE), 4)), 'Min: ',
                          str(np.round(np.min(annual_CV_RMSE), 4)),
-                         'Avg: ', str(np.round(annual_CV_RMSE[-1], 4)), 'PWA PM25 for models: ', 'MAX: ',str(np.round(np.max(annual_CV_models), 4)),'Min: ',
+                         'Avg: ', str(np.round(annual_CV_RMSE[-1], 4)), '\nPWA PM25 for models: ', 'MAX: ',str(np.round(np.max(annual_CV_models), 4)),'Min: ',
                          str(np.round(np.min(annual_CV_models), 4)),
-                         'Avg: ', str(np.round(annual_CV_models[-1], 4)),'PWA PM25 for monitors : ', 'MAX: ',str(np.round(np.max(annual_CV_monitors), 4)),'Min: ',
+                         'Avg: ', str(np.round(annual_CV_models[-1], 4)),'\nPWA PM25 for monitors : ', 'MAX: ',str(np.round(np.max(annual_CV_monitors), 4)),'Min: ',
                          str(np.round(np.min(annual_CV_monitors), 4)),
                          'Avg: ', str(np.round(annual_CV_monitors[-1], 4))])
         
@@ -2002,15 +1951,15 @@ def Output_Text(outfile:str,status:str,CV_R2,annual_CV_R2,month_CV_R2,CV_slope,a
             month_CV_RMSE[imonth,-1] = np.mean(month_CV_RMSE[imonth,0:kfold * repeats])
             month_CV_models[imonth,-1] = np.mean(month_CV_models[imonth,0:kfold * repeats])
             month_CV_monitors[imonth,-1] = np.mean(month_CV_monitors[imonth,0:kfold * repeats])
-            writer.writerow(['R2 for ', MONTH[imonth], 'Max: ', str(np.round(np.max(month_CV_R2[imonth,:]), 4)), 'Min: ',
+            writer.writerow(['-------------------------- {} ------------------------'.format(MONTH[imonth]),'\nR2 - Max: ', str(np.round(np.max(month_CV_R2[imonth,:]), 4)), 'Min: ',
                              str(np.round(np.min(month_CV_R2[imonth,:]), 4)), 'Avg: ',
-                             str(np.round(month_CV_R2[imonth,-1],4)),' Slope Max: ', str(np.round(np.max(month_CV_slope[imonth,:]), 4)), 'Min: ',
+                             str(np.round(month_CV_R2[imonth,-1],4)),'\n Slope Max: ', str(np.round(np.max(month_CV_slope[imonth,:]), 4)), 'Min: ',
                              str(np.round(np.min(month_CV_slope[imonth,:]), 4)), 'Avg: ',
-                             str(np.round(month_CV_slope[imonth,-1],4)),' RMSE Max: ', str(np.round(np.max(month_CV_RMSE[imonth,:]), 4)), 'Min: ',
+                             str(np.round(month_CV_slope[imonth,-1],4)),'\n RMSE Max: ', str(np.round(np.max(month_CV_RMSE[imonth,:]), 4)), 'Min: ',
                              str(np.round(np.min(month_CV_RMSE[imonth,:]), 4)), 'Avg: ',
-                             str(np.round(month_CV_RMSE[imonth,-1],4)),'PWA PM25 for models Max: ', str(np.round(np.max(month_CV_models[imonth,:]), 4)), 'Min: ',
+                             str(np.round(month_CV_RMSE[imonth,-1],4)),'\n PWA PM25 for models Max: ', str(np.round(np.max(month_CV_models[imonth,:]), 4)), 'Min: ',
                              str(np.round(np.min(month_CV_models[imonth,:]), 4)), 'Avg: ',
-                             str(np.round(month_CV_models[imonth,-1],4)),'PWA PM25 for monitors Max: ', str(np.round(np.max(month_CV_monitors[imonth,:]), 4)), 'Min: ',
+                             str(np.round(month_CV_models[imonth,-1],4)),'\n PWA PM25 for monitors Max: ', str(np.round(np.max(month_CV_monitors[imonth,:]), 4)), 'Min: ',
                              str(np.round(np.min(month_CV_monitors[imonth,:]), 4)), 'Avg: ',
                              str(np.round(month_CV_monitors[imonth,-1],4))])
     return
@@ -2035,21 +1984,21 @@ def Optimal_Model_Output_Text(outfile:str,status:str,training_annual_CV_R2,train
         writer = csv.writer(csvfile)
         writer.writerow([Area,'Area ','Time Period: ', beginyear,' ', endyear])
         writer.writerow(['R2 for monthly validation','Max: ',str(np.round(np.max(CV_R2),4)),'Min: ',str(np.round(np.min(CV_R2),4)),
-                         'Avg: ',str(np.round(CV_R2[-1],4)),'Slope for monthly validation','Max: ',str(np.round(np.max(CV_slope),4)),'Min: ',str(np.round(np.min(CV_slope),4)),
-                         'Avg: ',str(np.round(CV_slope[-1],4)),'RMSE for monthly validation','Max: ',str(np.round(np.max(CV_RMSE),4)),'Min: ',str(np.round(np.min(CV_RMSE),4)),
+                         'Avg: ',str(np.round(CV_R2[-1],4)),'\nSlope for monthly validation','Max: ',str(np.round(np.max(CV_slope),4)),'Min: ',str(np.round(np.min(CV_slope),4)),
+                         'Avg: ',str(np.round(CV_slope[-1],4)),'\nRMSE for monthly validation','Max: ',str(np.round(np.max(CV_RMSE),4)),'Min: ',str(np.round(np.min(CV_RMSE),4)),
                          'Avg: ',str(np.round(CV_RMSE[-1],4))])
-        writer.writerow(['R2 for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_R2), 4)), 'Min: ',
+        writer.writerow(['#####################   Annual average validation ####################','\nR2 - Max: ', str(np.round(np.max(annual_CV_R2), 4)), 'Min: ',
                          str(np.round(np.min(annual_CV_R2), 4)),
-                         'Avg: ', str(np.round(annual_CV_R2[-1], 4)),' Slope for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_slope), 4)), 'Min: ',
+                         'Avg: ', str(np.round(annual_CV_R2[-1], 4)),'\n Slope for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_slope), 4)), 'Min: ',
                          str(np.round(np.min(annual_CV_slope), 4)),
-                         'Avg: ', str(np.round(annual_CV_slope[-1], 4)),' RMSE for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_RMSE), 4)), 'Min: ',
+                         'Avg: ', str(np.round(annual_CV_slope[-1], 4)),'\n RMSE for Annual average validation', 'Max: ', str(np.round(np.max(annual_CV_RMSE), 4)), 'Min: ',
                          str(np.round(np.min(annual_CV_RMSE), 4)),
-                         'Avg: ', str(np.round(annual_CV_RMSE[-1], 4)), 'PWA PM25 for models: ', 'MAX: ',str(np.round(np.max(annual_CV_models), 4)),'Min: ',
+                         'Avg: ', str(np.round(annual_CV_RMSE[-1], 4)), '\n PWA PM25 for models: ', 'MAX: ',str(np.round(np.max(annual_CV_models), 4)),'Min: ',
                          str(np.round(np.min(annual_CV_models), 4)),
-                         'Avg: ', str(np.round(annual_CV_models[-1], 4)),'PWA PM25 for monitors : ', 'MAX: ',str(np.round(np.max(annual_CV_monitors), 4)),'Min: ',
+                         'Avg: ', str(np.round(annual_CV_models[-1], 4)),'\n PWA PM25 for monitors : ', 'MAX: ',str(np.round(np.max(annual_CV_monitors), 4)),'Min: ',
                          str(np.round(np.min(annual_CV_monitors), 4)),
                          'Avg: ', str(np.round(annual_CV_monitors[-1], 4))])
-        writer.writerow(['R2 for Annual Training', 'Max: ', str(np.round(np.max(training_annual_CV_R2), 4)), 'Min: ',
+        writer.writerow(['###################### Annual Training ####################','\nR2 - Max: ', str(np.round(np.max(training_annual_CV_R2), 4)), 'Min: ',
                          str(np.round(np.min(training_annual_CV_R2), 4)),
                          'Avg: ', str(np.round(training_annual_CV_R2[-1], 4))])
         
@@ -2060,7 +2009,7 @@ def Optimal_Model_Output_Text(outfile:str,status:str,training_annual_CV_R2,train
             month_CV_models[imonth,-1] = np.mean(month_CV_models[imonth,0:kfold * repeats])
             month_CV_monitors[imonth,-1] = np.mean(month_CV_monitors[imonth,0:kfold * repeats])
             training_month_CV_R2[imonth,-1] = np.mean(training_month_CV_R2[imonth,0:kfold * repeats])
-            writer.writerow(['R2 for ', MONTH[imonth], 'Max: ', str(np.round(np.max(month_CV_R2[imonth,:]), 4)), 'Min: ',
+            writer.writerow([' -------------------------- {} ------------------------'.format(MONTH[imonth]),'R2 - Max: ', str(np.round(np.max(month_CV_R2[imonth,:]), 4)), 'Min: ',
                              str(np.round(np.min(month_CV_R2[imonth,:]), 4)), 'Avg: ',
                              str(np.round(month_CV_R2[imonth,-1],4)),' Slope Max: ', str(np.round(np.max(month_CV_slope[imonth,:]), 4)), 'Min: ',
                              str(np.round(np.min(month_CV_slope[imonth,:]), 4)), 'Avg: ',
