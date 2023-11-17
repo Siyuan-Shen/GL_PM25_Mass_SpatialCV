@@ -1,0 +1,17 @@
+#!/bin/bash
+#BSUB -q general
+#BSUB -R 'gpuhost rusage[mem=300GB] span[ptile=16]'
+#BSUB -G compute-rvmartin
+#BSUB -gpu "num=1:gmodel=NVIDIAA100_SXM4_40GB"
+#BSUB -a 'docker(syword/python3-pytorch:2022.07)'
+#BSUB -J "Normal Area Optimal Each Year "
+#BSUB -g /s.siyuan/Test
+#BSUB -N
+#BSUB -u s.siyuan@wustl.edu
+#BSUB -o job_output/job-%J-output.txt
+
+/bin/true
+
+
+cd /my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark
+python3 main_1.py
