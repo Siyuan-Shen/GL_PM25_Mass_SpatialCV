@@ -2,7 +2,7 @@
 #BSUB -q general
 #BSUB -R 'gpuhost rusage[mem=300GB] span[ptile=16]'
 #BSUB -G compute-rvmartin
-#BSUB -gpu "num=1:gmodel=TeslaV100_SXM2_32GB"
+#BSUB -gpu "num=1:gmodel=NVIDIAA100_SXM4_40GB"
 #BSUB -a 'docker(syword/python3-pytorch:2022.07)'
 #BSUB -J "Global PM tests"
 #BSUB -g /s.siyuan/Test
