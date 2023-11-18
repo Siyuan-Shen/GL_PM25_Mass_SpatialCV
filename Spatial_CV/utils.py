@@ -77,7 +77,7 @@ EachMonthForcedSlopeUnity = ForcedSlopeUnityTable['EachMonthForcedSlopeUnity']
 # Training file Path
 results_dir = cfg['Pathway']['Results-dir'] 
 
-txt_outdir = results_dir['txt_outdir']
+txt_dir = results_dir['txt_outdir']
 
 
 

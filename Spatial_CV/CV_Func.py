@@ -247,7 +247,7 @@ def MultiyearAreaModelCrossValid(train_input, true_input,channel_index, kfold:in
 
         count += 1
     
-    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
+    txt_outdir = txt_dir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_'+Area+'_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -509,7 +509,7 @@ def MultiyearMultiAreasSpatialCrossValidation(train_input, true_input,channel_in
             month_CV_PWAMonitor['Alltime'][Areas[iarea]][:, count] = month_PWA_monitor
 
         count += 1
-    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
+    txt_outdir = txt_dir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -799,7 +799,7 @@ def EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input, t
             month_CV_PWAMonitor['Alltime'][Areas[iarea]][:, count] = month_PWA_monitor
 
         count += 1
-    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
+    txt_outdir = txt_dir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -944,7 +944,6 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
                               'EU':np.array([],dtype = np.float64),
                               'GL':np.array([],dtype = np.float64)}
         '''
-        
         for imodel in range(len(beginyear)):
 
             X_index = GetTrainingIndex(Global_index=site_index,train_index=train_index,beginyear=beginyear[imodel],
@@ -1160,7 +1159,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
             month_CV_PWAMonitor['Alltime'][Areas[iarea]][:, count] = month_PWA_monitor
 
         count += 1
-    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
+    txt_outdir = txt_dir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -1496,7 +1495,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_All
             
 
         count += 1
-    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
+    txt_outdir = txt_dir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -1829,7 +1828,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
     # *------------------------------------------------------------------------------*#
     ## Calculate the correlation R2 for all models for all folds
     # *------------------------------------------------------------------------------*#
-    txt_outdir = txt_outdir + '{}/Results/results-SpatialCV/'.format(version)
+    txt_outdir = txt_dir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
@@ -2076,35 +2075,48 @@ def CalculateMonthR2(test_index,final_data,test_obs_data,population,beginyear:in
         month_PWA_monitor[imonth] = Calculate_PWA_PM25(month_population,month_obs)
     return month_R2, month_slope, month_RMSE, month_PWA_model, month_PWA_monitor
 
-
 def CalculateMonthR2_EachYear(test_index,final_data,test_obs_data,population,beginyear:int,endyear:int):
     '''
     This funciton is used to calculate the monthly R2, slope and RMSE
     return:
     month_R2, month_slope, month_RMSE
     '''
-    month_obs = np.zeros(((endyear - beginyear + 1)*len(test_index)))
-    month_predict = np.zeros(((endyear - beginyear + 1)*len(test_index)))
-    month_population = np.zeros((endyear - beginyear + 1)*len(test_index))
+    month_obs = np.zeros((len(test_index)))
+    month_predict = np.zeros((len(test_index)))
+    month_population = np.zeros(len(test_index))
     month_R2 = np.zeros(12,dtype = np.float64)
     month_slope = np.zeros(12,dtype = np.float64)
     month_RMSE = np.zeros(12,dtype = np.float64)
     month_PWA_model = np.zeros(12,dtype = np.float64)
     month_PWA_monitor = np.zeros(12,dtype = np.float64)
     for imonth in range(12):
+        temp_R2 = np.zeros((endyear-beginyear+1),dtype = np.float64)
+        temp_slope = np.zeros((endyear-beginyear+1),dtype = np.float64)
+        temp_RMSE = np.zeros((endyear-beginyear+1),dtype = np.float64)    
+        temp_PWA_model = np.zeros((endyear-beginyear+1),dtype = np.float64)    
+        temp_PWA_monitor = np.zeros((endyear-beginyear+1),dtype = np.float64)    
         for iyear in range(endyear-beginyear+1):
-            monthly_test_month = iyear * 12        
+            monthly_test_month = iyear * 12
+            
             for isite in range(len(test_index)):
-                month_obs[iyear*len(test_index)+isite] = test_obs_data[isite + (imonth + monthly_test_month) * len(test_index)]
-                month_predict[iyear*len(test_index)+isite] =final_data[isite + (imonth + monthly_test_month) * len(test_index)]
-                month_population[iyear*len(test_index)+isite] = population[isite + (imonth + monthly_test_month) * len(test_index)]
-        month_R2[imonth] = linear_regression(month_obs, month_predict)
-        regression_Dic = regress2(_x=month_obs,_y=month_predict,_method_type_1='ordinary least square',_method_type_2='reduced major axis',)
-        intercept,slope = regression_Dic['intercept'], regression_Dic['slope']
+                month_obs[isite] = test_obs_data[isite + (imonth + monthly_test_month) * len(test_index)]
+                month_predict[isite] =final_data[isite + (imonth + monthly_test_month) * len(test_index)]
+                month_population[isite] = population[isite + (imonth + monthly_test_month) * len(test_index)]
+            
+            temp_R2[iyear] = linear_regression(month_obs, month_predict)
+            regression_Dic = regress2(_x=month_obs,_y=month_predict,_method_type_1='ordinary least square',_method_type_2='reduced major axis',)
+            intercept,temp_slope[iyear] = regression_Dic['intercept'], regression_Dic['slope']
+            temp_RMSE[iyear] = Cal_RMSE(month_obs, month_predict)
+            temp_PWA_model[iyear] =  Calculate_PWA_PM25(month_population,month_predict)
+            temp_PWA_monitor[iyear] = Calculate_PWA_PM25(month_population,month_obs)
+
+        month_R2[imonth] = np.mean(temp_R2)
+        print( "r-squared: ", month_R2[imonth])
+        slope = np.mean(temp_slope)
         month_slope[imonth] = round(slope, 2)
-        month_RMSE[imonth] = Cal_RMSE(month_obs, month_predict)
-        month_PWA_model[imonth] = Calculate_PWA_PM25(month_population,month_predict)
-        month_PWA_monitor[imonth] = Calculate_PWA_PM25(month_population,month_obs)
+        month_RMSE[imonth] = np.mean(temp_RMSE)
+        month_PWA_model[imonth] = np.mean(temp_PWA_model)
+        month_PWA_monitor[imonth] = np.mean(temp_PWA_monitor)
     return month_R2, month_slope, month_RMSE, month_PWA_model, month_PWA_monitor
 
 
@@ -2160,24 +2172,34 @@ def CalculateAnnualR2(test_index,final_data,population,test_obs_data,beginyear,e
 
 
 def CalculateAnnualR2_EachYear(test_index,final_data,population,test_obs_data,beginyear,endyear):
-    annual_mean_obs = np.zeros(((endyear-beginyear+1)*len(test_index)))
-    annual_final_data = np.zeros(((endyear-beginyear+1)*len(test_index)))
-    annual_population = np.zeros(((endyear-beginyear+1)*len(test_index)))
+    annual_mean_obs = np.zeros((len(test_index)))
+    annual_final_data = np.zeros((len(test_index)))
+    annual_population = np.zeros((len(test_index)))
+    temp_R2 = np.zeros((endyear-beginyear+1),dtype = np.float64)    
+    temp_slope = np.zeros((endyear-beginyear+1),dtype = np.float64)    
+    temp_RMSE = np.zeros((endyear-beginyear+1),dtype = np.float64)    
+    temp_PWA_model = np.zeros((endyear-beginyear+1),dtype = np.float64)    
+    temp_PWA_monitor = np.zeros((endyear-beginyear+1),dtype = np.float64)    
     for iyear in range((endyear - beginyear + 1)):
         test_month = np.array(range(12)) + iyear*12
         for isite in range(len(test_index)):
-            annual_mean_obs[iyear*len(test_index)+isite]   = np.mean(test_obs_data[isite + test_month * len(test_index)])
-            annual_final_data[iyear*len(test_index)+isite] = np.mean(final_data[isite + test_month * len(test_index)])
-            annual_population[iyear*len(test_index)+isite] = np.mean(population[isite + test_month * len(test_index)])
-    annual_R2 = linear_regression(annual_mean_obs, annual_final_data)
-    regression_Dic = regress2(_x=annual_mean_obs,_y=annual_final_data,_method_type_1='ordinary least square',_method_type_2='reduced major axis',)
-    intercept,slope = regression_Dic['intercept'], regression_Dic['slope']
+            annual_mean_obs[isite]   = np.mean(test_obs_data[isite + test_month * len(test_index)])
+            annual_final_data[isite] = np.mean(final_data[isite + test_month * len(test_index)])
+            annual_population[isite] = np.mean(population[isite + test_month * len(test_index)])
+        temp_R2[iyear] = linear_regression(annual_mean_obs, annual_final_data)
+        regression_Dic = regress2(_x=annual_mean_obs,_y=annual_final_data,_method_type_1='ordinary least square',_method_type_2='reduced major axis',)
+        intercept,temp_slope[iyear] = regression_Dic['intercept'], regression_Dic['slope']
+        temp_RMSE[iyear] = Cal_RMSE(annual_mean_obs, annual_final_data)
+        temp_PWA_model[iyear] =  Calculate_PWA_PM25(annual_population,annual_final_data)
+        temp_PWA_monitor[iyear] = Calculate_PWA_PM25(annual_population,annual_mean_obs)
+    annual_R2 = np.mean(temp_R2)
+   
     # b0, b1 = linear_slope(plot_obs_pm25, plot_pre_pm25)
-    intercept = round(intercept, 2)
+    slope = np.mean(temp_slope)
     slope = round(slope, 2)
-    RMSE = Cal_RMSE(annual_mean_obs, annual_final_data)
-    annual_PWA_model = Calculate_PWA_PM25(annual_population,annual_final_data)
-    annual_PWA_monitor = Calculate_PWA_PM25(annual_population,annual_mean_obs)
+    RMSE = np.mean(temp_RMSE)
+    annual_PWA_model = np.mean(temp_PWA_model)
+    annual_PWA_monitor = np.mean(temp_PWA_monitor)
     return annual_R2,annual_final_data,annual_mean_obs,slope,RMSE,annual_PWA_model,annual_PWA_monitor
 
 
