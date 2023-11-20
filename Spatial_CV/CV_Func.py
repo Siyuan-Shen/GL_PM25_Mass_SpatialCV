@@ -10,6 +10,7 @@ from Spatial_CV.Statistic_Func import linear_regression, regress2, Cal_RMSE, Cal
 from Spatial_CV.Net_Construction import  ResNet, BasicBlock, Bottleneck, Net
 from Spatial_CV.visualization import regression_plot, bias_regression_plot,PM25_histgram_distribution_plot,regression_plot_area_test_average,PM25_histgram_distribution_area_tests_plot,regression_plot_ReducedAxisReduced
 from Spatial_CV.ConvNet_Data import normalize_Func, Normlize_Training_Datasets, Normlize_Testing_Datasets, Data_Augmentation, Get_GeophysicalPM25_Datasets
+from Spatial_CV.data_func import initialize_AVD_DataRecording
 from Spatial_CV.utils import *
 from .Model_Func import MyLoss,initialize_weights_kaiming,weight_init_normal
 import random
@@ -718,7 +719,7 @@ def EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input, t
                     final_data = np.exp(Validation_Prediction) - 1
                     train_final_data = np.exp(Training_Prediction) - 1
                 
-                final_data = ForcedSlopeUnity(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
+                final_data = ForcedSlopeUnity_Func(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
                                               test_final_data=final_data,train_area_index=area_train_index,test_area_index=area_train_index,endyear=endyear[imodel],
                                               beginyear=beginyear[imodel],EachMonth=EachMonthSlopeUnity)
                 
@@ -1047,7 +1048,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
                 final_data = (1.0-coeficient)*final_data + coeficient * geo_data[Y_index]
                 print('Forced Slope Unity - length of area_test_index: ',len(area_test_index),' length of area_train_index',len(area_train_index),'Area: ',MultiyearForMultiAreasList[imodel][iarea],
                       '\nlength of final_data',len(final_data))
-                final_data = ForcedSlopeUnity(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
+                final_data = ForcedSlopeUnity_Func(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
                                               test_final_data=final_data,train_area_index=area_train_index,test_area_index=area_test_index,endyear=endyear[imodel],
                                               beginyear=beginyear[imodel],EachMonth=EachMonthSlopeUnity)
                 
@@ -1410,7 +1411,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_All
                 final_data = (1.0-coeficient)*final_data + coeficient * geo_data[Y_index]
                 print('Forced Slope Unity - length of area_test_index: ',len(area_test_index),' length of area_train_index',len(area_train_index),'Area: ',MultiyearForMultiAreasList[imodel][iarea],
                       '\nlength of final_data',len(final_data))
-                final_data = ForcedSlopeUnity(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
+                final_data = ForcedSlopeUnity_Func(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
                                               test_final_data=final_data,train_area_index=area_train_index,test_area_index=area_test_index,endyear=endyear[imodel],
                                               beginyear=beginyear[imodel],EachMonth=EachMonthSlopeUnity)
                 
@@ -1711,7 +1712,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
                 final_data = (1.0-coeficient)*final_data + coeficient * geo_data[Y_index]
                 print('Forced Slope Unity - length of area_test_index: ',len(area_test_index),' length of area_train_index',len(area_train_index),'Area: ',MultiyearForMultiAreasList[imodel][iarea],
                       '\nlength of final_data',len(final_data))
-                final_data = ForcedSlopeUnity(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
+                final_data = ForcedSlopeUnity_Func(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
                                               test_final_data=final_data,train_area_index=area_train_index,test_area_index=area_test_index,endyear=endyear[imodel],
                                               beginyear=beginyear[imodel],EachMonth=EachMonthSlopeUnity)
                 
@@ -1890,6 +1891,166 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
     gc.collect()
 
     return txtoutfile
+
+
+def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input, true_input,channel_index, kfold:int, repeats:int,
+                         extent,num_epochs:int, batch_size:int, learning_rate:float,
+                         Area:str,version:str,special_name:str,model_outdir:str,
+                         databeginyear:int,beginyear:np.array, endyear:np.array,bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
+                         Log_PM25:bool):
+    # *------------------------------------------------------------------------------*#
+    ##   Initialize the array, variables and constants.
+    # *------------------------------------------------------------------------------*#
+    site_index = np.array(range(10870))         ### The index of sites.
+    nchannel   = len(channel_index)    ### The number of channels.
+    width      = train_input.shape[2]    ### The width of the input images.
+    count      = 0                       ### Initialize the count number.
+    seed = Get_CV_seed()                 ### Get the seed for random numbers for the folds seperation.
+    MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    ### Get observation data and Normalized parameters
+    obs_data, obs_mean, obs_std = Get_data_NormPara(input_dir='/my-projects/Projects/MLCNN_PM25_2021/data/',input_file='obsPM25.npy')
+    geo_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/geoPM25.npy')
+    population_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/CoMonitors_Population_Data.npy')
+    ### Initialize the CV R2 arrays for all datasets
+    extent_dic = extent_table()
+    #MultiyearForMultiAreasList = [['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
+    #Area_beginyears = {'NA':2001,'EU':2010,'AS':2015,'GL':2015}
+    MultiyearForMultiAreasList = MultiyearForMultiAreasLists ## Each model test on which areas
+    Area_beginyears = {'NA':NA_beginyear,'EU':EU_beginyear,'AS':AS_beginyear,'GL':GL_beginyear}
+    Areas = ['NA','EU','AS','GL']## Alltime areas names.
+    final_data_recording, obs_data_recording, geo_data_recording, testing_population_data_recording, training_final_data_recording, training_obs_data_recording, training_dataForSlope_recording = initialize_AVD_DataRecording(Areas=Areas,Area_beginyears=Area_beginyears,endyear=endyears[-1])
+    # *------------------------------------------------------------------------------*#
+    ## Begining the Cross-Validation.
+    ## Multiple Models will be trained in each fold.
+    # *------------------------------------------------------------------------------*#
+    rkf = RepeatedKFold(n_splits=kfold, n_repeats=repeats, random_state=seed)
+    train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index)
+    GeoPM25_mean = train_mean[16,int((width-1)/2),int((width-1)/2)]
+    GeoPM25_std  = train_std[16,int((width-1)/2),int((width-1)/2)]
+    SitesNumber_mean = train_mean[31,int((width-1)/2),int((width-1)/2)]
+    SitesNumber_std  = train_std[31,int((width-1)/2),int((width-1)/2)]
+    train_input = train_input[:,channel_index,:,:]
+    if bias == True:
+        typeName = 'PM25Bias'
+    elif Normlized_PM25 == True:
+        typeName = 'NormaizedPM25'
+    elif Absolute_Pm25 == True:
+        typeName = 'AbsolutePM25'
+    elif Log_PM25 == True:
+        typeName = 'LogPM25'
+    for train_index, test_index in rkf.split(site_index):
+        for imodel in range(len(beginyear)):
+            X_index = GetTrainingIndex(Global_index=site_index,train_index=train_index,beginyear=beginyear[imodel],
+                                            endyear=endyear[imodel],databeginyear=databeginyear,GLsitesNum=len(site_index))
+            X_train, X_test = train_input[X_index, :, :, :], true_input[X_index]
+            # *------------------------------------------------------------------------------*#
+            ## Training Process.
+            # *------------------------------------------------------------------------------*#
+            cnn_model = ResNet(nchannel=nchannel,block=BasicBlock,blocks_num=[1,1,1,1],num_classes=1,include_top=True,
+            groups=1,width_per_group=width)
+            #cnn_model = Net(nchannel=nchannel)
+            #cnn_model.apply(initialize_weights_Xavier) # No need for Residual Net
+
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            cnn_model.to(device)
+            torch.manual_seed(21)
+
+            train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
+           
+            # *------------------------------------------------------------------------------*#
+            ## Save Model results.
+            # *------------------------------------------------------------------------------*#
+            if not os.path.isdir(model_outdir):
+                os.makedirs(model_outdir)
+            modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
+                nchannel) + 'Channel' + special_name + '_No' + str(count) + '.pt'
+            torch.save(cnn_model, modelfile)
+            for iyear in range((endyear[imodel]-beginyear[imodel]+1)):
+                for iarea in range(len(MultiyearForMultiAreasList[imodel])):
+                    extent = extent_dic[MultiyearForMultiAreasList[imodel][iarea]]
+                    area_test_index = get_area_index(extent=extent, test_index=test_index)
+                    Y_index = GetValidationIndex(area_index=area_test_index,beginyear=(beginyear[imodel]+iyear),endyear=(beginyear[imodel]+iyear),GLsitesNum=len(site_index))
+                    y_train, y_test = train_input[Y_index, :, :, :], true_input[Y_index]
+                    
+                    area_train_forSlope_index = get_area_index(extent=extent_dic['GL'], test_index=train_index)
+                    area_train_forStatistic_index = get_area_index(extent=extent, test_index=train_index)
+
+                    XforForcedSlope_index = GetValidationIndex(area_index=area_train_forSlope_index,beginyear=(beginyear[imodel]+iyear),endyear=(beginyear[imodel]+iyear),GLsitesNum=len(site_index))
+                    XforStatistic_index = GetValidationIndex(area_index=area_train_forStatistic_index,beginyear=(beginyear[imodel]+iyear),endyear=(beginyear[imodel]+iyear),GLsitesNum=len(site_index))
+                    x_train_forSlope = train_input[XforForcedSlope_index,:,:,:]
+                    X_train_forStatistic = train_input[XforStatistic_index,:,:,:]
+                    # *------------------------------------------------------------------------------*#
+                    ## Validation Process
+                    # *------------------------------------------------------------------------------*#
+
+                    Training_Prediction = predict(x_train_forSlope,cnn_model,width,3000)
+                    Training_forStatistic = predict(X_train_forStatistic, cnn_model, width,3000)
+                    Validation_Prediction = predict(y_train, cnn_model, width, 3000)
+                    if bias == True:
+                        final_data = Validation_Prediction + geo_data[Y_index]
+                        train_final_data = Training_Prediction + geo_data[XforForcedSlope_index]
+                        train_final_forStatistic = Training_forStatistic + geo_data[XforStatistic_index]
+                    elif Normlized_PM25 == True:
+                        final_data = Validation_Prediction * obs_std + obs_mean
+                        train_final_data = Training_Prediction * obs_std + obs_mean
+                        train_final_forStatistic = Training_forStatistic* obs_std + obs_mean
+                    elif Absolute_Pm25 == True:
+                        final_data = Validation_Prediction
+                        train_final_data = Training_Prediction
+                        train_final_forStatistic = Training_forStatistic
+                    elif Log_PM25 == True:
+                        final_data = np.exp(Validation_Prediction) - 1
+                        train_final_data = np.exp(Training_Prediction) - 1
+                        train_final_forStatistic = np.exp(train_final_forStatistic) - 1
+                    nearest_distance = get_nearest_test_distance(area_test_index=area_test_index,area_train_index=train_index)
+                    coeficient = get_coefficients(nearest_site_distance=nearest_distance,beginyear=(beginyear[imodel]+iyear),
+                                              endyear = (beginyear[imodel]+iyear))
+                    final_data = (1.0-coeficient)*final_data + coeficient * geo_data[Y_index]
+                    print('Forced Slope Unity - length of area_test_index: ',len(area_test_index),' length of area_train_index',len(area_train_forSlope_index),'Area: ',MultiyearForMultiAreasList[imodel][iarea],
+                      '\nlength of final_data',len(final_data))
+                    final_data = ForcedSlopeUnity_Func(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
+                                              test_final_data=final_data,train_area_index=area_train_forSlope_index,test_area_index=area_test_index,endyear=(beginyear[imodel]+iyear),
+                                              beginyear=(beginyear[imodel]+iyear),EachMonth=EachMonthSlopeUnity)
+                    # *------------------------------------------------------------------------------*#
+                    ## Recording Results
+                    # *------------------------------------------------------------------------------*#
+                    test_geo_data = geo_data[Y_index]
+                    test_obs_data = obs_data[Y_index]
+                    Train_obs_data = obs_data[XforStatistic_index]
+                    Validation_population = population_data[Y_index]
+                    for imonth in range(len(MONTH)):
+                        final_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
+                            np.append(final_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
+                                       Validation_Prediction[imonth*len(area_test_index):(imonth+1)*len(area_test_index)])
+                        
+                        obs_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
+                            np.append(obs_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
+                                       test_obs_data[imonth*len(area_test_index):(imonth+1)*len(area_test_index)])
+                        
+                        geo_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
+                            np.append(geo_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
+                                       test_geo_data[imonth*len(area_test_index):(imonth+1)*len(area_test_index)])
+                        
+                        testing_population_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
+                            np.append(testing_population_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
+                                       Validation_population[imonth*len(area_test_index):(imonth+1)*len(area_test_index)])
+                        
+                        training_final_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
+                            np.append(training_final_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
+                                       train_final_forStatistic[imonth*len(area_train_forStatistic_index):(imonth+1)*len(area_train_forStatistic_index)])
+                        
+                        training_obs_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
+                            np.append(training_obs_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
+                                       Train_obs_data[imonth*len(area_train_forStatistic_index):(imonth+1)*len(area_train_forStatistic_index)])
+                        
+                        training_dataForSlope_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
+                            np.append(training_obs_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
+                                       train_final_data[imonth*len(area_train_forSlope_index):(imonth+1)*len(area_train_forSlope_index)])
+                        
+
+    return
+
+
 def plot_from_data(infile:str,true_infile,
  Area:str,version:str,special_name:str,nchannel:int,bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,
                          Log_PM25:bool):
@@ -2231,7 +2392,7 @@ def CalculateTrainingAnnualR2(train_index,train_final_data,train_obs_data,beginy
     annual_R2 = linear_regression(annual_mean_obs, annual_final_data)
     return annual_R2
 
-def ForcedSlopeUnity(train_final_data,train_obs_data,test_final_data,train_area_index,test_area_index,endyear,beginyear,EachMonth:bool):
+def ForcedSlopeUnity_Func(train_final_data,train_obs_data,test_final_data,train_area_index,test_area_index,endyear,beginyear,EachMonth:bool):
     if EachMonth:
         for i in range(12 * (endyear - beginyear + 1)):
             temp_train_final_data = train_final_data[i*len(train_area_index):(i+1)*len(train_area_index)]
