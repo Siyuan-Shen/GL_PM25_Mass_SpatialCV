@@ -3,7 +3,7 @@ import numpy as np
 import time
 import gc
 import os
-from Spatial_CV.CV_Func import MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_AllfoldsTogether_GBDAreas,MultiyearAreaModelCrossValid,plot_from_data, MultiyearMultiAreasSpatialCrossValidation, EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation, MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25, MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBDAreas
+from Spatial_CV.CV_Func import MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25,MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_AllfoldsTogether_GBDAreas,MultiyearAreaModelCrossValid,plot_from_data, MultiyearMultiAreasSpatialCrossValidation, EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation, MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25, MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBDAreas
 from Spatial_CV.ConvNet_Data import Learning_Object_Datasets
 from Spatial_CV.utils import *
 from LRP_Func.Assemble import MultiyearAreaModelLRP
@@ -152,35 +152,11 @@ if __name__ == '__main__':
     if CV == True:
         train_input = np.load(train_infile)
         true_input = Learning_Object_Datasets(bias=bias,Normlized_PM25=Normalized_PM25,Absolute_PM25=Absolute_PM25,Log_PM25=Log_PM25)
-
-        if MultiAreas == False:
-            MultiyearAreaModelCrossValid(train_input=train_input,true_input=true_input,channel_index=channel_index,
-    kfold=kfold,repeats=repeats,extent=extent,num_epochs=num_epochs,batch_size=batchsize,learning_rate=learning_rate,
-    Area=Area,version=version,special_name=special_name,model_outdir=model_outdir,databeginyear=databeginyear,
-    beginyear=beginyear,endyear=endyear,
-    bias=bias,Normlized_PM25=Normalized_PM25,Absolute_Pm25=Absolute_PM25,Log_PM25=Log_PM25)
-        else:
-            if ForcedSlopeUnity:
-                if Combine_with_GeoPM25 == True:
-                    txt_outfile = MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(train_input=train_input,true_input=true_input,channel_index=channel_index,
-    kfold=kfold,repeats=repeats,extent=extent,num_epochs=num_epochs,batch_size=batchsize,learning_rate=learning_rate,
-    Area=Area,version=version,special_name=special_name,model_outdir=model_outdir,databeginyear=databeginyear,
-    beginyear=beginyear,endyear=endyear,
-    bias=bias,Normlized_PM25=Normalized_PM25,Absolute_Pm25=Absolute_PM25,Log_PM25=Log_PM25,
-    EachMonthSlopeUnity=EachMonthForcedSlopeUnity,EachAreaForcedSlopeUnity=EachAreaForcedSlopeUnity)
-                else:
-                    txt_outfile = EachAreaForcedSlope_MultiyearMultiAreasSpatialCrossValidation(train_input=train_input,true_input=true_input,channel_index=channel_index,
-    kfold=kfold,repeats=repeats,extent=extent,num_epochs=num_epochs,batch_size=batchsize,learning_rate=learning_rate,
-    Area=Area,version=version,special_name=special_name,model_outdir=model_outdir,databeginyear=databeginyear,
-    beginyear=beginyear,endyear=endyear,
-    bias=bias,Normlized_PM25=Normalized_PM25,Absolute_Pm25=Absolute_PM25,Log_PM25=Log_PM25,
-    EachMonthSlopeUnity=EachMonthForcedSlopeUnity,EachAreaForcedSlopeUnity=EachAreaForcedSlopeUnity)
-            else:
-                txt_outfile = MultiyearMultiAreasSpatialCrossValidation(train_input=train_input,true_input=true_input,channel_index=channel_index,
-    kfold=kfold,repeats=repeats,extent=extent,num_epochs=num_epochs,batch_size=batchsize,learning_rate=learning_rate,
-    Area=Area,version=version,special_name=special_name,model_outdir=model_outdir,databeginyear=databeginyear,
-    beginyear=beginyear,endyear=endyear,
-    bias=bias,Normlized_PM25=Normalized_PM25,Absolute_Pm25=Absolute_PM25,Log_PM25=Log_PM25)
+        MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input=train_input, true_input=true_input, channel_index=channel_index,kfold=kfold,repeats=repeats,
+                                                                                  extent=extent,num_epochs=num_epochs,batch_size=batchsize,learning_rate=learning_rate,Area=Area,version=version,special_name=special_name,
+                                                                                  model_outdir=model_outdir,databeginyear=databeginyear,beginyear=beginyear,endyear=endyear
+                                                                                  ,bias=bias, Normlized_PM25=Normalized_PM25,Absolute_Pm25=Absolute_PM25,Log_PM25=Log_PM25,EachMonthSlopeUnity=EachMonthForcedSlopeUnity,)
+        
         del train_input,true_input
         gc.collect()
     CV_time_end = time.time()
@@ -220,6 +196,3 @@ total_time_end = time.time()
 
 Total_time = total_time_end - total_time_start
 
-with open(txt_outfile,'a') as csvfile:
-    writer = csv.writer(csvfile)
-    writer.writerow(['Time for CV: ',str(np.round(CV_time,4)),'\nTime for total:  ',str(np.round(Total_time,4))])

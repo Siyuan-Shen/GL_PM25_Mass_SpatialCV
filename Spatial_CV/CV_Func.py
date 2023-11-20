@@ -10,8 +10,9 @@ from Spatial_CV.Statistic_Func import linear_regression, regress2, Cal_RMSE, Cal
 from Spatial_CV.Net_Construction import  ResNet, BasicBlock, Bottleneck, Net
 from Spatial_CV.visualization import regression_plot, bias_regression_plot,PM25_histgram_distribution_plot,regression_plot_area_test_average,PM25_histgram_distribution_area_tests_plot,regression_plot_ReducedAxisReduced
 from Spatial_CV.ConvNet_Data import normalize_Func, Normlize_Training_Datasets, Normlize_Testing_Datasets, Data_Augmentation, Get_GeophysicalPM25_Datasets
-from Spatial_CV.data_func import initialize_AVD_DataRecording
+from Spatial_CV.data_func import initialize_AVD_DataRecording, calculate_Statistics_results
 from Spatial_CV.utils import *
+from Spatial_CV.iostram import output_text
 from .Model_Func import MyLoss,initialize_weights_kaiming,weight_init_normal
 import random
 import csv
@@ -2044,10 +2045,26 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
                                        Train_obs_data[imonth*len(area_train_forStatistic_index):(imonth+1)*len(area_train_forStatistic_index)])
                         
                         training_dataForSlope_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
-                            np.append(training_obs_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
+                            np.append(training_dataForSlope_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
                                        train_final_data[imonth*len(area_train_forSlope_index):(imonth+1)*len(area_train_forSlope_index)])
-                        
+    # *------------------------------------------------------------------------------*#
+    ## Calculate R2, RMSE, slope, etc.
+    # *------------------------------------------------------------------------------*#
+    test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2, slope_CV_R2, PWAModel, PWAMonitors = calculate_Statistics_results(Areas=Areas,Area_beginyears=Area_beginyears, endyear=endyears[-1], 
+                                                                                                                                   final_data_recording=final_data_recording,obs_data_recording=obs_data_recording,
+                                                                                                                                   geo_data_recording=geo_data_recording,
+                                                                                                                                   testing_population_data_recording=testing_population_data_recording,
+                                                                                                                                   training_final_data_recording=training_final_data_recording, 
+                                                                                                                                   training_obs_data_recording=training_obs_data_recording,
+                                                                                                                                   )
+    txt_outdir = txt_dir + '{}/Results/results-SpatialCV/'.format(version)
+    if not os.path.isdir(txt_outdir):
+        os.makedirs(txt_outdir)
+    txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
 
+    output_text(outfile=txtoutfile,status='a', Areas=Areas, Area_beginyears=Area_beginyears, endyear=endyears[-1],test_CV_R2=test_CV_R2,train_CV_R2=train_CV_R2, geo_CV_R2=geo_CV_R2,
+                RMSE_CV_R2=RMSE_CV_R2,slope_CV_R2=slope_CV_R2,PWAModel=PWAModel, PWAMonitors=PWAMonitors)
+    
     return
 
 
