@@ -34,7 +34,7 @@ special_name = '_ResNet_Basic1111_NoMaxPooling_1'
 
 [Training-Settings.hyper-parameters]
 
-epoch         = 30
+epoch         = 2
 batchsize     = 512
 learning_rate = 0.01
 lr_strategy   = ''
@@ -69,12 +69,13 @@ Spatial_CV_LossAccuracy_plot_Switch = true
 
 [Spatial-CrossValidation.Training_Settings]
 
-kfold   = 10
+kfold   = 2
 repeats = 1
 beginyears = [2000, 2005, 2010, 2015]
 endyears   = [2004, 2009, 2014, 2019]
 
 MultiyearForMultiAreasList = [['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
+
 Area_beginyears.NA = 2001
 Area_beginyears.EU = 2010
 Area_beginyears.AS = 2015

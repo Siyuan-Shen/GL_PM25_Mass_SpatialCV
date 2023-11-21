@@ -16,7 +16,7 @@ import random
 import csv
 
 
-def initialize_AVD_DataRecording(Areas:list,Area_beginyears:dict,endyear:int):
+def initialize_AVD_DataRecording(Areas:list,beginyear:int,endyear:int):
     """This is used to return data recording dict. dict = { area: {Year : {Month : np.array() }}}
 
     Args:
@@ -46,23 +46,24 @@ def initialize_AVD_DataRecording(Areas:list,Area_beginyears:dict,endyear:int):
         training_obs_data_recording[iarea] = {}
         training_dataForSlope_recording[iarea] = {}
         
-        for iyear in range(endyear-Area_beginyears[iarea]+1):    
-            final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)] = {}
-            obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)] = {}
-            geo_data_recording[iarea][str(Area_beginyears[iarea]+iyear)] = {}
-            testing_population_data_recording[iarea][str(Area_beginyears[iarea]+iyear)] = {}
-            training_final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)] = {}
-            training_obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)] = {}
-            training_dataForSlope_recording[iarea][str(Area_beginyears[iarea]+iyear)] = {}
+        for iyear in range(endyear-beginyear+1): 
+            print(str(beginyear+iyear))   
+            final_data_recording[iarea][str(beginyear+iyear)] = {}
+            obs_data_recording[iarea][str(beginyear+iyear)] = {}
+            geo_data_recording[iarea][str(beginyear+iyear)] = {}
+            testing_population_data_recording[iarea][str(beginyear+iyear)] = {}
+            training_final_data_recording[iarea][str(beginyear+iyear)] = {}
+            training_obs_data_recording[iarea][str(beginyear+iyear)] = {}
+            training_dataForSlope_recording[iarea][str(beginyear+iyear)] = {}
 
             for imonth in MONTH:
-                final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = np.array([],dtype=np.float64)
-                obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = np.array([],dtype=np.float64)
-                geo_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = np.array([],dtype=np.float64)
-                testing_population_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = np.array([],dtype=np.float64)
-                training_final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = np.array([],dtype=np.float64)
-                training_obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = np.array([],dtype=np.float64)
-                training_dataForSlope_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = np.array([],dtype=np.float64)
+                final_data_recording[iarea][str(beginyear+iyear)][imonth] = np.array([],dtype=np.float64)
+                obs_data_recording[iarea][str(beginyear+iyear)][imonth] = np.array([],dtype=np.float64)
+                geo_data_recording[iarea][str(beginyear+iyear)][imonth] = np.array([],dtype=np.float64)
+                testing_population_data_recording[iarea][str(beginyear+iyear)][imonth] = np.array([],dtype=np.float64)
+                training_final_data_recording[iarea][str(beginyear+iyear)][imonth] = np.array([],dtype=np.float64)
+                training_obs_data_recording[iarea][str(beginyear+iyear)][imonth] = np.array([],dtype=np.float64)
+                training_dataForSlope_recording[iarea][str(beginyear+iyear)][imonth] = np.array([],dtype=np.float64)
              
     return final_data_recording, obs_data_recording, geo_data_recording, testing_population_data_recording, training_final_data_recording, training_obs_data_recording, training_dataForSlope_recording
 
@@ -81,7 +82,7 @@ def initialize_AVD_CV_dict(Areas:list,Area_beginyears:dict,endyear:int):
         geo_CV_R2[iarea]   = {}
         RMSE_CV_R2[iarea]  = {}
         slope_CV_R2[iarea] = {}
-        PWAModel[iarea]    = {}
+        PWAModel[iarea]    = {} 
         PWAMonitors[iarea] = {}
         for iyear in range(endyear-Area_beginyears[iarea]+1):
             test_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)]  = {}
@@ -114,13 +115,13 @@ def initialize_AVD_CV_Alltime_dict(Areas:list,Area_beginyears:dict,endyear:int):
     PWAModel_Alltime     = {}
     PWAMonitors_Alltime  = {}
     for iarea in Areas:
-        test_CV_R2_Alltime[iarea]  = {}
-        train_CV_R2_Alltime[iarea] = {}
-        geo_CV_R2_Alltime[iarea]   = {}
-        RMSE_CV_R2_Alltime[iarea]  = {}
-        slope_CV_R2_Alltime[iarea] = {}
-        PWAModel_Alltime[iarea]    = {}
-        PWAMonitors_Alltime[iarea] = {}
+        test_CV_R2_Alltime[iarea]  = {'Alltime':{}}
+        train_CV_R2_Alltime[iarea] = {'Alltime':{}}
+        geo_CV_R2_Alltime[iarea]   = {'Alltime':{}}
+        RMSE_CV_R2_Alltime[iarea]  = {'Alltime':{}}
+        slope_CV_R2_Alltime[iarea] = {'Alltime':{}}
+        PWAModel_Alltime[iarea]    = {'Alltime':{}}
+        PWAMonitors_Alltime[iarea] = {'Alltime':{}}
         for imonth in MONTH:
             ## np.zeros((3),dtype=np.float64) - 0 - mean, 1 - min, 2 - max
             test_CV_R2_Alltime[iarea]['Alltime'][imonth]  = np.zeros((3),dtype=np.float64)
@@ -138,7 +139,7 @@ def calculate_Statistics_results(Areas:list,Area_beginyears:dict,endyear:int,fin
     for iarea in Areas:
         for iyear in range(endyear-Area_beginyears[iarea]+1):
             for imonth in MONTH:
-                print('Area: {}, Year: {}, Month: {}'.format(Areas[iarea], Area_beginyears[iarea]+iyear, MONTH[imonth]))
+                print('Area: {}, Year: {}, Month: {}'.format(iarea, Area_beginyears[iarea]+iyear, imonth))
                 test_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = linear_regression(final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth], obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
                 train_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = linear_regression(training_final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth], training_obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
                 geo_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth] = linear_regression(geo_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth], obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
@@ -171,7 +172,7 @@ def calculate_Statistics_results(Areas:list,Area_beginyears:dict,endyear:int,fin
             training_final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'] = training_final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual']/12.0
             training_obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'] = training_obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual']/12.0
             
-            print('Area: {}, Year: {}, Month: {}'.format(Areas[iarea], Area_beginyears[iarea]+iyear, 'Annual'))
+            print('Area: {}, Year: {}, Month: {}'.format(iarea, Area_beginyears[iarea]+iyear, 'Annual'))
             test_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'] = linear_regression(final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'], obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'])
             train_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'] = linear_regression(training_final_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'], training_obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'])
             geo_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'] = linear_regression(geo_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'], obs_data_recording[iarea][str(Area_beginyears[iarea]+iyear)]['Annual'])
@@ -200,7 +201,7 @@ def calculate_Alltime_Statistics_results(Areas:list,Area_beginyears:dict,endyear
             temp_PWAModel_Alltime     = np.array([],dtype=np.float64)
             temp_PWAMonitors_Alltime  = np.array([],dtype=np.float64)
             for iyear in range(endyear-Area_beginyears[iarea]+1):
-                print('Area: {}, Year: {}, Month: {}'.format(Areas[iarea], Area_beginyears[iarea]+iyear, MONTH[imonth]))
+                print('Area: {}, Year: {}, Month: {}'.format(iarea, Area_beginyears[iarea]+iyear, imonth))
                 temp_test_CV_R2_Alltime  = np.append(temp_test_CV_R2_Alltime, test_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
                 temp_train_CV_R2_Alltime = np.append(temp_train_CV_R2_Alltime, train_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
                 temp_geo_CV_R2_Alltime   = np.append(temp_geo_CV_R2_Alltime, geo_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
@@ -218,6 +219,16 @@ def calculate_Alltime_Statistics_results(Areas:list,Area_beginyears:dict,endyear
             PWAMonitors_Alltime[iarea]['Alltime'][imonth]    = get_mean_min_max_statistic(temp_PWAMonitors_Alltime)
 
     return test_CV_R2_Alltime, train_CV_R2_Alltime, geo_CV_R2_Alltime, RMSE_CV_R2_Alltime, slope_CV_R2_Alltime, PWAModel_Alltime, PWAMonitors_Alltime
+
+def get_longterm_array(area, imonth,beginyear, endyear, final_data_recording,obs_data_recording):
+    final_longterm_data = np.zeros(final_data_recording[area][beginyear][imonth].shape, dtype=np.float64)
+    obs_longterm_data   = np.zeros(final_data_recording[area][beginyear][imonth].shape, dtype=np.float64)
+    for iyear in range(endyear-beginyear+1):
+        final_longterm_data += final_data_recording[area][str(beginyear+iyear)][imonth]
+        obs_longterm_data   += obs_data_recording[area][str(beginyear+iyear)][imonth]
+    final_longterm_data = final_longterm_data/(endyear-beginyear+1.0)
+    obs_longterm_data   = obs_longterm_data/(endyear-beginyear+1.0)
+    return final_longterm_data, obs_longterm_data
 
 def get_mean_min_max_statistic(temp_CV):
     temp_array = np.zeros((3),dtype=np.float64)

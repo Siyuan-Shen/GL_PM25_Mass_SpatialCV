@@ -2,6 +2,16 @@ import csv
 import numpy as np
 from Spatial_CV.data_func import *
 
+def save_loss_accuracy(model_outdir, loss, accuracy, typeName, epoch, nchannel, special_name, width, height):
+
+    outdir = model_outdir + '/Results/results-Trained_Models/'
+    if not os.path.isdir(outdir):
+                os.makedirs(outdir)
+    loss_outfile = outdir + 'SpatialCV_loss_{}_{}Epoch_{}x{}_{}Channel{}.npy'.format(typeName, epoch, width, height, nchannel,special_name)
+    accuracy_outfile = outdir + 'SpatialCV_accuracy_{}_{}Epoch_{}x{}_{}Channel{}.npy'.format(typeName, epoch, width, height, nchannel,special_name)
+    np.save(loss_outfile, loss)
+    np.save(accuracy_outfile, accuracy)
+    return
 
 def output_text(outfile:str,status:str,Areas:list,Area_beginyears:dict,endyear:int,
                 test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2, slope_CV_R2, PWAModel, PWAMonitors):
@@ -14,7 +24,7 @@ def output_text(outfile:str,status:str,Areas:list,Area_beginyears:dict,endyear:i
         for iarea in Areas:
             writer.writerow(['Area: {} ; Time Period: {} - {}'.format(iarea, Area_beginyears[iarea], endyear)])
         
-            for imonth in range(MONTH):
+            for imonth in MONTH:
                 writer.writerow([' -------------------------- {} ------------------------'.format(imonth), 
                             '\n Test R2 - Avg: ', str(np.round(test_CV_R2_Alltime[iarea]['Alltime'][imonth][0], 4)), 'Min: ',
                              str(np.round(test_CV_R2_Alltime[iarea]['Alltime'][imonth][1], 4)), 'Max: ',str(np.round(test_CV_R2_Alltime[iarea]['Alltime'][imonth][2],4)),
