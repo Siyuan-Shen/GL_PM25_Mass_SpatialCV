@@ -8,11 +8,11 @@ from sklearn.model_selection import RepeatedKFold
 from Spatial_CV.Model_Func import predict, train, weight_reset
 from Spatial_CV.Statistic_Func import linear_regression, regress2, Cal_RMSE, Calculate_PWA_PM25
 from Spatial_CV.Net_Construction import  ResNet, BasicBlock, Bottleneck, Net
-from Spatial_CV.visualization import regression_plot, bias_regression_plot,PM25_histgram_distribution_plot,regression_plot_area_test_average,PM25_histgram_distribution_area_tests_plot,regression_plot_ReducedAxisReduced
+from Spatial_CV.visualization import plot_loss_accuracy_with_epoch,regression_plot, bias_regression_plot,PM25_histgram_distribution_plot,regression_plot_area_test_average,PM25_histgram_distribution_area_tests_plot,regression_plot_ReducedAxisReduced
 from Spatial_CV.ConvNet_Data import normalize_Func, Normlize_Training_Datasets, Normlize_Testing_Datasets, Data_Augmentation, Get_GeophysicalPM25_Datasets
-from Spatial_CV.data_func import initialize_AVD_DataRecording, calculate_Statistics_results
+from Spatial_CV.data_func import initialize_AVD_DataRecording, calculate_Statistics_results, get_longterm_array
 from Spatial_CV.utils import *
-from Spatial_CV.iostram import output_text
+from Spatial_CV.iostram import output_text, save_loss_accuracy
 from .Model_Func import MyLoss,initialize_weights_kaiming,weight_init_normal
 import random
 import csv
@@ -1919,7 +1919,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     MultiyearForMultiAreasList = MultiyearForMultiAreasLists ## Each model test on which areas
     Area_beginyears = {'NA':NA_beginyear,'EU':EU_beginyear,'AS':AS_beginyear,'GL':GL_beginyear}
     Areas = ['NA','EU','AS','GL']## Alltime areas names.
-    final_data_recording, obs_data_recording, geo_data_recording, testing_population_data_recording, training_final_data_recording, training_obs_data_recording, training_dataForSlope_recording = initialize_AVD_DataRecording(Areas=Areas,Area_beginyears=Area_beginyears,endyear=endyears[-1])
+    final_data_recording, obs_data_recording, geo_data_recording, testing_population_data_recording, training_final_data_recording, training_obs_data_recording, training_dataForSlope_recording = initialize_AVD_DataRecording(Areas=Areas,beginyear=beginyear[0],endyear=endyears[-1])
     # *------------------------------------------------------------------------------*#
     ## Begining the Cross-Validation.
     ## Multiple Models will be trained in each fold.
@@ -1961,6 +1961,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
             # *------------------------------------------------------------------------------*#
+           
             if not os.path.isdir(model_outdir):
                 os.makedirs(model_outdir)
             modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
@@ -2065,6 +2066,18 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     output_text(outfile=txtoutfile,status='a', Areas=Areas, Area_beginyears=Area_beginyears, endyear=endyears[-1],test_CV_R2=test_CV_R2,train_CV_R2=train_CV_R2, geo_CV_R2=geo_CV_R2,
                 RMSE_CV_R2=RMSE_CV_R2,slope_CV_R2=slope_CV_R2,PWAModel=PWAModel, PWAMonitors=PWAMonitors)
     
+    save_loss_accuracy(model_outdir=model_outdir,loss=train_loss,accuracy=train_acc,typeName=typeName,version=version,epoch=epoch,nchannel=nchannel,special_name=special_name,width=width,height=width)
+    Loss_Accuracy_outdirs = Loss_Accuracy_outdir + '{}/Figures/figures-Loss_Accuracy/'.format(version)
+    if not os.path.isdir(Loss_Accuracy_outdirs):
+        os.makedirs(Loss_Accuracy_outdirs)
+    Loss_Accuracy_outfile = 'SpatialCV_{}_{}_{}Epoch_{}Channel_{}x{}{}.png'.format(typeName,version,epoch,nchannel,width,width,special_name)
+    plot_loss_accuracy_with_epoch(loss=train_loss, accuracy=train_acc, outfile=Loss_Accuracy_outfile)
+
+    for iarea in Areas:
+        longterm_final_data, longterm_obs_data = get_longterm_array(area=iarea,imonth='Annual', beginyear=Area_beginyears[iarea], endyear=endyear[-1], final_data_recording=final_data_recording,
+                                                                    obs_data_recording=obs_data_recording)
+        regression_plot(plot_obs_pm25=longterm_obs_data,plot_pre_pm25=longterm_final_data,version=version,channel=nchannel,special_name=special_name,area_name=iarea,beginyear=Area_beginyears[iarea],endyear=endyear[-1],
+                        extentlim=2.2 * np.mean(longterm_obs_data), bias=bias,Normlized_PM25=Normlized_PM25, Absolute_Pm25=Absolute_Pm25,Log_PM25=Log_PM25)
     return
 
 

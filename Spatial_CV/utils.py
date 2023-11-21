@@ -21,7 +21,7 @@ model_outdir = Training_dir['model_outdir']
 
 #######################################################################################
 Config_outdir = cfg['Pathway']['Config-outdir']['Config_outdir']
-
+Loss_Accuracy_outdir = cfg['Pathway']['Figures-dir']['Loss_Accuracy_outdir']
 Scatter_plots_outdir = cfg['Pathway']['Figures-dir']['Scatter_plots_outdir']
 #######################################################################################
 # identity settings

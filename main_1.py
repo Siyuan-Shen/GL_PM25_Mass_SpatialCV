@@ -123,7 +123,7 @@ ForcedSlopeUnity = ForcedSlopeUnity # True: force the slope to unity and offset 
 EachAreaForcedSlopeUnity = False # True: force the slope to unity and offset to zero by each area; False: by global
 EachMonthForcedSlopeUnity = EachMonthForcedSlopeUnity # True: force the slope to unity and offset to zero by each year, each month; False: by each month, all year average 
 
-Combine_with_GeoPM25 = True   #### For optimal model
+Combine_with_GeoPM25 = Combine_with_geophysical   #### For optimal model
 
 LRP = False
 LRP_Calculation = False
