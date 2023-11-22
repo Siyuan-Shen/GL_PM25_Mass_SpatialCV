@@ -141,7 +141,7 @@ def regression_plot_ReducedAxisReduced(plot_obs_pm25:np.array,plot_pre_pm25:np.a
 def regression_plot(plot_obs_pm25:np.array,plot_pre_pm25:np.array,
                     version:str, channel:int, special_name:str, area_name:str,beginyear:str,endyear:str, extentlim:int,
                     bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,
-                    Log_PM25:bool):
+                    Log_PM25:bool) -> None:
     fig_output_dir = Scatter_plots_outdir + '{}/Figures/scatter-figures/'.format(version)
 
     if not os.path.isdir(fig_output_dir):

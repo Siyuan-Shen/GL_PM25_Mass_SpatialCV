@@ -261,9 +261,19 @@ class SigmoidMSELoss_WithExpGeoSitesNumberLogPenalties(nn.Module):
     
 def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoPM25_mean, GeoPM25_std,
           SitesNumber_mean, SitesNumber_std):
-
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    #accelerator = Accelerator()
+    #device = accelerator.device
+    #model.to(device)
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate)
+    ## scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,mode='max',factor=0.5,patience=3,threshold=0.005)    
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
     train_loader = DataLoader(Dataset(X_train, y_train), BATCH_SIZE, shuffle=True)
+    #model, optimizer, train_loader, scheduler = accelerator.prepare(model, optimizer, train_loader, scheduler)
+    model.train()
 
+    
 
     print('*' * 25, type(train_loader), '*' * 25)
     #criterion = nn.SmoothL1Loss()
@@ -278,10 +288,7 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
     #beta = 8.0
     #gamma = 3.0
     #lambda1 = 0.1
-    #criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)
-
-
-    
+    #criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)   
     alpha = 0.0005
     beta = 5.0
     gamma = 3.0
@@ -309,13 +316,8 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
     #criterion = MyLoss(lambda1=lambda1,lambda2=lambda2,minbar=minbar,maxbar=maxbar)
     losses = []
     train_acc = []
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate)
-    ## scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,mode='max',factor=0.5,patience=3,threshold=0.005)    
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
-    accelerator = Accelerator()
-    model, optimizer, train_loader, scheduler = accelerator.prepare(model, optimizer, train_loader, scheduler)
-    model.train()
+    
+    
     for epoch in range(TOTAL_EPOCHS):
         #learning_rate = learning_rate/(1+0.95*epoch)
         correct = 0
@@ -331,8 +333,8 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
             # print('output.shape,labels.shape :', outputs, labels)
             ## Calculate Loss Func
             loss = criterion(outputs, labels, images[:,16,5,5],GeoPM25_mean,GeoPM25_std)#,images[:,-1,5,5],SitesNumber_mean,SitesNumber_std)
-            #loss.backward()  ## backward
-            accelerator.backward(loss=loss)
+            loss.backward()  ## backward
+            #accelerator.backward(loss=loss)
             optimizer.step()  ## refresh training parameters
             losses.append(loss.item())
 

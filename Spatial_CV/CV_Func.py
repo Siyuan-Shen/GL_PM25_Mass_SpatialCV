@@ -2026,7 +2026,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
                     for imonth in range(len(MONTH)):
                         final_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
                             np.append(final_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
-                                       Validation_Prediction[imonth*len(area_test_index):(imonth+1)*len(area_test_index)])
+                                       final_data[imonth*len(area_test_index):(imonth+1)*len(area_test_index)])
                         
                         obs_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]] = \
                             np.append(obs_data_recording[MultiyearForMultiAreasList[imodel][iarea]][str(beginyear[imodel]+iyear)][MONTH[imonth]],
@@ -2067,7 +2067,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
         os.makedirs(txt_outdir)
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
 
-    output_text(outfile=txtoutfile,status='a', Areas=Areas, Area_beginyears=Area_beginyears, endyear=endyears[-1],test_CV_R2=test_CV_R2,train_CV_R2=train_CV_R2, geo_CV_R2=geo_CV_R2,
+    output_text(outfile=txtoutfile,status='w', Areas=Areas, Area_beginyears=Area_beginyears, endyear=endyears[-1],test_CV_R2=test_CV_R2,train_CV_R2=train_CV_R2, geo_CV_R2=geo_CV_R2,
                 RMSE_CV_R2=RMSE_CV_R2,slope_CV_R2=slope_CV_R2,PWAModel=PWAModel, PWAMonitors=PWAMonitors)
     
     save_loss_accuracy(model_outdir=model_outdir,loss=train_loss,accuracy=train_acc,typeName=typeName,epoch=epoch,nchannel=nchannel,special_name=special_name,width=width,height=width)
