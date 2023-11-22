@@ -7,6 +7,8 @@ from torch.utils.data import DataLoader
 from Spatial_CV.Statistic_Func import linear_regression
 from Spatial_CV.ConvNet_Data import Dataset,Dataset_Val
 import torch.nn.functional as F
+import accelerate
+from accelerate import Accelerator
 
 
 nsite = 10870
@@ -309,9 +311,11 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
     train_acc = []
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate)
-    ## scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,mode='max',factor=0.5,patience=3,threshold=0.005)
-    model.train()
+    ## scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,mode='max',factor=0.5,patience=3,threshold=0.005)    
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+    accelerator = Accelerator()
+    model, optimizer, train_loader, scheduler = accelerator.prepare(model, optimizer, train_loader, scheduler)
+    model.train()
     for epoch in range(TOTAL_EPOCHS):
         #learning_rate = learning_rate/(1+0.95*epoch)
         correct = 0
@@ -327,12 +331,17 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
             # print('output.shape,labels.shape :', outputs, labels)
             ## Calculate Loss Func
             loss = criterion(outputs, labels, images[:,16,5,5],GeoPM25_mean,GeoPM25_std)#,images[:,-1,5,5],SitesNumber_mean,SitesNumber_std)
-            loss.backward()  ## backward
+            #loss.backward()  ## backward
+            accelerator.backward(loss=loss)
             optimizer.step()  ## refresh training parameters
             losses.append(loss.item())
+
             # Calculate R2
             y_hat = model(images).cpu().detach().numpy()
+            y_hat = np.squeeze(y_hat)
+            print('y_hat type: {}, y_hat shape: {}'.format(type(y_hat), y_hat.shape))
             y_true = labels.cpu().detach().numpy()
+            
             #torch.cuda.empty_cache()
             print('Epoch: ', epoch, ' i th: ', i)
             #print('y_hat:', y_hat)
@@ -345,9 +354,8 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
                 # 每10个batches打印一次loss
                 print('Epoch : %d/%d, Iter : %d/%d,  Loss: %.4f' % (epoch + 1, TOTAL_EPOCHS,
                                                                     i + 1, len(X_train) // BATCH_SIZE,
-                                                                    loss.item()))
+                                                                    loss.item())) 
         accuracy = correct / counts
-
         print('Epoch: ',epoch, ', Loss: ', loss.item(),', Training set accuracy:',accuracy)
         train_acc.append(accuracy)
         print('Epoch: ',epoch,'\nLearning Rate:',optimizer.param_groups[0]['lr'])
@@ -367,6 +375,8 @@ def predict(inputarray, model, Width, batchsize):
         for i, image in enumerate(predictinput):
             image = image.to(device)
             output = model(image).cpu().detach().numpy()
+            output = torch.squeeze(output)
+            output = output
             final_output = np.append(final_output,output)
 
     return final_output

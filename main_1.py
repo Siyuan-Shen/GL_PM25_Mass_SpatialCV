@@ -135,6 +135,7 @@ f = open(cfg_outfile,'w')
 toml.dump(cfg, f)
 f.close()
 
+availability, devices_number, devices_names, current_device = get_gpu_information()
 
 if __name__ == '__main__':
     bias = True
@@ -148,19 +149,23 @@ if __name__ == '__main__':
     '\nCV:',CV,'\nLRP:',LRP,'\nLRP Calculation:', LRP_Calculation,'\nLRP Plot:', LRP_Plot,'\n Channel INDEX: ', channel_index,'\nChannel Name: ', channel_name,
     '\nForcedSlopeUnity: ',ForcedSlopeUnity, '\nEachAreaForcedSlopeUnity:',EachAreaForcedSlopeUnity,'\nEachMonthForcedSlopeUnity:',EachMonthForcedSlopeUnity)
 
-    CV_time_start = time.time()
+    
     if CV == True:
+        CV_time_start = time.time()
         train_input = np.load(train_infile)
         true_input = Learning_Object_Datasets(bias=bias,Normlized_PM25=Normalized_PM25,Absolute_PM25=Absolute_PM25,Log_PM25=Log_PM25)
-        MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input=train_input, true_input=true_input, channel_index=channel_index,kfold=kfold,repeats=repeats,
+        txt_outfile = MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input=train_input, true_input=true_input, channel_index=channel_index,kfold=kfold,repeats=repeats,
                                                                                   extent=extent,num_epochs=num_epochs,batch_size=batchsize,learning_rate=learning_rate,Area=Area,version=version,special_name=special_name,
                                                                                   model_outdir=model_outdir,databeginyear=databeginyear,beginyear=beginyear,endyear=endyear
                                                                                   ,bias=bias, Normlized_PM25=Normalized_PM25,Absolute_Pm25=Absolute_PM25,Log_PM25=Log_PM25,EachMonthSlopeUnity=EachMonthForcedSlopeUnity,)
         
         del train_input,true_input
         gc.collect()
-    CV_time_end = time.time()
-    CV_time = CV_time_end - CV_time_start
+        CV_time_end = time.time()
+        CV_time = CV_time_end - CV_time_start
+        with open(txt_outfile,'a') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Time for CV: {} seconds'.format(str(np.round(CV_time,4)))])
     if LRP == True:
         
         train_input = np.load(train_infile)

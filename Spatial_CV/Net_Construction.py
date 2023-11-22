@@ -191,7 +191,7 @@ class Net(nn.Module):
         #self.conv2 = nn.Sequential(ResidualBlocks(in_channel=32,out_channel=32,kernel_size=3,stride=1,padding=1),
         #                           nn.Tanh())
 
-              # The first loop of ConvLayer, ReLU, Pooling
+        # The first loop of ConvLayer, ReLU, Pooling
             nn.Conv2d(in_channels=32,
                       out_channels=64,
                       kernel_size=3,
@@ -202,7 +202,6 @@ class Net(nn.Module):
         #self.conv4 = nn.Sequential(ResidualBlocks(in_channel=64,out_channel=64,kernel_size=3,stride=1,padding=1),
         #                           nn.Tanh())
 
-        
             nn.Conv2d(in_channels=64,
                       out_channels=128,
                       kernel_size=3,

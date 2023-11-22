@@ -1,5 +1,6 @@
 import numpy as np
 import toml
+import torch
 
 cfg = toml.load('./config.toml')
 
@@ -80,6 +81,13 @@ results_dir = cfg['Pathway']['Results-dir']
 txt_dir = results_dir['txt_outdir']
 
 
+def get_gpu_information():
+    availability   = torch.cuda.is_available()
+    devices_number = torch.cuda.device_count()
+    devices_names  = torch.cuda.get_device_name(0)
+    current_device = torch.cuda.current_device()
+    print('GPU information: \nAvailability: {}, \ndevices numbers: {}, \ndevices names: {}, \ncurrent device: {}'.format(availability, devices_number, devices_names, current_device))
+    return availability, devices_number, devices_names, current_device
 
 def pretrained_regional_group(extent):
     input_dir = '/my-projects/Projects/MLCNN_PM25_2021/code/Data_Processing/Get_Pretrained_sites_loc/Data/'
