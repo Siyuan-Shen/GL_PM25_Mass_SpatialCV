@@ -375,8 +375,6 @@ def predict(inputarray, model, Width, batchsize):
         for i, image in enumerate(predictinput):
             image = image.to(device)
             output = model(image).cpu().detach().numpy()
-            output = torch.squeeze(output)
-            output = output
             final_output = np.append(final_output,output)
 
     return final_output
