@@ -627,11 +627,11 @@ class ResNet(nn.Module):
         #self.tanh = nn.Tanh()
         #self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         #self.layer0 = nn.Sequential(self.conv1,self.bn1,self.tanh,self.maxpool)
-        #self.layer0 = nn.Sequential(nn.Conv2d(nchannel, self.in_channel, kernel_size=7, stride=2,padding=3, bias=False) #output size:6x6
-        self.layer0 = nn.Sequential(nn.Conv2d(nchannel, self.in_channel, kernel_size=5, stride=1,padding=1, bias=False)
+        self.layer0 = nn.Sequential(nn.Conv2d(nchannel, self.in_channel, kernel_size=7, stride=2,padding=3, bias=False) #output size:6x6
+        #self.layer0 = nn.Sequential(nn.Conv2d(nchannel, self.in_channel, kernel_size=5, stride=1,padding=1, bias=False)
         ,nn.BatchNorm2d(self.in_channel)
-        ,nn.Tanh())
-        #,nn.MaxPool2d(kernel_size=3, stride=2, padding=1)) # output 4x4
+        ,nn.Tanh()
+        ,nn.MaxPool2d(kernel_size=3, stride=2, padding=1)) # output 4x4
 
         # _make_layer(残差块类型，残差块中第一个卷积层的卷积核个数，残差块个数，残差块中卷积步长)函数：生成多个连续的残差块的残差结构
         self.layer1 = self._make_layer(block, 64, blocks_num[0])
