@@ -2074,7 +2074,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     Loss_Accuracy_outdirs = Loss_Accuracy_outdir + '{}/Figures/figures-Loss_Accuracy/'.format(version)
     if not os.path.isdir(Loss_Accuracy_outdirs):
         os.makedirs(Loss_Accuracy_outdirs)
-    Loss_Accuracy_outfile = 'SpatialCV_{}_{}_{}Epoch_{}Channel_{}x{}{}.png'.format(typeName,version,epoch,nchannel,width,width,special_name)
+    Loss_Accuracy_outfile = Loss_Accuracy_outdirs + 'SpatialCV_{}_{}_{}Epoch_{}Channel_{}x{}{}.png'.format(typeName,version,epoch,nchannel,width,width,special_name)
     plot_loss_accuracy_with_epoch(loss=train_loss, accuracy=train_acc, outfile=Loss_Accuracy_outfile)
 
     for iarea in Areas:
