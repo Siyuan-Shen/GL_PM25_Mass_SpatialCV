@@ -154,7 +154,7 @@ def regression_plot(plot_obs_pm25:np.array,plot_pre_pm25:np.array,
         typeName = 'AbsolutePM25'
     elif Log_PM25 == True:
         typeName = 'LogPM25'
-    fig_outfile =  fig_output_dir + typeName+'_PM25_RegressionPlot_'+str(channel)+'Channel_'+area_name+'_'+beginyear+endyear+special_name+'.png'
+    fig_outfile =  fig_output_dir + '{}_PM25_RegressionPlot_{}Channel_{}_{}-{}{}.png'.format(typeName,channel,area_name,beginyear,endyear,special_name)
     
     data_outdic = model_outdir + '{}/data_recording/'.format(version)
     if not os.path.isdir(data_outdic):
