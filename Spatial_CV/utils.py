@@ -45,6 +45,7 @@ lr0 = HyperParameters['learning_rate']
 learning_objective = cfg['Training-Settings']['learning-objective']
 
 bias = learning_objective['bias']
+normalize_bias = learning_objective['normalize_bias']
 normalize_species = learning_objective['normalize_species']
 absolute_species = learning_objective['absolute_species']
 log_species = learning_objective['log_species']
@@ -80,6 +81,19 @@ results_dir = cfg['Pathway']['Results-dir']
 
 txt_dir = results_dir['txt_outdir']
 
+
+def get_typeName():
+    if bias == True:
+        typeName = 'PM25Bias'
+    elif normalize_bias:
+        typeName = 'NormalizedPM25Bias'
+    elif normalize_species == True:
+        typeName = 'NormaizedPM25'
+    elif absolute_species == True:
+        typeName = 'AbsolutePM25'
+    elif log_species == True:
+        typeName = 'LogPM25'
+    return typeName
 
 def get_gpu_information():
     availability   = torch.cuda.is_available()

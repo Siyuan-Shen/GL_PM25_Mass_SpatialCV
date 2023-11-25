@@ -24,15 +24,8 @@ cfg = toml.load('./config.toml')
 cfg_outdir = Config_outdir + '{}/Results/results-SpatialCV/'.format(version)
 if not os.path.isdir(cfg_outdir):
     os.makedirs(cfg_outdir)
-if bias == True:
-    typeName = 'PM25Bias'
-elif normalize_species == True:
-    typeName = 'NormaizedPM25'
-elif absolute_species == True:
-    typeName = 'AbsolutePM25'
-elif log_species == True:
-    typeName = 'LogPM25'
 
+typeName = get_typeName()
 
 total_time_start = time.time()
 #######################################################################################
@@ -138,14 +131,10 @@ f.close()
 availability, devices_number, devices_names, current_device = get_gpu_information()
 
 if __name__ == '__main__':
-    bias = True
-    Normalized_PM25 = False
-    Absolute_PM25 = False
-    Log_PM25 = False
 
     print('Train infile:',train_infile,'\nEpoch: ', num_epochs,'\n batchsize: ',batchsize,'\ninitial learning rate: ',learning_rate,
     '\nbeginyear: ', beginyear,'\nendyear: ',endyear,'\nversion:', version,'\nArea:', Area,'\nSpecial Name:', special_name,
-    '\nbias:',bias,'\nNormalized PM2.5: ',Normalized_PM25,'\nAbsolute PM2.5:', Absolute_PM25,'\nLog PM2.5: ',Log_PM25,
+    '\nbias:',bias,'\nNormalized PM2.5: ',normalize_species,'\nAbsolute PM2.5:', absolute_species,'\nLog PM2.5: ',log_species,
     '\nCV:',CV,'\nLRP:',LRP,'\nLRP Calculation:', LRP_Calculation,'\nLRP Plot:', LRP_Plot,'\n Channel INDEX: ', channel_index,'\nChannel Name: ', channel_name,
     '\nForcedSlopeUnity: ',ForcedSlopeUnity, '\nEachAreaForcedSlopeUnity:',EachAreaForcedSlopeUnity,'\nEachMonthForcedSlopeUnity:',EachMonthForcedSlopeUnity)
 
@@ -153,11 +142,11 @@ if __name__ == '__main__':
     if CV == True:
         CV_time_start = time.time()
         train_input = np.load(train_infile)
-        true_input = Learning_Object_Datasets(bias=bias,Normlized_PM25=Normalized_PM25,Absolute_PM25=Absolute_PM25,Log_PM25=Log_PM25)
+        true_input = Learning_Object_Datasets(bias=bias,Normalized_PM25Bias=normalize_bias,Normlized_PM25=normalize_species,Absolute_PM25=absolute_species,Log_PM25=log_species)
         txt_outfile = MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input=train_input, true_input=true_input, channel_index=channel_index,kfold=kfold,repeats=repeats,
                                                                                   extent=extent,num_epochs=num_epochs,batch_size=batchsize,learning_rate=learning_rate,Area=Area,version=version,special_name=special_name,
                                                                                   model_outdir=model_outdir,databeginyear=databeginyear,beginyear=beginyear,endyear=endyear
-                                                                                  ,bias=bias, Normlized_PM25=Normalized_PM25,Absolute_Pm25=Absolute_PM25,Log_PM25=Log_PM25,EachMonthSlopeUnity=EachMonthForcedSlopeUnity,)
+                                                                                  ,EachMonthSlopeUnity=EachMonthForcedSlopeUnity)
         
         del train_input,true_input
         gc.collect()
@@ -169,33 +158,26 @@ if __name__ == '__main__':
     if LRP == True:
         
         train_input = np.load(train_infile)
-        true_input = Learning_Object_Datasets(bias=bias,Normlized_PM25=Normalized_PM25,Absolute_PM25=Absolute_PM25,Log_PM25=Log_PM25)
+        true_input = Learning_Object_Datasets(bias=bias,Normalized_PM25Bias=normalize_bias,Normlized_PM25=normalize_species,Absolute_PM25=absolute_species,Log_PM25=log_species)
         MultiyearAreaModelLRP(train_input=train_input, true_input=true_input,
                         channel_index=channel_index, kfold=kfold, repeats=repeats,
                          extent=extent,
                          Area=Area,version=version,special_name=special_name,model_outdir=model_outdir,
-                         databeginyear=databeginyear,beginyear=beginyear, endyear=endyear, bias=bias, Normlized_PM25=Normalized_PM25, Absolute_Pm25=Absolute_PM25,
-                         Log_PM25=Log_PM25,calculate=LRP_Calculation,plot=LRP_Plot)
+                         databeginyear=databeginyear,beginyear=beginyear, endyear=endyear, bias=bias, Normlized_PM25=normalize_species, Absolute_Pm25=absolute_species,
+                         Log_PM25=log_species,calculate=LRP_Calculation,plot=LRP_Plot)
         del train_input,true_input
         gc.collect()
     
 
     if OnlyCV_plot == True:
-        if bias == True:
-            typeName = 'PM25Bias'
-        elif Normalized_PM25 == True:
-            typeName = 'NormaizedPM25'
-        elif Absolute_PM25 == True:
-            typeName = 'AbsolutePM25'
-        elif Log_PM25 == True:
-            typeName = 'LogPM25'
+        typeName = get_typeName()
         Area = 'EU'
         data_indic = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/data_output/v' + version + '/'
         obs_pm25_outfile = data_indic + typeName+'_ObservationPM25_'+str(nchannel)+'Channel_'+Area+'_Alltime'+special_name+'.npy'
         pre_pm25_outfile = data_indic + typeName+'_PredictionPM25_'+str(nchannel)+'Channel_'+Area+'_Alltime'+special_name+'.npy'
     
         plot_from_data(infile=pre_pm25_outfile,true_infile=obs_pm25_outfile,Area=Area,version=version,special_name=special_name,nchannel=nchannel,bias=bias,
-        Normlized_PM25=Normalized_PM25,Absolute_Pm25=Absolute_PM25,Log_PM25=Log_PM25)
+        Normlized_PM25=normalize_species,Absolute_Pm25=absolute_species,Log_PM25=log_species)
 
 total_time_end = time.time()
 

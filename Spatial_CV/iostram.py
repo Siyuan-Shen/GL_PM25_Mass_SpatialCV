@@ -2,6 +2,8 @@ import csv
 import numpy as np
 from Spatial_CV.data_func import *
 
+
+
 def save_loss_accuracy(model_outdir, loss, accuracy, typeName, epoch, nchannel, special_name, width, height):
 
     outdir = model_outdir + '/Results/results-Trained_Models/'

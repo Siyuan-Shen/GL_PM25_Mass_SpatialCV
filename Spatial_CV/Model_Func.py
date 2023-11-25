@@ -277,7 +277,7 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
 
     print('*' * 25, type(train_loader), '*' * 25)
     #criterion = nn.SmoothL1Loss()
-    #criterion = nn.MSELoss()
+    criterion = nn.MSELoss()
 
     #alpha = 0.005
     #beta = 8.0
@@ -289,18 +289,15 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
     #gamma = 3.0
     #lambda1 = 0.1
     #criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)   
+    
     alpha = 0.0005
     beta = 5.0
     gamma = 3.0
     lambda1 = 0.2
     lambda2 = 5e-7
-    #criterion = SigmoidMSELossWithGeoSumPenalties_withAbsoluteLimitation(alpha=alpha,beta=beta,gamma=gamma,lambda1=lambda1,lambda3=lambda3)
-    criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)
-    #criterion =SigmoidMSELoss_WithGeoSitesNumberSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)
-    #criterion = SigmoidMSELoss_WithGeoSitesNumberLogPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma）
-    #criterion = SigmoidMSELoss_WithSqrtGeoSitesNumberLogPenalties(alpha=alpha,beta=beta, lambda1=lambda1, gamma=gamma)
-    #criterion  = SigmoidMSELoss_WithExpGeoSitesNumberLogPenalties(alpha=alpha,beta=beta,gamma=gamma,lambda1=lambda1,lambda2=lambda2)
-
+    
+    #criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)
+    
 
     #lambda1 = 0.5
     #lambda2 = 0.5
@@ -310,10 +307,7 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
     #print('Geophysical Loss Parameters: ','\nlambda1: ',lambda1,' lambda2: ', lambda2, ' alpha:',alpha,' beta: ',beta)
 
 
-
-    #lambda1,lambda2,minbar,maxbar  = -0.8, -0.5, 8, 80
-    #print('My Loss Parameters: ','\nlambda1: ',lambda1,'\nlambda2: ', lambda2, '\nmin bar: ',minbar,'\nmaxbar: ',maxbar)
-    #criterion = MyLoss(lambda1=lambda1,lambda2=lambda2,minbar=minbar,maxbar=maxbar)
+    
     losses = []
     train_acc = []
     
