@@ -139,21 +139,12 @@ def regression_plot_ReducedAxisReduced(plot_obs_pm25:np.array,plot_pre_pm25:np.a
     
     return
 def regression_plot(plot_obs_pm25:np.array,plot_pre_pm25:np.array,
-                    version:str, channel:int, special_name:str, area_name:str,beginyear:str,endyear:str, extentlim:int,
-                    bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,
-                    Log_PM25:bool) -> None:
+                    version:str, channel:int, special_name:str, area_name:str,beginyear:str,endyear:str, extentlim:int) -> None:
     fig_output_dir = Scatter_plots_outdir + '{}/Figures/scatter-figures/'.format(version)
 
     if not os.path.isdir(fig_output_dir):
         os.makedirs(fig_output_dir)
-    if bias == True:
-        typeName = 'PM25Bias'
-    elif Normlized_PM25 == True:
-        typeName = 'NormaizedPM25'
-    elif Absolute_Pm25 == True:
-        typeName = 'AbsolutePM25'
-    elif Log_PM25 == True:
-        typeName = 'LogPM25'
+    typeName = get_typeName()
     fig_outfile =  fig_output_dir + '{}_PM25_RegressionPlot_{}Channel_{}_{}-{}{}.png'.format(typeName,channel,area_name,beginyear,endyear,special_name)
     
     data_outdic = model_outdir + '{}/data_recording/'.format(version)
