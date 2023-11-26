@@ -64,7 +64,8 @@ CosineAnnealingLR.eta_min = 1e-4
 
 [Training-Settings.learning-objective]
 
-bias = true   # learning objectives: bias = ground-based species observation - geophysical species concentration estimation
+bias = false   # learning objectives: bias = ground-based species observation - geophysical species concentration estimation
+normalize_bias = true
 normalize_species = false
 absolute_species  = false 
 log_species = false

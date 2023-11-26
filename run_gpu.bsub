@@ -2,9 +2,9 @@
 #BSUB -q general
 #BSUB -R 'gpuhost rusage[mem=300GB] span[ptile=16]'
 #BSUB -G compute-rvmartin
-#BSUB -gpu "num=2:gmodel=NVIDIAA100_SXM4_40GB"
+#BSUB -gpu "num=1:gmodel=NVIDIAA100_SXM4_40GB"
 #BSUB -a 'docker(syword/python3-pytorch:2023.11)'
-#BSUB -J "Accelerator tests NVIDIAA100_SXM4_40GB GPU-2 "
+#BSUB -J "normalize_species MSE Loss v1.0.5 "
 #BSUB -g /s.siyuan/Test
 #BSUB -N
 #BSUB -u s.siyuan@wustl.edu
@@ -12,5 +12,5 @@
 
 /bin/true
 
-cd /my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Evaluation/v1.0.0/
+cd /my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Evaluation/v1.0.5/
 python3 main_1.py

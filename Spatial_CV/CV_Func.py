@@ -1897,8 +1897,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
 def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input, true_input,channel_index, kfold:int, repeats:int,
                          extent,num_epochs:int, batch_size:int, learning_rate:float,
                          Area:str,version:str,special_name:str,model_outdir:str,
-                         databeginyear:int,beginyear:np.array, endyear:np.array,bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,EachMonthSlopeUnity:bool,
-                         Log_PM25:bool):
+                         databeginyear:int,beginyear:np.array, endyear:np.array,EachMonthSlopeUnity:bool):
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
     # *------------------------------------------------------------------------------*#
@@ -1910,6 +1909,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     ### Get observation data and Normalized parameters
     obs_data, obs_mean, obs_std = Get_data_NormPara(input_dir='/my-projects/Projects/MLCNN_PM25_2021/data/',input_file='obsPM25.npy')
+    bias_data, bias_mean, bias_std = Get_data_NormPara(input_dir='/my-projects/Projects/MLCNN_PM25_2021/data/',input_file='true_data.npy')
     geo_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/geoPM25.npy')
     population_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/CoMonitors_Population_Data.npy')
     ### Initialize the CV R2 arrays for all datasets
@@ -1931,14 +1931,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     SitesNumber_mean = train_mean[31,int((width-1)/2),int((width-1)/2)]
     SitesNumber_std  = train_std[31,int((width-1)/2),int((width-1)/2)]
     train_input = train_input[:,channel_index,:,:]
-    if bias == True:
-        typeName = 'PM25Bias'
-    elif Normlized_PM25 == True:
-        typeName = 'NormaizedPM25'
-    elif Absolute_Pm25 == True:
-        typeName = 'AbsolutePM25'
-    elif Log_PM25 == True:
-        typeName = 'LogPM25'
+    typeName = get_typeName()
     count = 0
     for train_index, test_index in rkf.split(site_index):
         for imodel in range(len(beginyear)):
@@ -1995,15 +1988,19 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
                         final_data = Validation_Prediction + geo_data[Y_index]
                         train_final_data = Training_Prediction + geo_data[XforForcedSlope_index]
                         train_final_forStatistic = Training_forStatistic + geo_data[XforStatistic_index]
-                    elif Normlized_PM25 == True:
+                    elif normalize_bias:
+                        final_data = Validation_Prediction * bias_std + bias_mean + geo_data[Y_index]
+                        train_final_data = Training_Prediction * bias_std + bias_mean + geo_data[XforForcedSlope_index]
+                        train_final_forStatistic = Training_forStatistic * bias_std + bias_mean + geo_data[XforStatistic_index]
+                    elif normalize_species == True:
                         final_data = Validation_Prediction * obs_std + obs_mean
                         train_final_data = Training_Prediction * obs_std + obs_mean
                         train_final_forStatistic = Training_forStatistic* obs_std + obs_mean
-                    elif Absolute_Pm25 == True:
+                    elif absolute_species == True:
                         final_data = Validation_Prediction
                         train_final_data = Training_Prediction
                         train_final_forStatistic = Training_forStatistic
-                    elif Log_PM25 == True:
+                    elif log_species == True:
                         final_data = np.exp(Validation_Prediction) - 1
                         train_final_data = np.exp(Training_Prediction) - 1
                         train_final_forStatistic = np.exp(train_final_forStatistic) - 1
@@ -2081,7 +2078,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
         longterm_final_data, longterm_obs_data = get_longterm_array(area=iarea,imonth='Annual', beginyear=Area_beginyears[iarea], endyear=endyear[-1], final_data_recording=final_data_recording,
                                                                     obs_data_recording=obs_data_recording)
         regression_plot(plot_obs_pm25=longterm_obs_data,plot_pre_pm25=longterm_final_data,version=version,channel=nchannel,special_name=special_name,area_name=iarea,beginyear=Area_beginyears[iarea],endyear=endyear[-1],
-                        extentlim=2.2 * np.mean(longterm_obs_data), bias=bias,Normlized_PM25=Normlized_PM25, Absolute_Pm25=Absolute_Pm25,Log_PM25=Log_PM25)
+                        extentlim=2.2 * np.mean(longterm_obs_data))
     return txtoutfile
 
 

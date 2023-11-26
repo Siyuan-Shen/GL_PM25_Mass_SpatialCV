@@ -221,8 +221,10 @@ def calculate_Alltime_Statistics_results(Areas:list,Area_beginyears:dict,endyear
     return test_CV_R2_Alltime, train_CV_R2_Alltime, geo_CV_R2_Alltime, RMSE_CV_R2_Alltime, slope_CV_R2_Alltime, PWAModel_Alltime, PWAMonitors_Alltime
 
 def get_longterm_array(area, imonth, beginyear, endyear, final_data_recording,obs_data_recording):
-    final_longterm_data = np.zeros(final_data_recording[area][str(endyear)][imonth].shape, dtype=np.float64)
-    obs_longterm_data   = np.zeros(final_data_recording[area][str(endyear)][imonth].shape, dtype=np.float64)
+
+    final_longterm_data = np.zeros(final_data_recording[area][str(beginyear)][imonth].shape, dtype=np.float64)
+    obs_longterm_data   = np.zeros(final_data_recording[area][str(beginyear)][imonth].shape, dtype=np.float64)
+
     for iyear in range(endyear-beginyear+1):
         final_longterm_data += final_data_recording[area][str(beginyear+iyear)][imonth]
         obs_longterm_data   += obs_data_recording[area][str(beginyear+iyear)][imonth]
