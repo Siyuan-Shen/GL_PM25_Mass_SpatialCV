@@ -326,7 +326,7 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
             #print(outputs)
             # print('output.shape,labels.shape :', outputs, labels)
             ## Calculate Loss Func
-            loss = criterion(outputs, labels, images[:,16,5,5],GeoPM25_mean,GeoPM25_std)#,images[:,-1,5,5],SitesNumber_mean,SitesNumber_std)
+            loss = criterion(outputs, labels)#, images[:,16,5,5],GeoPM25_mean,GeoPM25_std)#,images[:,-1,5,5],SitesNumber_mean,SitesNumber_std)
             loss.backward()  ## backward
             #accelerator.backward(loss=loss)
             optimizer.step()  ## refresh training parameters

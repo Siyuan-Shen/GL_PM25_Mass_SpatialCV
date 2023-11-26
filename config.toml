@@ -22,8 +22,8 @@ Config_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Eva
 
 [Pathway.Figures-dir]
 
-Scatter_plots_outdir = '/my-projects/Projects/PM25_Speices_DL_2023/code/Training_Evaluation_Estimation/'
-Loss_Accuracy_outdir = '/my-projects/Projects/PM25_Speices_DL_2023/code/Training_Evaluation_Estimation/'
+Scatter_plots_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Evaluation/'
+Loss_Accuracy_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Evaluation/'
 #########################################################################################################################################################
 [Training-Settings]
 
