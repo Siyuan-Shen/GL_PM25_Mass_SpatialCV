@@ -6,6 +6,7 @@ import math
 from torch.utils.data import DataLoader
 from Spatial_CV.Statistic_Func import linear_regression
 from Spatial_CV.ConvNet_Data import Dataset,Dataset_Val
+from Spatial_CV.utils import *
 import torch.nn.functional as F
 import accelerate
 from accelerate import Accelerator
@@ -148,10 +149,7 @@ class SigmoidMSELossWithGeoSumPenalties(nn.Module):
         sigmoid_coefficient = torch.sqrt(self.beta * 1/(1+torch.exp(self.alpha*torch.square(target)))+1)
         geophysical = geophysical * GeoPM25_std + GeoPM25_mean
         #sigmoid_coefficient = torch.sqrt(self.beta * 1/(1+torch.exp(self.alpha*torch.square(target+geophysical)))+1)
-        
         MSE_Loss = F.mse_loss(sigmoid_coefficient*input,sigmoid_coefficient*target)
-
-        
         Penalty1 = torch.sum(torch.relu(-input - geophysical))
         Penalty2 = torch.sum(torch.relu(input - self.gamma * geophysical))
 
@@ -267,13 +265,12 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
     #device = accelerator.device
     #model.to(device)
     optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate)
-    ## scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,mode='max',factor=0.5,patience=3,threshold=0.005)    
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+    ## scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,mode='max',factor=0.5,patience=3,threshold=0.005)
+    scheduler = lr_strategy_lookup_table(optimizer=optimizer)
+    #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
     train_loader = DataLoader(Dataset(X_train, y_train), BATCH_SIZE, shuffle=True)
     #model, optimizer, train_loader, scheduler = accelerator.prepare(model, optimizer, train_loader, scheduler)
     model.train()
-
-    
 
     print('*' * 25, type(train_loader), '*' * 25)
     #criterion = nn.SmoothL1Loss()
@@ -288,9 +285,9 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
     #beta = 8.0
     #gamma = 3.0
     #lambda1 = 0.1
-    #criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)   
-    
-    alpha = 0.0005
+    #criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)  
+ 
+    alpha = 0.005
     beta = 5.0
     gamma = 3.0
     lambda1 = 0.2
