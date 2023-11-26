@@ -159,8 +159,8 @@ def regression_plot(plot_obs_pm25:np.array,plot_pre_pm25:np.array,
     data_outdic = model_outdir + '{}/data_recording/'.format(version)
     if not os.path.isdir(data_outdic):
         os.makedirs(data_outdic)
-    obs_pm25_outfile = data_outdic + typeName+'_ObservationPM25_'+str(channel)+'Channel_'+area_name+'_'+beginyear+endyear+special_name+'.npy'
-    pre_pm25_outfile = data_outdic + typeName+'_PredictionPM25_'+str(channel)+'Channel_'+area_name+'_'+beginyear+endyear+special_name+'.npy'
+    obs_pm25_outfile = data_outdic + '{}_ObservationPM25_{}Channel_{}_{}-{}{}.npy'.format(typeName,channel,area_name,beginyear,endyear,special_name)
+    pre_pm25_outfile = data_outdic + '{}_PredictionPM25_{}Channel_{}_{}-{}{}.npy'.format(typeName,channel,area_name,beginyear,endyear,special_name)
     np.save(obs_pm25_outfile,plot_obs_pm25)
     np.save(pre_pm25_outfile,plot_pre_pm25)
 
