@@ -38,8 +38,20 @@ channel_index = HyperParameters['channel_index']
 channel_names = HyperParameters['channel_names']
 epoch = HyperParameters['epoch']
 batchsize = HyperParameters['batchsize']
-lr0 = HyperParameters['learning_rate']
 
+#######################################################################################
+# learning rate settings
+lr_settings = cfg['Training-Settings']['learning_rate']
+lr0 = lr_settings['learning_rate0']
+
+
+### Strategy
+ExponentialLR = lr_settings['ExponentialLR']['Settings']
+ExponentialLR_gamma = lr_settings['ExponentialLR']['gamma']
+
+CosineAnnealingLR = lr_settings['CosineAnnealingLR']['Settings']
+CosineAnnealingLR_T_max = lr_settings['CosineAnnealingLR']['T_max']
+CosineAnnealingLR_eta_min = lr_settings['CosineAnnealingLR']['eta_min']
 #######################################################################################
 # Learning Objectives Settings
 learning_objective = cfg['Training-Settings']['learning-objective']
@@ -80,6 +92,13 @@ results_dir = cfg['Pathway']['Results-dir']
 
 txt_dir = results_dir['txt_outdir']
 
+
+def lr_strategy_lookup_table(optimizer):
+    if ExponentialLR:
+        return torch.optim.lr_scheduler.ExponentialLR(optimizer=optimizer, gamma=ExponentialLR_gamma)
+    elif CosineAnnealingLR:
+        return torch.optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=CosineAnnealingLR_T_max,eta_min=CosineAnnealingLR_eta_min)
+    
 
 def get_gpu_information():
     availability   = torch.cuda.is_available()
