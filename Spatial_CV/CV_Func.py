@@ -2062,7 +2062,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     txt_outdir = txt_dir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
-    txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_v' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
+    txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
 
     output_text(outfile=txtoutfile,status='w', Areas=Areas, Area_beginyears=Area_beginyears, endyear=endyears[-1],test_CV_R2=test_CV_R2,train_CV_R2=train_CV_R2, geo_CV_R2=geo_CV_R2,
                 RMSE_CV_R2=RMSE_CV_R2,slope_CV_R2=slope_CV_R2,PWAModel=PWAModel, PWAMonitors=PWAMonitors)
