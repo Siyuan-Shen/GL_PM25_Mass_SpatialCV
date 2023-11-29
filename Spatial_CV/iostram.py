@@ -27,7 +27,7 @@ def output_text(outfile:str,status:str,Areas:list,Area_beginyears:dict,endyear:i
             writer.writerow(['Area: {} ; Time Period: {} - {}'.format(iarea, Area_beginyears[iarea], endyear)])
         
             for imonth in MONTH:
-                writer.writerow([' -------------------------- {} ------------------------'.format(imonth), 
+                writer.writerow(['-------------------------- {} ------------------------'.format(imonth), 
                             '\n Test R2 - Avg: ', str(np.round(test_CV_R2_Alltime[iarea]['Alltime'][imonth][0], 4)), 'Min: ',
                              str(np.round(test_CV_R2_Alltime[iarea]['Alltime'][imonth][1], 4)), 'Max: ',str(np.round(test_CV_R2_Alltime[iarea]['Alltime'][imonth][2],4)),
 

@@ -173,9 +173,10 @@ if __name__ == '__main__':
         typeName = get_typeName()
         Area = ['GL']
         data_indic = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/data_output/' + version + '/'
-        obs_pm25_outfile = data_indic + typeName+'_ObservationPM25_'+str(nchannel)+'Channel_'+Area+'_Alltime'+special_name+'.npy'
-        pre_pm25_outfile = data_indic + typeName+'_PredictionPM25_'+str(nchannel)+'Channel_'+Area+'_Alltime'+special_name+'.npy'
+        
         for iarea in Area:
+            obs_pm25_outfile = data_indic + typeName+'_ObservationPM25_'+str(nchannel)+'Channel_'+iarea+'_Alltime'+special_name+'.npy'
+            pre_pm25_outfile = data_indic + typeName+'_PredictionPM25_'+str(nchannel)+'Channel_'+iarea+'_Alltime'+special_name+'.npy'
             plot_from_data(infile=pre_pm25_outfile,true_infile=obs_pm25_outfile,Area=iarea,version=version,special_name=special_name,nchannel=nchannel,bias=bias,
         Normlized_PM25=normalize_species,Absolute_Pm25=absolute_species,Log_PM25=log_species)
 
