@@ -274,7 +274,7 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
 
     print('*' * 25, type(train_loader), '*' * 25)
     #criterion = nn.SmoothL1Loss()
-    criterion = nn.MSELoss()
+    #criterion = nn.MSELoss()
 
     #alpha = 0.005
     #beta = 8.0
@@ -293,7 +293,7 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
     lambda1 = 0.2
     lambda2 = 5e-7
     
-    #criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)
+    criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)
     
 
     #lambda1 = 0.5
@@ -323,7 +323,7 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
             #print(outputs)
             # print('output.shape,labels.shape :', outputs, labels)
             ## Calculate Loss Func
-            loss = criterion(outputs, labels)#, images[:,16,5,5],GeoPM25_mean,GeoPM25_std)#,images[:,-1,5,5],SitesNumber_mean,SitesNumber_std)
+            loss = criterion(outputs, labels, images[:,16,5,5],GeoPM25_mean,GeoPM25_std)#,images[:,-1,5,5],SitesNumber_mean,SitesNumber_std)
             loss.backward()  ## backward
             #accelerator.backward(loss=loss)
             optimizer.step()  ## refresh training parameters
