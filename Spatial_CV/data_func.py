@@ -191,7 +191,6 @@ def calculate_Alltime_Statistics_results(Areas:list,Area_beginyears:dict,endyear
     MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec','Annual']
     test_CV_R2_Alltime, train_CV_R2_Alltime, geo_CV_R2_Alltime, RMSE_CV_R2_Alltime, slope_CV_R2_Alltime, PWAModel_Alltime, PWAMonitors_Alltime = initialize_AVD_CV_Alltime_dict(Areas=Areas,Area_beginyears=Area_beginyears,endyear=endyear)
     for iarea in Areas:
-        
         for imonth in MONTH:
             temp_test_CV_R2_Alltime   = np.array([],dtype=np.float64)
             temp_train_CV_R2_Alltime  = np.array([],dtype=np.float64)

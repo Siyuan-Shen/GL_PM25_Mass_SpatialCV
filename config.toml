@@ -34,7 +34,7 @@ special_name = '_ResNet_1111_SigmoidMSELossWithGeoSumPenaltiesLoss_CARSLR_T_0-10
 
 [Training-Settings.hyper-parameters]
 
-epoch         = 70
+epoch         = 50
 batchsize     = 512
 
 channel_names = ['EtaAOD_Bias','EtaCoastal','EtaMixing','EtaSGAOD_Bias','EtaSGTOPO_Bias',
@@ -89,7 +89,9 @@ repeats = 1
 beginyears = [2000, 2005, 2010, 2015]
 endyears   = [2004, 2009, 2014, 2019]
 
-MultiyearForMultiAreasList = [['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
+training_area = 'NA'
+Test_Areas    = ['NA']
+MultiyearForMultiAreasList = [['NA'],['NA'],['NA'],['NA']]#[['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
 
 Area_beginyears.NA = 2001
 Area_beginyears.EU = 2010
