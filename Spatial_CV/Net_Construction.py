@@ -2,7 +2,9 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
+from Spatial_CV.utils import *
 
+activation_func = activation_function_table()
 '''
 class Net(nn.Module):
     def __init__(self, nchannel):
@@ -526,10 +528,10 @@ class BasicBlock(nn.Module):  # 卷积2层，F(X)和X的维度相等
         self.downsample = downsample
         self.conv1 = nn.Conv2d(in_channels=in_channel, out_channels=out_channel,kernel_size=3, stride=stride, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(out_channel)  # BN层在conv和relu层之间
-        self.tanh1 = nn.Tanh()
+        self.tanh1 = activation_func
         self.conv2 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel,kernel_size=3, stride=1, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(out_channel)
-        self.tanh2 = nn.Tanh()
+        self.tanh2 = activation_func
     def forward(self, x):
         identity = x
         if self.downsample is not None:
@@ -574,8 +576,7 @@ class Bottleneck(nn.Module):  # 卷积3层，F(X)和X的维度不等
         self.conv3 = nn.Conv2d(in_channels=width, out_channels=out_channel * self.expansion,kernel_size=1, stride=1, bias=False)  # unsqueeze channels
         self.bn3 = nn.BatchNorm2d(out_channel * self.expansion)
 
-        self.Tanh = nn.Tanh()
-        
+        self.Tanh = activation_func
 
     def forward(self, x):
         identity = x
@@ -630,8 +631,8 @@ class ResNet(nn.Module):
         self.layer0 = nn.Sequential(nn.Conv2d(nchannel, self.in_channel, kernel_size=7, stride=2,padding=3, bias=False) #output size:6x6
         #self.layer0 = nn.Sequential(nn.Conv2d(nchannel, self.in_channel, kernel_size=5, stride=1,padding=1, bias=False)
         ,nn.BatchNorm2d(self.in_channel)
-        ,nn.Tanh()
-        ,nn.MaxPool2d(kernel_size=3, stride=2, padding=1)) # output 4x4
+        ,activation_func)
+        #,nn.MaxPool2d(kernel_size=3, stride=2, padding=1)) # output 4x4
 
         # _make_layer(残差块类型，残差块中第一个卷积层的卷积核个数，残差块个数，残差块中卷积步长)函数：生成多个连续的残差块的残差结构
         self.layer1 = self._make_layer(block, 64, blocks_num[0])
@@ -646,7 +647,7 @@ class ResNet(nn.Module):
 
         for m in self.modules():  # 初始化
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='tanh')
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity=activation_func_name)
 
     # _make_layer()函数：生成多个连续的残差块，(残差块类型，残差块中第一个卷积层的卷积核个数，残差块个数，残差块中卷积步长)
     def _make_layer(self, block, channel, block_num, stride=1):
@@ -697,4 +698,6 @@ class ResNet(nn.Module):
             x = self.fc(x)
 
         return x
+
+
 

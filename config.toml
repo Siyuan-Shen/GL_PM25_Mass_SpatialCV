@@ -29,12 +29,12 @@ Loss_Accuracy_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Test
 
 [Training-Settings.identity]
 
-version      = 'v1.1.0'
-special_name = '_ResNet_1111_CosineAnnealingLR_Tmax-10_EtaMin-1e-4_Epoch150'
+version      = 'v1.1.5'
+special_name = '_ResNet_1111_MSELoss_ReLU_CosineAnnealingLR_Tmax-10_EtaMin-1e-4_Epoch70'
 
 [Training-Settings.hyper-parameters]
 
-epoch         = 150
+epoch         = 70
 batchsize     = 512
 
 channel_names = ['EtaAOD_Bias','EtaCoastal','EtaMixing','EtaSGAOD_Bias','EtaSGTOPO_Bias',
@@ -60,11 +60,17 @@ CosineAnnealingLR.Settings = true
 CosineAnnealingLR.T_max = 10
 CosineAnnealingLR.eta_min = 1e-4
 
+[Training_Settings.activation_func]
+
+activation_func_name = 'relu'
+ReLU.Settings = true
+Tanh.Settings = false
 
 [Training-Settings.learning-objective]
 
 bias = false   # learning objectives: bias = ground-based species observation - geophysical species concentration estimation
-normalize_bias = true
+normalize_bias = false
+unit_normalize_bias = true
 normalize_species = false
 absolute_species  = false 
 log_species = false

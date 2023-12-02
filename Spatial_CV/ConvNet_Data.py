@@ -134,11 +134,17 @@ def Normlize_Testing_Datasets(true_input:np.array):
     return true_input, obs_mean,obs_std
 
 
-def Learning_Object_Datasets(bias:bool,Normalized_PM25Bias:bool,Normlized_PM25:bool,Absolute_PM25:bool, Log_PM25):
+def Learning_Object_Datasets(bias:bool,unit_normalize_bias:bool,Normalized_PM25Bias:bool,Normlized_PM25:bool,Absolute_PM25:bool, Log_PM25):
     input_dir = '/my-projects/Projects/MLCNN_PM25_2021/data/'
     if bias == True:
         test_infile = input_dir + 'true_data.npy'
         true_input  = np.load(test_infile)
+    elif unit_normalize_bias == True:
+        test_infile = input_dir + 'true_data.npy'
+        bias_data   = np.load(test_infile)
+        min_bias    = np.min(bias_data)
+        max_bias    = np.max(bias_data)
+        true_input  = (bias_data - min_bias)/np.abs(max_bias - min_bias)
     elif Normalized_PM25Bias == True:
         test_infile = input_dir + 'true_data.npy'
         bias_data  = np.load(test_infile)
