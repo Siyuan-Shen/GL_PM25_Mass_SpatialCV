@@ -29,12 +29,12 @@ Loss_Accuracy_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Test
 
 [Training-Settings.identity]
 
-version      = 'v1.1.5'
-special_name = '_ResNet_1111_MSELoss_ReLU_CosineAnnealingLR_Tmax-10_EtaMin-1e-4_Epoch70'
+version      = 'v1.1.0'
+special_name = '_ResNet_1111_SigmoidMSELossWithGeoSumPenaltiesLoss_CARSLR_T_0-10_T_mult-2_etaMin-1e-6_Epoch70'
 
 [Training-Settings.hyper-parameters]
 
-epoch         = 70
+epoch         = 50
 batchsize     = 512
 
 channel_names = ['EtaAOD_Bias','EtaCoastal','EtaMixing','EtaSGAOD_Bias','EtaSGTOPO_Bias',
@@ -56,9 +56,14 @@ learning_rate0 = 0.01
 ExponentialLR.Settings = false
 ExponentialLR.gamma    = 0.9
 
-CosineAnnealingLR.Settings = true
-CosineAnnealingLR.T_max = 10
+CosineAnnealingLR.Settings = false
+CosineAnnealingLR.T_max = 20
 CosineAnnealingLR.eta_min = 1e-4
+
+CosineAnnealingRestartsLR.Settings = true
+CosineAnnealingRestartsLR.T_0      = 10
+CosineAnnealingRestartsLR.T_mult   = 2
+CosineAnnealingRestartsLR.eta_min = 1e-6
 
 [Training_Settings.activation_func]
 
@@ -66,11 +71,14 @@ activation_func_name = 'relu'
 ReLU.Settings = true
 Tanh.Settings = false
 
+
+
+
 [Training-Settings.learning-objective]
 
-bias = false   # learning objectives: bias = ground-based species observation - geophysical species concentration estimation
+bias = true   # learning objectives: bias = ground-based species observation - geophysical species concentration estimation
 normalize_bias = false
-unit_normalize_bias = true
+unit_normalize_bias = false
 normalize_species = false
 absolute_species  = false 
 log_species = false
@@ -91,7 +99,9 @@ repeats = 1
 beginyears = [2000, 2005, 2010, 2015]
 endyears   = [2004, 2009, 2014, 2019]
 
-MultiyearForMultiAreasList = [['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
+training_area = 'NA'
+Test_Areas    = ['NA']
+MultiyearForMultiAreasList = [['NA'],['NA'],['NA'],['NA']]#[['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
 
 Area_beginyears.NA = 2001
 Area_beginyears.EU = 2010

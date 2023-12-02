@@ -1901,10 +1901,13 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
     # *------------------------------------------------------------------------------*#
-    site_index = np.array(range(10870))         ### The index of sites.
-    nchannel   = len(channel_index)    ### The number of channels.
-    width      = train_input.shape[2]    ### The width of the input images.
-    count      = 0                       ### Initialize the count number.
+    extent_dic   = extent_table()
+    global_index = np.array(range(10870))         
+    site_index   = get_area_index(extent=extent_dic[Area], test_index=global_index) ### The index of sites.
+    print('site index: ',len(site_index))
+    nchannel     = len(channel_index)    ### The number of channels.
+    width        = train_input.shape[2]    ### The width of the input images.
+    count        = 0                       ### Initialize the count number.
     seed = Get_CV_seed()                 ### Get the seed for random numbers for the folds seperation.
     MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     ### Get observation data and Normalized parameters
@@ -1914,12 +1917,12 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     geo_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/geoPM25.npy')
     population_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/CoMonitors_Population_Data.npy')
     ### Initialize the CV R2 arrays for all datasets
-    extent_dic = extent_table()
+    
     #MultiyearForMultiAreasList = [['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
     #Area_beginyears = {'NA':2001,'EU':2010,'AS':2015,'GL':2015}
     MultiyearForMultiAreasList = MultiyearForMultiAreasLists ## Each model test on which areas
     Area_beginyears = {'NA':NA_beginyear,'EU':EU_beginyear,'AS':AS_beginyear,'GL':GL_beginyear}
-    Areas = ['NA','EU','AS','GL']## Alltime areas names.
+    Areas = Test_Areas ## Alltime areas names.
     final_data_recording, obs_data_recording, geo_data_recording, testing_population_data_recording, training_final_data_recording, training_obs_data_recording, training_dataForSlope_recording = initialize_AVD_DataRecording(Areas=Areas,beginyear=beginyear[0],endyear=endyears[-1])
     # *------------------------------------------------------------------------------*#
     ## Begining the Cross-Validation.
@@ -1937,7 +1940,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     for train_index, test_index in rkf.split(site_index):
         for imodel in range(len(beginyear)):
             X_index = GetTrainingIndex(Global_index=site_index,train_index=train_index,beginyear=beginyear[imodel],
-                                            endyear=endyear[imodel],databeginyear=databeginyear,GLsitesNum=len(site_index))
+                                            endyear=endyear[imodel],databeginyear=databeginyear,GLsitesNum=len(global_index))
             X_train, X_test = train_input[X_index, :, :, :], true_input[X_index]
             # *------------------------------------------------------------------------------*#
             ## Training Process.
@@ -1950,7 +1953,6 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             cnn_model.to(device)
             torch.manual_seed(21)
-
             train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
            
             # *------------------------------------------------------------------------------*#
@@ -1967,15 +1969,15 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
                 for iarea in range(len(MultiyearForMultiAreasList[imodel])):
                     
                     extent = extent_dic[MultiyearForMultiAreasList[imodel][iarea]]
-                    area_test_index = get_area_index(extent=extent, test_index=test_index)
-                    Y_index = GetValidationIndex(area_index=area_test_index,beginyear=(beginyear[imodel]+iyear),endyear=(beginyear[imodel]+iyear),GLsitesNum=len(site_index))
+                    area_test_index = get_area_index(extent=extent, test_index=site_index[test_index])
+                    Y_index = GetValidationIndex(area_index=area_test_index,beginyear=(beginyear[imodel]+iyear),endyear=(beginyear[imodel]+iyear),GLsitesNum=len(global_index))
                     y_train, y_test = train_input[Y_index, :, :, :], true_input[Y_index]
                     
-                    area_train_forSlope_index = get_area_index(extent=extent_dic['GL'], test_index=train_index)
-                    area_train_forStatistic_index = get_area_index(extent=extent, test_index=train_index)
+                    area_train_forSlope_index = get_area_index(extent=extent_dic[Area], test_index=site_index[train_index])
+                    area_train_forStatistic_index = get_area_index(extent=extent, test_index=site_index[train_index])
 
-                    XforForcedSlope_index = GetValidationIndex(area_index=area_train_forSlope_index,beginyear=(beginyear[imodel]+iyear),endyear=(beginyear[imodel]+iyear),GLsitesNum=len(site_index))
-                    XforStatistic_index = GetValidationIndex(area_index=area_train_forStatistic_index,beginyear=(beginyear[imodel]+iyear),endyear=(beginyear[imodel]+iyear),GLsitesNum=len(site_index))
+                    XforForcedSlope_index = GetValidationIndex(area_index=area_train_forSlope_index,beginyear=(beginyear[imodel]+iyear),endyear=(beginyear[imodel]+iyear),GLsitesNum=len(global_index))
+                    XforStatistic_index = GetValidationIndex(area_index=area_train_forStatistic_index,beginyear=(beginyear[imodel]+iyear),endyear=(beginyear[imodel]+iyear),GLsitesNum=len(global_index))
                     x_train_forSlope = train_input[XforForcedSlope_index,:,:,:]
                     X_train_forStatistic = train_input[XforStatistic_index,:,:,:]
                     # *------------------------------------------------------------------------------*#
@@ -2009,7 +2011,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
                         final_data = np.exp(Validation_Prediction) - 1
                         train_final_data = np.exp(Training_Prediction) - 1
                         train_final_forStatistic = np.exp(train_final_forStatistic) - 1
-                    nearest_distance = get_nearest_test_distance(area_test_index=area_test_index,area_train_index=train_index)
+                    nearest_distance = get_nearest_test_distance(area_test_index=area_test_index,area_train_index=site_index[train_index])
                     coeficient = get_coefficients(nearest_site_distance=nearest_distance,beginyear=(beginyear[imodel]+iyear),
                                               endyear = (beginyear[imodel]+iyear))
                     final_data = (1.0-coeficient)*final_data + coeficient * geo_data[Y_index]
@@ -2067,7 +2069,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     txt_outdir = txt_dir + '{}/Results/results-SpatialCV/'.format(version)
     if not os.path.isdir(txt_outdir):
         os.makedirs(txt_outdir)
-    txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_' + version + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
+    txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_' + version + '_' + str(Area) + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
 
     output_text(outfile=txtoutfile,status='w', Areas=Areas, Area_beginyears=Area_beginyears, endyear=endyears[-1],test_CV_R2=test_CV_R2,train_CV_R2=train_CV_R2, geo_CV_R2=geo_CV_R2,
                 RMSE_CV_R2=RMSE_CV_R2,slope_CV_R2=slope_CV_R2,PWAModel=PWAModel, PWAMonitors=PWAMonitors)
@@ -2076,7 +2078,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     Loss_Accuracy_outdirs = Loss_Accuracy_outdir + '{}/Figures/figures-Loss_Accuracy/'.format(version)
     if not os.path.isdir(Loss_Accuracy_outdirs):
         os.makedirs(Loss_Accuracy_outdirs)
-    Loss_Accuracy_outfile = Loss_Accuracy_outdirs + 'SpatialCV_{}_{}_{}Epoch_{}Channel_{}x{}{}.png'.format(typeName,version,epoch,nchannel,width,width,special_name)
+    Loss_Accuracy_outfile = Loss_Accuracy_outdirs + 'SpatialCV_{}_{}_{}_{}Epoch_{}Channel_{}x{}{}.png'.format(typeName,version,Area,epoch,nchannel,width,width,special_name)
     plot_loss_accuracy_with_epoch(loss=train_loss, accuracy=train_acc, outfile=Loss_Accuracy_outfile)
 
     for iarea in Areas:

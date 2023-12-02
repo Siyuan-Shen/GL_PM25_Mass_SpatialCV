@@ -54,6 +54,10 @@ CosineAnnealingLR = lr_settings['CosineAnnealingLR']['Settings']
 CosineAnnealingLR_T_max = lr_settings['CosineAnnealingLR']['T_max']
 CosineAnnealingLR_eta_min = lr_settings['CosineAnnealingLR']['eta_min']
 
+CosineAnnealingRestartsLR = lr_settings['CosineAnnealingRestartsLR']['Settings']
+CosineAnnealingRestartsLR_T_0 = lr_settings['CosineAnnealingRestartsLR']['T_0']
+CosineAnnealingRestartsLR_T_mult = lr_settings['CosineAnnealingRestartsLR']['T_mult']
+CosineAnnealingRestartsLR_eta_min = lr_settings['CosineAnnealingRestartsLR']['eta_min']
 #######################################################################################
 # activation func settings
 activation_func_settings = cfg['Training_Settings']['activation_func']
@@ -90,6 +94,8 @@ AS_beginyear = Spatial_Trainning_Settings['Area_beginyears']['AS']
 EU_beginyear = Spatial_Trainning_Settings['Area_beginyears']['EU']
 GL_beginyear = Spatial_Trainning_Settings['Area_beginyears']['GL']
 MultiyearForMultiAreasLists = Spatial_Trainning_Settings['MultiyearForMultiAreasList']
+training_area = Spatial_Trainning_Settings['training_area']
+Test_Areas   = Spatial_Trainning_Settings['Test_Areas']
 #######################################################################################
 # Forced Slope Unity Settings
 ForcedSlopeUnityTable = cfg['Spatial-CrossValidation']['Forced-Slope-Unity']
@@ -115,7 +121,9 @@ def lr_strategy_lookup_table(optimizer):
         return torch.optim.lr_scheduler.ExponentialLR(optimizer=optimizer, gamma=ExponentialLR_gamma)
     elif CosineAnnealingLR:
         return torch.optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=CosineAnnealingLR_T_max,eta_min=CosineAnnealingLR_eta_min)
-    
+    elif CosineAnnealingRestartsLR:
+        return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer=optimizer, T_0=CosineAnnealingRestartsLR_T_0, T_mult=CosineAnnealingRestartsLR_T_mult,eta_min=CosineAnnealingRestartsLR_eta_min)
+
 def get_typeName():
     if bias == True:
         typeName = 'PM25Bias'
@@ -173,32 +181,6 @@ def pretrained_get_area_index(extent:np.array,test_index:np.array)->np.array:
     area_index = np.intersect1d(area_index,test_index)
     return area_index
 
-def regional_group(extent):
-    input_dir = '/my-projects/Projects/MLCNN_PM25_2021/data/'
-    sitelat_infile = input_dir + 'sitelat.npy'
-    sitelon_infile = input_dir + 'sitelon.npy'
-    site_lon_array = np.load(sitelon_infile)
-    site_lat_array = np.load(sitelat_infile)
-    nsite = len(site_lon_array)
-
-    lat_index = np.array([], dtype=int)
-    lon_index = np.array([], dtype=int)
-    for isite in range(nsite):
-        if site_lon_array[isite] >= extent[2] and site_lon_array[isite]<= extent[3]:
-            lon_index = np.append(lon_index,isite)
-
-    #lon_index = np.array(lon_index)
-
-    for index in range(len(lon_index)):
-        if site_lat_array[lon_index[index]] >= extent[0] and site_lat_array[lon_index[index]] <= extent[1]:
-            lat_index = np.append(lat_index,lon_index[index])
-
-
-    region_index = lat_index
-
-    return  region_index
-
-
 
 def extent_table() -> dict:
     
@@ -233,6 +215,33 @@ def get_area_index(extent:np.array,test_index)->np.array:
         area_index = np.append(area_index, temp_index)
     area_index = np.intersect1d(area_index,test_index)
     return area_index
+
+
+def regional_group(extent):
+    input_dir = '/my-projects/Projects/MLCNN_PM25_2021/data/'
+    sitelat_infile = input_dir + 'sitelat.npy'
+    sitelon_infile = input_dir + 'sitelon.npy'
+    site_lon_array = np.load(sitelon_infile)
+    site_lat_array = np.load(sitelat_infile)
+    nsite = len(site_lon_array)
+
+    lat_index = np.array([], dtype=int)
+    lon_index = np.array([], dtype=int)
+    for isite in range(nsite):
+        if site_lon_array[isite] >= extent[2] and site_lon_array[isite]<= extent[3]:
+            lon_index = np.append(lon_index,isite)
+
+    #lon_index = np.array(lon_index)
+
+    for index in range(len(lon_index)):
+        if site_lat_array[lon_index[index]] >= extent[0] and site_lat_array[lon_index[index]] <= extent[1]:
+            lat_index = np.append(lat_index,lon_index[index])
+
+
+    region_index = lat_index
+
+    return  region_index
+
 
 def get_test_index_inGBD_area(GBD_area_index,test_index):
     area_index = np.intersect1d(GBD_area_index,test_index)

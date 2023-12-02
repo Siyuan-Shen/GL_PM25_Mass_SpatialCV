@@ -99,7 +99,7 @@ beginyear = beginyears
 endyear = endyears
 databeginyear = 1998
 version = version
-Area = 'GL'
+Area = training_area
 special_name = special_name #_SigmoidMSELossWithGeoPenalties_alpha0d005_beta8d0_gamma3d0_lambda1-0d2' #'_exclude_longitude_landtype_GeoPenaltySum_constrain_alpha0d75_beta0d75_lambda1_0d5_lambda2_0d5'
 extent_dic = extent_table()
 extent = extent_dic[Area]
@@ -173,7 +173,7 @@ if __name__ == '__main__':
         typeName = get_typeName()
         Area = ['GL']
         data_indic = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/data_output/' + version + '/'
-        
+       
         for iarea in Area:
             obs_pm25_outfile = data_indic + typeName+'_ObservationPM25_'+str(nchannel)+'Channel_'+iarea+'_Alltime'+special_name+'.npy'
             pre_pm25_outfile = data_indic + typeName+'_PredictionPM25_'+str(nchannel)+'Channel_'+iarea+'_Alltime'+special_name+'.npy'
