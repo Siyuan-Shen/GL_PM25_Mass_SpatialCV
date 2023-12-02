@@ -1,6 +1,7 @@
 import numpy as np
 import toml
 import torch
+import torch.nn as nn
 
 cfg = toml.load('./config.toml')
 
@@ -58,11 +59,19 @@ CosineAnnealingRestartsLR_T_0 = lr_settings['CosineAnnealingRestartsLR']['T_0']
 CosineAnnealingRestartsLR_T_mult = lr_settings['CosineAnnealingRestartsLR']['T_mult']
 CosineAnnealingRestartsLR_eta_min = lr_settings['CosineAnnealingRestartsLR']['eta_min']
 #######################################################################################
+# activation func settings
+activation_func_settings = cfg['Training_Settings']['activation_func']
+activation_func_name = activation_func_settings['activation_func_name']
+ReLU_ACF = activation_func_settings['ReLU']['Settings']
+Tanh_ACF = activation_func_settings['Tanh']['Settings']
+
+#######################################################################################
 # Learning Objectives Settings
 learning_objective = cfg['Training-Settings']['learning-objective']
 
 bias = learning_objective['bias']
 normalize_bias = learning_objective['normalize_bias']
+unit_normalize_bias = learning_objective['unit_normalize_bias']
 normalize_species = learning_objective['normalize_species']
 absolute_species = learning_objective['absolute_species']
 log_species = learning_objective['log_species']
@@ -101,6 +110,12 @@ results_dir = cfg['Pathway']['Results-dir']
 txt_dir = results_dir['txt_outdir']
 
 
+def activation_function_table():
+    if ReLU_ACF == True:
+        return nn.ReLU()
+    elif Tanh_ACF == True:
+        return nn.Tanh()
+
 def lr_strategy_lookup_table(optimizer):
     if ExponentialLR:
         return torch.optim.lr_scheduler.ExponentialLR(optimizer=optimizer, gamma=ExponentialLR_gamma)
@@ -114,6 +129,8 @@ def get_typeName():
         typeName = 'PM25Bias'
     elif normalize_bias:
         typeName = 'NormalizedPM25Bias'
+    elif unit_normalize_bias:
+        typeName = 'UnitNormalizedPM25Bias'
     elif normalize_species == True:
         typeName = 'NormaizedPM25'
     elif absolute_species == True:

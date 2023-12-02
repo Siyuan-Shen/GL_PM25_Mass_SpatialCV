@@ -65,10 +65,20 @@ CosineAnnealingRestartsLR.T_0      = 10
 CosineAnnealingRestartsLR.T_mult   = 2
 CosineAnnealingRestartsLR.eta_min = 1e-6
 
+[Training_Settings.activation_func]
+
+activation_func_name = 'relu'
+ReLU.Settings = true
+Tanh.Settings = false
+
+
+
+
 [Training-Settings.learning-objective]
 
 bias = true   # learning objectives: bias = ground-based species observation - geophysical species concentration estimation
 normalize_bias = false
+unit_normalize_bias = false
 normalize_species = false
 absolute_species  = false 
 log_species = false

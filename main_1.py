@@ -142,7 +142,7 @@ if __name__ == '__main__':
     if CV == True:
         CV_time_start = time.time()
         train_input = np.load(train_infile)
-        true_input = Learning_Object_Datasets(bias=bias,Normalized_PM25Bias=normalize_bias,Normlized_PM25=normalize_species,Absolute_PM25=absolute_species,Log_PM25=log_species)
+        true_input = Learning_Object_Datasets(bias=bias,unit_normalize_bias=unit_normalize_bias,Normalized_PM25Bias=normalize_bias,Normlized_PM25=normalize_species,Absolute_PM25=absolute_species,Log_PM25=log_species)
         txt_outfile = MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input=train_input, true_input=true_input, channel_index=channel_index,kfold=kfold,repeats=repeats,
                                                                                   extent=extent,num_epochs=num_epochs,batch_size=batchsize,learning_rate=learning_rate,Area=Area,version=version,special_name=special_name,
                                                                                   model_outdir=model_outdir,databeginyear=databeginyear,beginyear=beginyear,endyear=endyear
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     if LRP == True:
         
         train_input = np.load(train_infile)
-        true_input = Learning_Object_Datasets(bias=bias,Normalized_PM25Bias=normalize_bias,Normlized_PM25=normalize_species,Absolute_PM25=absolute_species,Log_PM25=log_species)
+        true_input = Learning_Object_Datasets(bias=bias,unit_normalize_bias=unit_normalize_bias,Normalized_PM25Bias=normalize_bias,Normlized_PM25=normalize_species,Absolute_PM25=absolute_species,Log_PM25=log_species)
         MultiyearAreaModelLRP(train_input=train_input, true_input=true_input,
                         channel_index=channel_index, kfold=kfold, repeats=repeats,
                          extent=extent,

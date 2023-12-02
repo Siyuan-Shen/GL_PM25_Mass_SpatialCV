@@ -1913,6 +1913,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     ### Get observation data and Normalized parameters
     obs_data, obs_mean, obs_std = Get_data_NormPara(input_dir='/my-projects/Projects/MLCNN_PM25_2021/data/',input_file='obsPM25.npy')
     bias_data, bias_mean, bias_std = Get_data_NormPara(input_dir='/my-projects/Projects/MLCNN_PM25_2021/data/',input_file='true_data.npy')
+    bias_data, bias_max, bias_min  = Get_data_MaxMinPara(input_dir='/my-projects/Projects/MLCNN_PM25_2021/data/',input_file='true_data.npy')
     geo_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/geoPM25.npy')
     population_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/CoMonitors_Population_Data.npy')
     ### Initialize the CV R2 arrays for all datasets
@@ -1994,6 +1995,10 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
                         final_data = Validation_Prediction * bias_std + bias_mean + geo_data[Y_index]
                         train_final_data = Training_Prediction * bias_std + bias_mean + geo_data[XforForcedSlope_index]
                         train_final_forStatistic = Training_forStatistic * bias_std + bias_mean + geo_data[XforStatistic_index]
+                    elif unit_normalize_bias:
+                        final_data = Validation_Prediction * np.abs(bias_max-bias_min) + bias_min + geo_data[Y_index]
+                        train_final_data = Training_Prediction * np.abs(bias_max-bias_min) + bias_min + geo_data[XforForcedSlope_index]
+                        train_final_forStatistic = Training_forStatistic * np.abs(bias_max-bias_min) + bias_min + geo_data[XforStatistic_index]
                     elif normalize_species == True:
                         final_data = Validation_Prediction * obs_std + obs_mean
                         train_final_data = Training_Prediction * obs_std + obs_mean
@@ -2764,6 +2769,13 @@ def Initialize_multiareas_optimalModel_CV_Dic(kfold:int, repeats:int, breakpoint
 
     return training_CV_R2, training_annual_CV_R2,training_month_CV_R2, CV_R2, annual_CV_R2, month_CV_R2, CV_slope, annual_CV_slope, month_CV_slope, CV_RMSE, annual_CV_RMSE, month_CV_RMSE,annual_CV_PWAModel,month_CV_PWAModel,annual_CV_PWAMonitor,month_CV_PWAMonitor
 
+def Get_data_MaxMinPara(input_dir:str,input_file:str):
+    infile = input_dir + input_file
+    data   = np.load(infile)
+    data_max = np.max(data)
+    data_min = np.min(data)
+    return data, data_max, data_min
+    
 
 def Get_data_NormPara(input_dir:str,input_file:str):
     infile = input_dir + input_file
