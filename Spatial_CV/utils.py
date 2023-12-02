@@ -52,6 +52,11 @@ ExponentialLR_gamma = lr_settings['ExponentialLR']['gamma']
 CosineAnnealingLR = lr_settings['CosineAnnealingLR']['Settings']
 CosineAnnealingLR_T_max = lr_settings['CosineAnnealingLR']['T_max']
 CosineAnnealingLR_eta_min = lr_settings['CosineAnnealingLR']['eta_min']
+
+CosineAnnealingRestartsLR = lr_settings['CosineAnnealingRestartsLR']['Settings']
+CosineAnnealingRestartsLR_T_0 = lr_settings['CosineAnnealingRestartsLR']['T_0']
+CosineAnnealingRestartsLR_T_mult = lr_settings['CosineAnnealingRestartsLR']['T_mult']
+CosineAnnealingRestartsLR_eta_min = lr_settings['CosineAnnealingRestartsLR']['eta_min']
 #######################################################################################
 # Learning Objectives Settings
 learning_objective = cfg['Training-Settings']['learning-objective']
@@ -99,7 +104,9 @@ def lr_strategy_lookup_table(optimizer):
         return torch.optim.lr_scheduler.ExponentialLR(optimizer=optimizer, gamma=ExponentialLR_gamma)
     elif CosineAnnealingLR:
         return torch.optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=CosineAnnealingLR_T_max,eta_min=CosineAnnealingLR_eta_min)
-    
+    elif CosineAnnealingRestartsLR:
+        return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer=optimizer, T_0=CosineAnnealingRestartsLR_T_0, T_mult=CosineAnnealingRestartsLR_T_mult,eta_min=CosineAnnealingRestartsLR_eta_min)
+
 def get_typeName():
     if bias == True:
         typeName = 'PM25Bias'
