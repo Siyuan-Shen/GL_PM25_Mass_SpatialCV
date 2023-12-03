@@ -2093,8 +2093,6 @@ def plot_from_data(infile:str,true_infile,
  Area:str,version:str,special_name:str,nchannel:int,bias:bool, Normlized_PM25:bool, Absolute_Pm25:bool,
                          Log_PM25:bool):
     site_index = np.array(range(10870))  
-    
-    
     model_results = np.load(infile)
     obsPM25 = np.load(true_infile)
     

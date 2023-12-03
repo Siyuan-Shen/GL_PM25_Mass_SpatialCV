@@ -68,7 +68,8 @@ def regression_plot_ReducedAxisReduced(plot_obs_pm25:np.array,plot_pre_pm25:np.a
         typeName = 'LogPM25'
     
     fig_outfile =  fig_output_dir + typeName+'_PM25_RMARegressionPlot_'+str(channel)+'Channel_'+area_name+'_'+beginyear+endyear+special_name+'.png'
-    data_outdic = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/data_output/v' + version + '/'
+    
+    data_outdic = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Evaluation/' + version + '/data_output/'
     if not os.path.isdir(data_outdic):
         os.makedirs(data_outdic)
     obs_pm25_outfile = data_outdic + typeName+'_ObservationPM25_'+str(channel)+'Channel_'+area_name+'_'+beginyear+endyear+special_name+'.npy'
