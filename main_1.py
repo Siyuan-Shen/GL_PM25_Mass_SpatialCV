@@ -172,7 +172,7 @@ if __name__ == '__main__':
     if OnlyCV_plot == True:
         typeName = get_typeName()
         Area = ['GL']
-        data_indic = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Evaluation/' + version + '/data_output/'
+        data_indic =  model_outdir + '{}/data_recording/'.format(version)
         for iarea in Area:
             obs_pm25_outfile = data_indic + typeName+'_ObservationPM25_'+str(nchannel)+'Channel_'+iarea+'_Alltime'+special_name+'.npy'
             pre_pm25_outfile = data_indic + typeName+'_PredictionPM25_'+str(nchannel)+'Channel_'+iarea+'_Alltime'+special_name+'.npy'

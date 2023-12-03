@@ -195,7 +195,7 @@ def regression_plot(plot_obs_pm25:np.array,plot_pre_pm25:np.array,
     ax.set_ylabel('Estimated $PM_{2.5}$ concentration ($\mu g/m^3$)', fontsize=32)
     ax.tick_params(axis='both', which='major', labelsize=28)
 
-    ax.text(0, extentlim - 0.05 * extentlim, '$R^2 = $0.70', style='italic', fontsize=32)
+    ax.text(0, extentlim - 0.05 * extentlim, '$R^2 = $ '+str(R2), style='italic', fontsize=32)
     ax.text(0, extentlim - (0.05 + 0.064) * extentlim, '$RMSE = $' + str(RMSE)+'$\mu g/m^3$', style='italic', fontsize=32)
     if b1 > 0.0:
         ax.text(0, extentlim - (0.05 + 0.064 * 2) * extentlim, 'y = {}x {} {}'.format(abs(b1),return_sign(b0),abs(b0)) , style='italic',

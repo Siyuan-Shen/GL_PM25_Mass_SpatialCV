@@ -2084,8 +2084,8 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     for iarea in Areas:
         longterm_final_data, longterm_obs_data = get_longterm_array(area=iarea,imonth='Annual', beginyear=Area_beginyears[iarea], endyear=endyear[-1], final_data_recording=final_data_recording,
                                                                     obs_data_recording=obs_data_recording)
-        regression_plot(plot_obs_pm25=longterm_obs_data,plot_pre_pm25=longterm_final_data,version=version,channel=nchannel,special_name=special_name,area_name=iarea,beginyear=Area_beginyears[iarea],endyear=endyear[-1],
-                        extentlim=2.2 * np.mean(longterm_obs_data))
+        regression_plot(plot_obs_pm25 = longterm_obs_data,plot_pre_pm25=longterm_final_data,version=version,channel=nchannel,special_name=special_name,area_name=iarea,beginyear=Area_beginyears[iarea],endyear=endyear[-1],
+                        extentlim = 2.2 * np.mean(longterm_obs_data))
     return txtoutfile
 
 
