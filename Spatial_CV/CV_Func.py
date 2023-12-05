@@ -3,7 +3,7 @@ import numpy as np
 import torch.nn as nn
 import os
 import gc
-
+import wandb
 from sklearn.model_selection import RepeatedKFold
 from Spatial_CV.Model_Func import predict, train, weight_reset
 from Spatial_CV.Statistic_Func import linear_regression, regress2, Cal_RMSE, Calculate_PWA_PM25
@@ -1896,7 +1896,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
 
 def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input, true_input,channel_index, kfold:int, repeats:int,
                          extent,num_epochs:int, batch_size:int, learning_rate:float,
-                         Area:str,version:str,special_name:str,model_outdir:str,
+                         Area:str,version:str,special_name:str,
                          databeginyear:int,beginyear:np.array, endyear:np.array,EachMonthSlopeUnity:bool):
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
@@ -1941,7 +1941,10 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
         for imodel in range(len(beginyear)):
             X_index = GetTrainingIndex(Global_index=site_index,train_index=train_index,beginyear=beginyear[imodel],
                                             endyear=endyear[imodel],databeginyear=databeginyear,GLsitesNum=len(global_index))
-            X_train, X_test = train_input[X_index, :, :, :], true_input[X_index]
+            Y_index = GetTrainingIndex(Global_index=site_index,train_index=test_index,beginyear=beginyear[imodel],
+                                            endyear=endyear[imodel],databeginyear=databeginyear,GLsitesNum=len(global_index))
+            X_train, y_train = train_input[X_index, :, :, :], true_input[X_index]
+            X_test, y_test   = train_input[Y_index, :, :, :], true_input[Y_index]
             # *------------------------------------------------------------------------------*#
             ## Training Process.
             # *------------------------------------------------------------------------------*#
@@ -1953,15 +1956,15 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             cnn_model.to(device)
             torch.manual_seed(21)
-            train_loss, train_acc = train(cnn_model, X_train, X_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
+            train_loss, train_acc, test_loss, test_acc = train(cnn_model, X_train, y_train, X_test, y_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
            
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
             # *------------------------------------------------------------------------------*#
-           
-            if not os.path.isdir(model_outdir):
-                os.makedirs(model_outdir)
-            modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
+            models_outdir = model_outdir + '{}/Results/trainedModels/'.format(version)
+            if not os.path.isdir(models_outdir):
+                os.makedirs(models_outdir)
+            modelfile = models_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
                 nchannel) + 'Channel' + special_name + '_No' + str(count) + '.pt'
             torch.save(cnn_model, modelfile)
             print('iModel: {}, fold: {}'.format(imodel, count))
@@ -2074,12 +2077,16 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     output_text(outfile=txtoutfile,status='w', Areas=Areas, Area_beginyears=Area_beginyears, endyear=endyears[-1],test_CV_R2=test_CV_R2,train_CV_R2=train_CV_R2, geo_CV_R2=geo_CV_R2,
                 RMSE_CV_R2=RMSE_CV_R2,slope_CV_R2=slope_CV_R2,PWAModel=PWAModel, PWAMonitors=PWAMonitors)
     
-    save_loss_accuracy(model_outdir=model_outdir,loss=train_loss,accuracy=train_acc,typeName=typeName,epoch=epoch,nchannel=nchannel,special_name=special_name,width=width,height=width)
+    save_loss_accuracy(model_outdir=model_outdir,TrainingOrTesting='Training',loss=train_loss,accuracy=train_acc,typeName=typeName,epoch=epoch,nchannel=nchannel,special_name=special_name,width=width,height=width)
+    save_loss_accuracy(model_outdir=model_outdir,TrainingOrTesting='Testing', loss=test_loss, accuracy=test_acc, typeName=typeName,epoch=epoch,nchannel=nchannel,special_name=special_name,width=width,height=width)
     Loss_Accuracy_outdirs = Loss_Accuracy_outdir + '{}/Figures/figures-Loss_Accuracy/'.format(version)
     if not os.path.isdir(Loss_Accuracy_outdirs):
         os.makedirs(Loss_Accuracy_outdirs)
-    Loss_Accuracy_outfile = Loss_Accuracy_outdirs + 'SpatialCV_{}_{}_{}_{}Epoch_{}Channel_{}x{}{}.png'.format(typeName,version,Area,epoch,nchannel,width,width,special_name)
-    plot_loss_accuracy_with_epoch(loss=train_loss, accuracy=train_acc, outfile=Loss_Accuracy_outfile)
+    Training_Loss_Accuracy_outfile = Loss_Accuracy_outdirs + 'Training_SpatialCV_{}_{}_{}_{}Epoch_{}Channel_{}x{}{}.png'.format(typeName,version,Area,epoch,nchannel,width,width,special_name)
+    Testing_Loss_Accuracy_outfile  = Loss_Accuracy_outdirs + 'Testing_SpatialCV_{}_{}_{}_{}Epoch_{}Channel_{}x{}{}.png'.format(typeName,version,Area,epoch,nchannel,width,width,special_name)
+    
+    plot_loss_accuracy_with_epoch(loss=train_loss, accuracy=train_acc, outfile=Training_Loss_Accuracy_outfile)
+    plot_loss_accuracy_with_epoch(loss=test_loss,  accuracy=test_acc, outfile=Testing_Loss_Accuracy_outfile)
 
     for iarea in Areas:
         longterm_final_data, longterm_obs_data = get_longterm_array(area=iarea,imonth='Annual', beginyear=Area_beginyears[iarea], endyear=endyear[-1], final_data_recording=final_data_recording,

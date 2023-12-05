@@ -80,7 +80,6 @@ nchannel = len(channel_index)
 input_dir = ground_observation_data_dir
 train_infile = training_infile
 
-model_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Cross_Validation/GlobalTraining_MultipleModel_Spatial_withAreas_Cross_Validation_BenchMark/model_results/'
 
 #######################################################################################
 ##                                Initial Arrays and Constants                       ##
@@ -145,7 +144,7 @@ if __name__ == '__main__':
         true_input = Learning_Object_Datasets(bias=bias,unit_normalize_bias=unit_normalize_bias,Normalized_PM25Bias=normalize_bias,Normlized_PM25=normalize_species,Absolute_PM25=absolute_species,Log_PM25=log_species)
         txt_outfile = MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input=train_input, true_input=true_input, channel_index=channel_index,kfold=kfold,repeats=repeats,
                                                                                   extent=extent,num_epochs=num_epochs,batch_size=batchsize,learning_rate=learning_rate,Area=Area,version=version,special_name=special_name,
-                                                                                  model_outdir=model_outdir,databeginyear=databeginyear,beginyear=beginyear,endyear=endyear
+                                                                                  databeginyear=databeginyear,beginyear=beginyear,endyear=endyear
                                                                                   ,EachMonthSlopeUnity=EachMonthForcedSlopeUnity)
         
         del train_input,true_input
