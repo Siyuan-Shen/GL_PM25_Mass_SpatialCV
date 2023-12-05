@@ -257,7 +257,7 @@ class SigmoidMSELoss_WithExpGeoSitesNumberLogPenalties(nn.Module):
 
         return Loss
     
-def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoPM25_mean, GeoPM25_std,
+def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoPM25_mean, GeoPM25_std,
           SitesNumber_mean, SitesNumber_std):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
@@ -269,8 +269,9 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
     scheduler = lr_strategy_lookup_table(optimizer=optimizer)
     #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
     train_loader = DataLoader(Dataset(X_train, y_train), BATCH_SIZE, shuffle=True)
+    validation_loader = DataLoader(Dataset(X_test, y_test), BATCH_SIZE, shuffle=True)
     #model, optimizer, train_loader, scheduler = accelerator.prepare(model, optimizer, train_loader, scheduler)
-    model.train()
+    
 
     print('*' * 25, type(train_loader), '*' * 25)
     #criterion = nn.SmoothL1Loss()
@@ -306,7 +307,9 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
 
     
     losses = []
+    valid_losses = []
     train_acc = []
+    test_acc  = []
     
     
     for epoch in range(TOTAL_EPOCHS):
@@ -314,6 +317,7 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
         correct = 0
         counts = 0
         for i, (images, labels) in enumerate(train_loader):
+            model.train()
             images = images.to(device)
             labels = torch.squeeze(labels.type(torch.FloatTensor))
             labels = labels.to(device)
@@ -330,9 +334,9 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
             losses.append(loss.item())
 
             # Calculate R2
-            y_hat = model(images).cpu().detach().numpy()
-            y_hat = np.squeeze(y_hat)
-            print('y_hat type: {}, y_hat shape: {}'.format(type(y_hat), y_hat.shape))
+            y_hat = outputs.cpu().detach().numpy()
+            #y_hat = np.squeeze(y_hat)
+    
             y_true = labels.cpu().detach().numpy()
             
             #torch.cuda.empty_cache()
@@ -348,15 +352,40 @@ def train(model, X_train, y_train, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoP
                 print('Epoch : %d/%d, Iter : %d/%d,  Loss: %.4f' % (epoch + 1, TOTAL_EPOCHS,
                                                                     i + 1, len(X_train) // BATCH_SIZE,
                                                                     loss.item())) 
+        valid_correct = 0
+        valid_counts  = 0
+        for i, (valid_images, valid_labels) in enumerate(validation_loader):
+            model.eval()
+            valid_images = valid_images.to(device)
+            valid_labels = valid_labels.to(device)
+            valid_output = model(valid_images)
+            valid_output = torch.squeeze(valid_output)
+            valid_loss   = criterion(valid_output, valid_labels, valid_images[:,16,5,5],GeoPM25_mean,GeoPM25_std)
+            valid_losses.append(valid_loss.item())
+            test_y_hat   = valid_output.cpu().detach().numpy()
+            test_y_true  = valid_labels.cpu().detach().numpy()
+            R2 = linear_regression(test_y_hat,test_y_true)
+            R2 = np.round(R2, 4)
+            valid_correct += R2
+            valid_counts  += 1
+            if (i + 1) % 10 == 0:
+                # 每10个batches打印一次loss
+                print('Epoch : %d/%d, Iter : %d/%d,  Test Loss: %.4f' % (epoch + 1, TOTAL_EPOCHS,
+                                                                    i + 1, len(X_train) // BATCH_SIZE,
+                                                                    valid_loss.item())) 
+
         accuracy = correct / counts
-        print('Epoch: ',epoch, ', Loss: ', loss.item(),', Training set accuracy:',accuracy)
+        test_accuracy = valid_correct / valid_counts
+        print('Epoch: ',epoch, ', Training Loss: ', loss.item(),', Training accuracy:',accuracy, ', \nTesting Loss:', valid_loss.item(),', Testing accuracy:', test_accuracy)
+
         train_acc.append(accuracy)
+        test_acc.append(test_accuracy)
         print('Epoch: ',epoch,'\nLearning Rate:',optimizer.param_groups[0]['lr'])
         scheduler.step()
        
         # Each epoch calculate test data accuracy
 
-    return losses,  train_acc
+    return losses,  train_acc, valid_losses, test_acc
 def predict(inputarray, model, Width, batchsize):
     #output = np.zeros((), dtype = float)
     model.eval()
