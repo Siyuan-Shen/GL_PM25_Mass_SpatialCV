@@ -30,11 +30,11 @@ Loss_Accuracy_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Test
 [Training-Settings.identity]
 
 version      = 'v1.2.0'
-special_name = '_ResNet_1111_SigmoidMSELossWithGeoSumPenaltiesLoss_CARSLR_T_0-10_T_mult-2_etaMin-1e-6_Epoch70'
+special_name = '_ResNet_1111_SigmoidMSELossWithGeoSumPenaltiesLoss_CARSLR_lr0-0d01_T_0-10_T_mult-2_etaMin-0_Epoch150'
 
 [Training-Settings.hyper-parameters]
 
-epoch         = 70
+epoch         = 150
 batchsize     = 512
 
 channel_names = ['EtaAOD_Bias','EtaCoastal','EtaMixing','EtaSGAOD_Bias','EtaSGTOPO_Bias',
@@ -58,12 +58,12 @@ ExponentialLR.gamma    = 0.9
 
 CosineAnnealingLR.Settings = false
 CosineAnnealingLR.T_max = 20
-CosineAnnealingLR.eta_min = 1e-4
+CosineAnnealingLR.eta_min = 0
 
 CosineAnnealingRestartsLR.Settings = true
 CosineAnnealingRestartsLR.T_0      = 10
 CosineAnnealingRestartsLR.T_mult   = 2
-CosineAnnealingRestartsLR.eta_min = 1e-6
+CosineAnnealingRestartsLR.eta_min = 0
 
 [Training_Settings.activation_func]
 
