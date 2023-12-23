@@ -517,7 +517,7 @@ class ResNet(nn.Module):
 '''
 
 ### Tanh() ResNet
-# Resnet 18/34使用此残差块
+# Resnet 18/34
 class BasicBlock(nn.Module):  # 卷积2层，F(X)和X的维度相等
     # expansion是F(X)相对X维度拓展的倍数
     expansion = 1  # 残差映射F(X)的维度有没有发生变化，1表示没有变化，downsample=None
@@ -619,7 +619,7 @@ class ResNet(nn.Module):
 
         self.groups = groups
         self.width_per_group = width_per_group
-
+        self.actfunc = activation_func
         # 输入层有RGB三个分量，使得输入特征矩阵的深度是3
         
         #self.conv1 = nn.Conv2d(nchannel, self.in_channel, kernel_size=7, stride=2,padding=3, bias=False)
@@ -695,6 +695,7 @@ class ResNet(nn.Module):
         if self.include_top:  # 一般为True
             x = self.avgpool(x)
             x = torch.flatten(x, 1)
+            #x = self.actfunc(x)
             x = self.fc(x)
 
         return x

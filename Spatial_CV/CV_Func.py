@@ -1896,7 +1896,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25_GBD
 
 def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(train_input, true_input,channel_index, kfold:int, repeats:int,
                          extent,num_epochs:int, batch_size:int, learning_rate:float,
-                         Area:str,version:str,special_name:str,model_outdir:str,
+                         Area:str,version:str,special_name:str,
                          databeginyear:int,beginyear:np.array, endyear:np.array,EachMonthSlopeUnity:bool):
     # *------------------------------------------------------------------------------*#
     ##   Initialize the array, variables and constants.
@@ -1945,8 +1945,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
             # *------------------------------------------------------------------------------*#
             ## Training Process.
             # *------------------------------------------------------------------------------*#
-            cnn_model = ResNet(nchannel=nchannel,block=BasicBlock,blocks_num=[1,1,1,1],num_classes=1,include_top=True,
-            groups=1,width_per_group=width)
+            cnn_model = ResNet(nchannel=nchannel,block=BasicBlock,blocks_num=[1,1,1,1],num_classes=1,include_top=True,groups=1,width_per_group=width)
             #cnn_model = Net(nchannel=nchannel)
             #cnn_model.apply(initialize_weights_Xavier) # No need for Residual Net
 
@@ -1958,10 +1957,10 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
             # *------------------------------------------------------------------------------*#
-           
-            if not os.path.isdir(model_outdir):
-                os.makedirs(model_outdir)
-            modelfile = model_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
+            models_outdir = model_outdir + '{}/Results/trainedModels/'.format(version)
+            if not os.path.isdir(models_outdir):
+                os.makedirs(models_outdir)
+            modelfile = models_outdir + 'CNN_PM25_Spatial_'+typeName+'_'+Area+'_2022' + version + '_' + str(
                 nchannel) + 'Channel' + special_name + '_No' + str(count) + '.pt'
             torch.save(cnn_model, modelfile)
             print('iModel: {}, fold: {}'.format(imodel, count))
