@@ -1,3 +1,3 @@
 # GL_PM25_Mass_SpatialCV
 
-v1.2.0 - This one merged the developments in v1.1.0, v1.1.4 and v1.1.5. This is used to test the hyperparameters settings. Also apply weights and bias, and plot testing accuracy and loss.
+v1.2.4 - This one merged the developments in v1.1.0, v1.1.4 and v1.1.5. This is used to test the activation function.

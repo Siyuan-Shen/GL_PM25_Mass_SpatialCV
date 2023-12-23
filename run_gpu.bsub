@@ -2,9 +2,9 @@
 #BSUB -q general
 #BSUB -R 'gpuhost rusage[mem=300GB] span[hosts=1]'
 #BSUB -G compute-rvmartin
-#BSUB -gpu "num=1:gmodel=NVIDIAA100_SXM4_40GB"
-#BSUB -a 'docker(syword/python3-pytorch:2023.11)'
-#BSUB -J "normalize_bias MSE Loss _ResNet_1111_CosineAnnealingLR_Tmax-10_EtaMin-1e-4_Epoch70 v1.1.0 "
+#BSUB -gpu "num=1:gmodel=NVIDIAA40"
+#BSUB -a 'docker(syword/python3-pytorch:2023.12)'
+#BSUB -J "bias '_ResNet_1111_SigmoidMSELossWithGeoSumPenaltiesLoss_CALR_Tmax-10_etaMin-1e-6_Epoch70_GeLU' v1.2.4 "
 #BSUB -g /s.siyuan/Test
 #BSUB -N
 #BSUB -u s.siyuan@wustl.edu
@@ -12,5 +12,5 @@
 
 /bin/true
 
-cd /my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Evaluation/v1.1.0/
+cd /my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Evaluation/v1.2.4/
 python3 main_1.py

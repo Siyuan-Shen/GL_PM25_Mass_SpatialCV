@@ -64,7 +64,7 @@ activation_func_settings = cfg['Training_Settings']['activation_func']
 activation_func_name = activation_func_settings['activation_func_name']
 ReLU_ACF = activation_func_settings['ReLU']['Settings']
 Tanh_ACF = activation_func_settings['Tanh']['Settings']
-
+GeLU_ACF = activation_func_settings['GeLU']['Settings']
 #######################################################################################
 # Learning Objectives Settings
 learning_objective = cfg['Training-Settings']['learning-objective']
@@ -115,6 +115,9 @@ def activation_function_table():
         return nn.ReLU()
     elif Tanh_ACF == True:
         return nn.Tanh()
+    elif GeLU_ACF == True:
+        return nn.GELU()
+    
 
 def lr_strategy_lookup_table(optimizer):
     if ExponentialLR:

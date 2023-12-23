@@ -29,8 +29,8 @@ Loss_Accuracy_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Test
 
 [Training-Settings.identity]
 
-version      = 'v1.2.0'
-special_name = '_ResNet_1111_SigmoidMSELossWithGeoSumPenaltiesLoss_CARSLR_T_0-10_T_mult-2_etaMin-1e-6_Epoch70'
+version      = 'v1.2.4'
+special_name = '_ResNet_1111_SigmoidMSELossWithGeoSumPenaltiesLoss_CALR_Tmax-10_etaMin-1e-6_Epoch70_GeLU'
 
 [Training-Settings.hyper-parameters]
 
@@ -56,20 +56,21 @@ learning_rate0 = 0.01
 ExponentialLR.Settings = false
 ExponentialLR.gamma    = 0.9
 
-CosineAnnealingLR.Settings = false
-CosineAnnealingLR.T_max = 20
-CosineAnnealingLR.eta_min = 1e-4
+CosineAnnealingLR.Settings = true
+CosineAnnealingLR.T_max = 10
+CosineAnnealingLR.eta_min = 1e-6
 
-CosineAnnealingRestartsLR.Settings = true
+CosineAnnealingRestartsLR.Settings = false
 CosineAnnealingRestartsLR.T_0      = 10
 CosineAnnealingRestartsLR.T_mult   = 2
 CosineAnnealingRestartsLR.eta_min = 1e-6
 
 [Training_Settings.activation_func]
 
-activation_func_name = 'tanh'
+activation_func_name = 'relu'
 ReLU.Settings = false
-Tanh.Settings = true
+Tanh.Settings = false
+GeLU.Settings = true
 
 
 
