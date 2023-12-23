@@ -4,13 +4,13 @@ from Spatial_CV.data_func import *
 
 
 
-def save_loss_accuracy(model_outdir, loss, accuracy, typeName, epoch, nchannel, special_name, width, height):
+def save_loss_accuracy(model_outdir, TrainingOrTesting, loss, accuracy, typeName, epoch, nchannel, special_name, width, height):
 
     outdir = model_outdir + '/Results/results-Trained_Models/'
     if not os.path.isdir(outdir):
                 os.makedirs(outdir)
-    loss_outfile = outdir + 'SpatialCV_loss_{}_{}Epoch_{}x{}_{}Channel{}.npy'.format(typeName, epoch, width, height, nchannel,special_name)
-    accuracy_outfile = outdir + 'SpatialCV_accuracy_{}_{}Epoch_{}x{}_{}Channel{}.npy'.format(typeName, epoch, width, height, nchannel,special_name)
+    loss_outfile = outdir + 'SpatialCV_{}_loss_{}_{}Epoch_{}x{}_{}Channel{}.npy'.format(TrainingOrTesting, typeName, epoch, width, height, nchannel,special_name)
+    accuracy_outfile = outdir + 'SpatialCV_{}_accuracy_{}_{}Epoch_{}x{}_{}Channel{}.npy'.format(TrainingOrTesting, typeName, epoch, width, height, nchannel,special_name)
     np.save(loss_outfile, loss)
     np.save(accuracy_outfile, accuracy)
     return
