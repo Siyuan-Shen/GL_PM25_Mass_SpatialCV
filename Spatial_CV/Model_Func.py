@@ -264,7 +264,7 @@ def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TO
     #accelerator = Accelerator()
     #device = accelerator.device
     #model.to(device)
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     ## scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,mode='max',factor=0.5,patience=3,threshold=0.005)
     scheduler = lr_strategy_lookup_table(optimizer=optimizer)
     #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
@@ -443,3 +443,5 @@ def initialize_weights_Xavier(m): #xavier
       nn.init.constant_(m.bias.data, 0)
 
 
+def create_optimizer():
+    return

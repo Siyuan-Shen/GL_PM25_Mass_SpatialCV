@@ -611,8 +611,9 @@ class ResNet(nn.Module):
 
         self.groups = groups
         self.width_per_group = width_per_group
-
-
+        self.actfunc = activation_func
+        # 输入层有RGB三个分量，使得输入特征矩阵的深度是3
+        
         #self.conv1 = nn.Conv2d(nchannel, self.in_channel, kernel_size=7, stride=2,padding=3, bias=False)
         #self.bn1 = nn.BatchNorm2d(self.in_channel)
 
@@ -682,6 +683,7 @@ class ResNet(nn.Module):
         if self.include_top:  
             x = self.avgpool(x)
             x = torch.flatten(x, 1)
+            #x = self.actfunc(x)
             x = self.fc(x)
 
         return x

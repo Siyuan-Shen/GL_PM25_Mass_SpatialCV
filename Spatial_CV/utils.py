@@ -39,7 +39,7 @@ channel_index = HyperParameters['channel_index']
 channel_names = HyperParameters['channel_names']
 epoch = HyperParameters['epoch']
 batchsize = HyperParameters['batchsize']
-
+weight_decay = HyperParameters['weight_decay']
 #######################################################################################
 # learning rate settings
 lr_settings = cfg['Training-Settings']['learning_rate']
