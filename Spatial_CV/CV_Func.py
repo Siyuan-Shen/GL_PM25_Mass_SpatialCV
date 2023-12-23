@@ -1948,8 +1948,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
             # *------------------------------------------------------------------------------*#
             ## Training Process.
             # *------------------------------------------------------------------------------*#
-            cnn_model = ResNet(nchannel=nchannel,block=BasicBlock,blocks_num=[1,1,1,1],num_classes=1,include_top=True,
-            groups=1,width_per_group=width)
+            cnn_model = ResNet(nchannel=nchannel,block=BasicBlock,blocks_num=[1,1,1,1],num_classes=1,include_top=True,groups=1,width_per_group=width)
             #cnn_model = Net(nchannel=nchannel)
             #cnn_model.apply(initialize_weights_Xavier) # No need for Residual Net
 

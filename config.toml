@@ -48,6 +48,7 @@ channel_names = ['EtaAOD_Bias','EtaCoastal','EtaMixing','EtaSGAOD_Bias','EtaSGTO
                 'SitesNumber',
                 'GFED4_TOTL_DM_Emi']
 channel_index = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,28,29]
+weight_decay  = 0
 
 [Training-Settings.learning_rate]
 
@@ -60,7 +61,7 @@ CosineAnnealingLR.Settings = false
 CosineAnnealingLR.T_max = 20
 CosineAnnealingLR.eta_min = 0
 
-CosineAnnealingRestartsLR.Settings = true
+CosineAnnealingRestartsLR.Settings = false
 CosineAnnealingRestartsLR.T_0      = 10
 CosineAnnealingRestartsLR.T_mult   = 2
 CosineAnnealingRestartsLR.eta_min = 0
@@ -70,7 +71,6 @@ CosineAnnealingRestartsLR.eta_min = 0
 activation_func_name = 'tanh'
 ReLU.Settings = false
 Tanh.Settings = true
-
 
 
 
