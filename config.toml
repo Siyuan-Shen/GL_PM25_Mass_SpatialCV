@@ -57,9 +57,9 @@ learning_rate0 = 0.01
 ExponentialLR.Settings = false
 ExponentialLR.gamma    = 0.9
 
-CosineAnnealingLR.Settings = false
-CosineAnnealingLR.T_max = 20
-CosineAnnealingLR.eta_min = 0
+CosineAnnealingLR.Settings = true
+CosineAnnealingLR.T_max = 10
+CosineAnnealingLR.eta_min = 1e-6
 
 CosineAnnealingRestartsLR.Settings = false
 CosineAnnealingRestartsLR.T_0      = 10
@@ -68,9 +68,10 @@ CosineAnnealingRestartsLR.eta_min = 0
 
 [Training_Settings.activation_func]
 
-activation_func_name = 'tanh'
+activation_func_name = 'relu'
 ReLU.Settings = false
-Tanh.Settings = true
+Tanh.Settings = false
+GeLU.Settings = true
 
 
 
