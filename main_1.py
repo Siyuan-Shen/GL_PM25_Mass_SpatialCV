@@ -106,7 +106,7 @@ extent = extent_dic[Area]
 #########################################################
 #                   Main Process Settings               #
 #########################################################
-model_outdir = model_outdir + '{}/Results/trainedModels/'.format(version)
+
 MultiAreas = True
 CV = Spatial_CrossValidation_Switch
 OnlyCV_plot = True
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     if OnlyCV_plot == True:
         typeName = get_typeName()
         Area = ['GL']
-        data_indic =  model_outdir + '{}/data_recording/'.format(version)
+        data_indic =  Scatter_plots_outdir + '{}/data_recording/'.format(version)
         for iarea in Area:
             obs_pm25_outfile = data_indic + typeName+'_ObservationPM25_'+str(nchannel)+'Channel_'+iarea+'_Alltime'+special_name+'.npy'
             pre_pm25_outfile = data_indic + typeName+'_PredictionPM25_'+str(nchannel)+'Channel_'+iarea+'_Alltime'+special_name+'.npy'
