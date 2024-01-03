@@ -1934,7 +1934,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     GeoPM25_std  = train_std[16,int((width-1)/2),int((width-1)/2)]
     SitesNumber_mean = train_mean[31,int((width-1)/2),int((width-1)/2)]
     SitesNumber_std  = train_std[31,int((width-1)/2),int((width-1)/2)]
-    train_input = train_input[:,channel_index,:,:]
+    #train_input = train_input[:,channel_index,:,:]
     typeName = get_typeName()
     count = 0
     for train_index, test_index in rkf.split(site_index):
@@ -1955,7 +1955,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             cnn_model.to(device)
             torch.manual_seed(21)
-            train_loss, train_acc, test_loss, test_acc = train(cnn_model, X_train, y_train, X_test, y_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
+            train_loss, train_acc, test_loss, test_acc = train(cnn_model, X_train, y_train, X_test, y_test, channel_index,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
            
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
@@ -1986,9 +1986,9 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
                     ## Validation Process
                     # *------------------------------------------------------------------------------*#
 
-                    Training_Prediction = predict(x_train_forSlope,cnn_model,width,3000)
-                    Training_forStatistic = predict(X_train_forStatistic, cnn_model, width,3000)
-                    Validation_Prediction = predict(y_train, cnn_model, width, 3000)
+                    Training_Prediction = predict(x_train_forSlope[:, channel_index, :, :],cnn_model,width,3000)
+                    Training_forStatistic = predict(X_train_forStatistic[:, channel_index, :, :], cnn_model, width,3000)
+                    Validation_Prediction = predict(y_train[:, channel_index, :, :], cnn_model, width, 3000)
                     if bias == True:
                         final_data = Validation_Prediction + geo_data[Y_index]
                         train_final_data = Training_Prediction + geo_data[XforForcedSlope_index]

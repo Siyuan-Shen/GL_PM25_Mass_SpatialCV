@@ -624,7 +624,7 @@ class ResNet(nn.Module):
         #self.layer0 = nn.Sequential(nn.Conv2d(nchannel, self.in_channel, kernel_size=5, stride=1,padding=1, bias=False)
         ,nn.BatchNorm2d(self.in_channel)
         ,activation_func)
-        #,nn.MaxPool2d(kernel_size=3, stride=2, padding=1)) # output 4x4
+       # ,nn.MaxPool2d(kernel_size=3, stride=2, padding=1)) # output 4x4
 
         
         self.layer1 = self._make_layer(block, 64, blocks_num[0])

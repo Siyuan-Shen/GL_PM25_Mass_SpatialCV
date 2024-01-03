@@ -257,7 +257,7 @@ class SigmoidMSELoss_WithExpGeoSitesNumberLogPenalties(nn.Module):
 
         return Loss
     
-def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoPM25_mean, GeoPM25_std,
+def train(model, X_train, y_train, X_test, y_test, channel_index, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoPM25_mean, GeoPM25_std,
           SitesNumber_mean, SitesNumber_std):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
@@ -322,7 +322,7 @@ def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TO
             labels = torch.squeeze(labels.type(torch.FloatTensor))
             labels = labels.to(device)
             optimizer.zero_grad()  # Set grads to zero
-            outputs = model(images) #dimension: Nx1
+            outputs = model(images[:,channel_index,:,:]) #dimension: Nx1
             outputs = torch.squeeze(outputs)
             #print(outputs)
             # print('output.shape,labels.shape :', outputs, labels)
@@ -358,7 +358,7 @@ def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TO
             model.eval()
             valid_images = valid_images.to(device)
             valid_labels = valid_labels.to(device)
-            valid_output = model(valid_images)
+            valid_output = model(valid_images[:,channel_index,:,:])
             valid_output = torch.squeeze(valid_output)
             valid_loss   = criterion(valid_output, valid_labels, valid_images[:,16,5,5],GeoPM25_mean,GeoPM25_std)
             valid_losses.append(valid_loss.item())
