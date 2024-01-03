@@ -442,6 +442,21 @@ def initialize_weights_Xavier(m): #xavier
       nn.init.xavier_uniform_(m.weight.data)
       nn.init.constant_(m.bias.data, 0)
 
+def initialize_weights(model):
+	for m in model.modules():
+		# 判断是否属于Conv2d
+		if isinstance(m, nn.Conv2d):
+			torch.nn.init.xavier_normal_(m.weight.data)
+			# 判断是否有偏置
+			if m.bias is not None:
+				torch.nn.init.constant_(m.bias.data,0.3)
+		elif isinstance(m, nn.Linear):
+			torch.nn.init.normal_(m.weight.data, 0.1)
+			if m.bias is not None:
+				torch.nn.init.zeros_(m.bias.data)
+		elif isinstance(m, nn.BatchNorm2d):
+			m.weight.data.fill_(1.0) 		 
+			m.bias.data.fill_(0.0)	
 
 def create_optimizer():
     return

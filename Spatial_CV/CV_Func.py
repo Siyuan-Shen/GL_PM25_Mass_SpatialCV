@@ -13,7 +13,7 @@ from Spatial_CV.ConvNet_Data import normalize_Func, Normlize_Training_Datasets, 
 from Spatial_CV.data_func import initialize_AVD_DataRecording, calculate_Statistics_results, get_longterm_array
 from Spatial_CV.utils import *
 from Spatial_CV.iostram import output_text, save_loss_accuracy
-from .Model_Func import MyLoss,initialize_weights_kaiming,weight_init_normal
+from .Model_Func import MyLoss,initialize_weights_kaiming,weight_init_normal, initialize_weights
 import random
 import csv
 
@@ -1949,6 +1949,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
             ## Training Process.
             # *------------------------------------------------------------------------------*#
             cnn_model = ResNet(nchannel=nchannel,block=BasicBlock,blocks_num=[1,1,1,1],num_classes=1,include_top=True,groups=1,width_per_group=width)
+            cnn_model.apply(initialize_weights)
             #cnn_model = Net(nchannel=nchannel)
             #cnn_model.apply(initialize_weights_Xavier) # No need for Residual Net
 
@@ -2793,17 +2794,4 @@ def Get_CV_seed():
     print('Seed is :', seed)
     return seed
 
-
-def initialize_weights_Xavier(m): #xavier 
-  tanh_gain = nn.init.calculate_gain('tanh')
-  if isinstance(m, nn.Conv2d):
-      nn.init.xavier_uniform_(m.weight.data,gain=tanh_gain)
-      if m.bias is not None:
-          nn.init.constant_(m.bias.data, 0)
-  elif isinstance(m, nn.BatchNorm2d):
-      nn.init.constant_(m.weight.data, 1)
-      nn.init.constant_(m.bias.data, 0)
-  elif isinstance(m, nn.Linear):
-      nn.init.xavier_uniform_(m.weight.data)
-      nn.init.constant_(m.bias.data, 0)
 

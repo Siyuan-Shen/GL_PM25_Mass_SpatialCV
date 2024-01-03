@@ -623,8 +623,8 @@ class ResNet(nn.Module):
         self.layer0 = nn.Sequential(nn.Conv2d(nchannel, self.in_channel, kernel_size=7, stride=2,padding=3, bias=False) #output size:6x6
         #self.layer0 = nn.Sequential(nn.Conv2d(nchannel, self.in_channel, kernel_size=5, stride=1,padding=1, bias=False)
         ,nn.BatchNorm2d(self.in_channel)
-        ,activation_func)
-        #,nn.MaxPool2d(kernel_size=3, stride=2, padding=1)) # output 4x4
+        ,activation_func
+        ,nn.MaxPool2d(kernel_size=3, stride=2, padding=1)) # output 4x4
 
         
         self.layer1 = self._make_layer(block, 64, blocks_num[0])
@@ -637,15 +637,13 @@ class ResNet(nn.Module):
             
             self.fc = nn.Linear(512 * block.expansion, num_classes)
 
-        for m in self.modules(): 
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity=activation_func_name)
+        #for m in self.modules(): 
+        #    if isinstance(m, nn.Conv2d):
+        #        nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity=activation_func_name)
 
    
     def _make_layer(self, block, channel, block_num, stride=1):
         downsample = None
-
-    
         if stride != 1 or self.in_channel != channel * block.expansion:
             downsample = nn.Sequential(
                 nn.Conv2d(self.in_channel, channel * block.expansion, kernel_size=1, stride=stride, bias=False),
