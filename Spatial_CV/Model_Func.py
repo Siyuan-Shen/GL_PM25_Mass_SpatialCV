@@ -289,7 +289,7 @@ def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TO
     #criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)  
  
     alpha = 0.005
-    beta = 5.0
+    beta = 8.0
     gamma = 3.0
     lambda1 = 0.2
     lambda2 = 5e-7
