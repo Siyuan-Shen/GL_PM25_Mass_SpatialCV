@@ -221,14 +221,24 @@ def calculate_Alltime_Statistics_results(Areas:list,Area_beginyears:dict,endyear
 
 def get_longterm_array(area, imonth, beginyear, endyear, final_data_recording,obs_data_recording):
 
-    final_longterm_data = np.zeros(final_data_recording[area][str(beginyear)][imonth].shape, dtype=np.float64)
-    obs_longterm_data   = np.zeros(final_data_recording[area][str(beginyear)][imonth].shape, dtype=np.float64)
-
-    for iyear in range(endyear-beginyear+1):
-        final_longterm_data += final_data_recording[area][str(beginyear+iyear)][imonth]
-        obs_longterm_data   += obs_data_recording[area][str(beginyear+iyear)][imonth]
-    final_longterm_data = final_longterm_data/(endyear-beginyear+1.0)
-    obs_longterm_data   = obs_longterm_data/(endyear-beginyear+1.0)
+    final_longterm_data = np.zeros(final_data_recording[area][str(beginyear)]['Jan'].shape, dtype=np.float64)
+    obs_longterm_data   = np.zeros(final_data_recording[area][str(beginyear)]['Jan'].shape, dtype=np.float64)
+    if imonth == 'Annual':
+        count = 0
+        MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        for iyear in range(endyear-beginyear+1):
+            for imonth in range(len(MONTH)):
+                final_longterm_data += final_data_recording[str(beginyear+iyear)][MONTH[imonth]]
+                obs_longterm_data   += obs_data_recording[str(beginyear+iyear)][MONTH[imonth]]
+                count += 1
+        final_longterm_data = final_longterm_data/count
+        obs_longterm_data   = obs_longterm_data/count
+    else:
+        for iyear in range(endyear-beginyear+1):
+            final_longterm_data += final_data_recording[area][str(beginyear+iyear)][imonth]
+            obs_longterm_data   += obs_data_recording[area][str(beginyear+iyear)][imonth]
+        final_longterm_data = final_longterm_data/(endyear-beginyear+1.0)
+        obs_longterm_data   = obs_longterm_data/(endyear-beginyear+1.0)
     return final_longterm_data, obs_longterm_data
 
 def get_mean_min_max_statistic(temp_CV):
