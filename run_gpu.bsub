@@ -4,7 +4,7 @@
 #BSUB -G compute-rvmartin
 #BSUB -gpu "num=1:gmodel=TeslaV100_SXM2_32GB"
 #BSUB -a 'docker(syword/python3-pytorch:2023.12)'
-#BSUB -J "_Optimal_Model v2.0.0 "
+#BSUB -J "_MSE_Model v2.0.0 "
 #BSUB -g /s.siyuan/Test
 #BSUB -N
 #BSUB -u s.siyuan@wustl.edu

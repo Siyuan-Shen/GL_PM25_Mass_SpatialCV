@@ -16,10 +16,10 @@ def save_loss_accuracy(model_outdir, TrainingOrTesting, loss, accuracy, typeName
     return
 
 def output_text(outfile:str,status:str,Areas:list,Area_beginyears:dict,endyear:int,
-                test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2, slope_CV_R2, PWAModel, PWAMonitors):
+                test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2,rRMSE_CV_R2,PWM_rRMSE_CV_R2, slope_CV_R2, PWAModel, PWAMonitors):
     
     MONTH = ['Annual','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    test_CV_R2_Alltime, train_CV_R2_Alltime, geo_CV_R2_Alltime, RMSE_CV_R2_Alltime, slope_CV_R2_Alltime, PWAModel_Alltime, PWAMonitors_Alltime = calculate_Alltime_Statistics_results(Areas,Area_beginyears,endyear,test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2, slope_CV_R2, PWAModel, PWAMonitors)
+    test_CV_R2_Alltime, train_CV_R2_Alltime, geo_CV_R2_Alltime, RMSE_CV_R2_Alltime, rRMSE_CV_R2_Alltime,PWM_rRMSE_CV_R2_Alltime, slope_CV_R2_Alltime, PWAModel_Alltime, PWAMonitors_Alltime = calculate_Alltime_Statistics_results(Areas,Area_beginyears,endyear,test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2, slope_CV_R2, PWAModel, PWAMonitors)
 
     with open(outfile,status) as csvfile:
         writer = csv.writer(csvfile)
@@ -36,6 +36,12 @@ def output_text(outfile:str,status:str,Areas:list,Area_beginyears:dict,endyear:i
 
                              '\n RMSE -  Avg: ', str(np.round(RMSE_CV_R2_Alltime[iarea]['Alltime'][imonth][0], 4)), 'Min: ',
                              str(np.round(RMSE_CV_R2_Alltime[iarea]['Alltime'][imonth][1], 4)), 'Max: ',str(np.round(RMSE_CV_R2_Alltime[iarea]['Alltime'][imonth][2],4)),
+
+                            '\n rRMSE -  Avg: ', str(np.round(rRMSE_CV_R2_Alltime[iarea]['Alltime'][imonth][0], 4)), 'Min: ',
+                             str(np.round(rRMSE_CV_R2_Alltime[iarea]['Alltime'][imonth][1], 4)), 'Max: ',str(np.round(rRMSE_CV_R2_Alltime[iarea]['Alltime'][imonth][2],4)),
+
+                            '\n PWM_rRMSE -  Avg: ', str(np.round(PWM_rRMSE_CV_R2_Alltime[iarea]['Alltime'][imonth][0], 4)), 'Min: ',
+                             str(np.round(PWM_rRMSE_CV_R2_Alltime[iarea]['Alltime'][imonth][1], 4)), 'Max: ',str(np.round(PWM_rRMSE_CV_R2_Alltime[iarea]['Alltime'][imonth][2],4)),
 
                              '\n Training R2 - Avg: ',str(np.round(train_CV_R2_Alltime[iarea]['Alltime'][imonth][0], 4)), 'Min: ',str(np.round(train_CV_R2_Alltime[iarea]['Alltime'][imonth][1], 4)), 'Max: ',
                              str(np.round(train_CV_R2_Alltime[iarea]['Alltime'][imonth][2],4)),
