@@ -30,7 +30,7 @@ Loss_Accuracy_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Test
 [Training-Settings.identity]
 
 version      = 'v2.0.0'
-special_name = '_Optimal_Model'
+special_name = '_MSE_Model'
 
 [Training-Settings.hyper-parameters]
 
@@ -89,7 +89,7 @@ log_species = false
 
 [Spatial-CrossValidation]
 
-Combine_with_geophysical = true
+Combine_with_geophysical = false
 Spatial_CrossValidation_Switch      = true
 Spatial_CV_LossAccuracy_plot_Switch = true
 

@@ -57,6 +57,20 @@ def Cal_RMSE(x,y):
     RMSE = np.sqrt(mean_squared_error(x, y))
     RMSE = round(RMSE, 2)
     return RMSE
+def Cal_rRMSE(x,y):
+    RMSE = np.sqrt(mean_squared_error(x, y))
+    RMSE = round(RMSE, 2)
+    rRMSE = RMSE/np.mean(x)
+    return rRMSE
+
+def Cal_PWM_rRMSE(x,y,population):
+    Total_Population = np.sum(population)
+    Weighted_RMSE = np.sum(population*np.square(x-y)) 
+    PWA_RMSE = np.sqrt(Weighted_RMSE/Total_Population)
+    PWA_PM = np.sum(population*x)/Total_Population
+    PWA_rRMSE = PWA_RMSE/PWA_PM
+    PWA_rRMSE = round(PWA_rRMSE, 3)
+    return PWA_rRMSE
 def func(x, a, b):
     y = a * x + b
     return y

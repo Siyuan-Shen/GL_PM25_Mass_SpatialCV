@@ -1044,6 +1044,7 @@ def MultiyearMultiAreasBLOOSpatialCrossValidation_CombineWithGeophysicalPM25(tra
                     final_data = np.exp(Validation_Prediction) - 1
                     train_final_data = np.exp(Training_Prediction) - 1
                     train_final_forStatistic = np.exp(train_final_forStatistic) - 1
+                
                 nearest_distance = get_nearest_test_distance(area_test_index=area_test_index,area_train_index=train_index)
                 coeficient = get_coefficients(nearest_site_distance=nearest_distance,beginyear=beginyear[imodel],
                                               endyear = endyear[imodel])
@@ -2015,10 +2016,11 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
                         final_data = np.exp(Validation_Prediction) - 1
                         train_final_data = np.exp(Training_Prediction) - 1
                         train_final_forStatistic = np.exp(train_final_forStatistic) - 1
-                    nearest_distance = get_nearest_test_distance(area_test_index=area_test_index,area_train_index=site_index[train_index])
-                    coeficient = get_coefficients(nearest_site_distance=nearest_distance,beginyear=(beginyear[imodel]+iyear),
+                    if Combine_with_geophysical:
+                        nearest_distance = get_nearest_test_distance(area_test_index=area_test_index,area_train_index=site_index[train_index])
+                        coeficient = get_coefficients(nearest_site_distance=nearest_distance,beginyear=(beginyear[imodel]+iyear),
                                               endyear = (beginyear[imodel]+iyear))
-                    final_data = (1.0-coeficient)*final_data + coeficient * geo_data[Y_index]
+                        final_data = (1.0-coeficient)*final_data + coeficient * geo_data[Y_index]
                     print('Forced Slope Unity - length of area_test_index: ',len(area_test_index),' length of area_train_index',len(area_train_forSlope_index),'Area: ',MultiyearForMultiAreasList[imodel][iarea],
                       '\nlength of final_data',len(final_data))
                     final_data = ForcedSlopeUnity_Func(train_final_data=train_final_data,train_obs_data=obs_data[XforForcedSlope_index],
@@ -2063,7 +2065,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     # *------------------------------------------------------------------------------*#
     ## Calculate R2, RMSE, slope, etc.
     # *------------------------------------------------------------------------------*#
-    test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2, slope_CV_R2, PWAModel, PWAMonitors = calculate_Statistics_results(Areas=Areas,Area_beginyears=Area_beginyears, endyear=endyears[-1], 
+    test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2, rRMSE_CV_R2,PWM_rRMSE_CV_R2,  slope_CV_R2, PWAModel, PWAMonitors = calculate_Statistics_results(Areas=Areas,Area_beginyears=Area_beginyears, endyear=endyears[-1], 
                                                                                                                                    final_data_recording=final_data_recording,obs_data_recording=obs_data_recording,
                                                                                                                                    geo_data_recording=geo_data_recording,
                                                                                                                                    testing_population_data_recording=testing_population_data_recording,
