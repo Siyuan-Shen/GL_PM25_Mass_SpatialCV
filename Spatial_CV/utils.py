@@ -11,9 +11,13 @@ cfg = toml.load('./config.toml')
 obs_dir = cfg['Pathway']['observations-dir']
 
 geophysical_species_data_dir = obs_dir['geophysical_species_data_dir']
+geophysical_species_data_infile = obs_dir['geophysical_species_data_infile']
 geophysical_biases_data_dir  = obs_dir['geophysical_biases_data_dir']
+geophysical_biases_data_infile = obs_dir['geophysical_biases_data_infile']
 ground_observation_data_dir  = obs_dir['ground_observation_data_dir']
-
+ground_observation_data_infile = obs_dir['ground_observation_data_infile']
+population_data_dir  = obs_dir['population_data_dir']
+population_data_infile = obs_dir['population_data_infile']
 #######################################################################################
 # Training file Path
 Training_dir = cfg['Pathway']['TrainingModule-dir']
@@ -31,7 +35,7 @@ identity = cfg['Training-Settings']['identity']
 
 special_name = identity['special_name']
 version = identity['version']
-
+total_sites_number = identity['total_sites_number']
 #######################################################################################
 # Hyperparameters settings
 HyperParameters = cfg['Training-Settings']['hyper-parameters']

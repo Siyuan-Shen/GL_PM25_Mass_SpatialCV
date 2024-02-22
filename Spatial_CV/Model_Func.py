@@ -275,7 +275,7 @@ def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TO
 
     print('*' * 25, type(train_loader), '*' * 25)
     #criterion = nn.SmoothL1Loss()
-    criterion = nn.MSELoss()
+    #criterion = nn.MSELoss()
 
     #alpha = 0.005
     #beta = 8.0
@@ -294,7 +294,7 @@ def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TO
     lambda1 = 0.2
     lambda2 = 5e-7
     
-    #criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)
+    criterion = SigmoidMSELossWithGeoSumPenalties(alpha=alpha,beta=beta,lambda1=lambda1,gamma=gamma)
     
 
     #lambda1 = 0.5
@@ -327,7 +327,7 @@ def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TO
             #print(outputs)
             # print('output.shape,labels.shape :', outputs, labels)
             ## Calculate Loss Func
-            loss = criterion(outputs, labels)#, images[:,16,5,5],GeoPM25_mean,GeoPM25_std)#,images[:,-1,5,5],SitesNumber_mean,SitesNumber_std)
+            loss = criterion(outputs, labels, images[:,16,5,5],GeoPM25_mean,GeoPM25_std)#,images[:,-1,5,5],SitesNumber_mean,SitesNumber_std)
             loss.backward()  ## backward
             #accelerator.backward(loss=loss)
             optimizer.step()  ## refresh training parameters
@@ -360,7 +360,7 @@ def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TO
             valid_labels = valid_labels.to(device)
             valid_output = model(valid_images)
             valid_output = torch.squeeze(valid_output)
-            valid_loss   = criterion(valid_output, valid_labels)#, valid_images[:,16,5,5],GeoPM25_mean,GeoPM25_std)
+            valid_loss   = criterion(valid_output, valid_labels, valid_images[:,16,5,5],GeoPM25_mean,GeoPM25_std)
             valid_losses.append(valid_loss.item())
             test_y_hat   = valid_output.cpu().detach().numpy()
             test_y_true  = valid_labels.cpu().detach().numpy()
