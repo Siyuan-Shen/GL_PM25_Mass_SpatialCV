@@ -1904,7 +1904,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     ##   Initialize the array, variables and constants.
     # *------------------------------------------------------------------------------*#
     extent_dic   = extent_table()
-    global_index = np.array(range(10870))         
+    global_index = np.array(range(total_sites_number))         
     site_index   = get_area_index(extent=extent_dic[Area], test_index=global_index) ### The index of sites.
     print('site index: ',len(site_index))
     nchannel     = len(channel_index)    ### The number of channels.
@@ -1913,11 +1913,11 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     seed = Get_CV_seed()                 ### Get the seed for random numbers for the folds seperation.
     MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     ### Get observation data and Normalized parameters
-    obs_data, obs_mean, obs_std = Get_data_NormPara(input_dir='/my-projects/Projects/MLCNN_PM25_2021/data/',input_file='obsPM25.npy')
-    bias_data, bias_mean, bias_std = Get_data_NormPara(input_dir='/my-projects/Projects/MLCNN_PM25_2021/data/',input_file='true_data.npy')
-    bias_data, bias_max, bias_min  = Get_data_MaxMinPara(input_dir='/my-projects/Projects/MLCNN_PM25_2021/data/',input_file='true_data.npy')
-    geo_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/geoPM25.npy')
-    population_data = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/CoMonitors_Population_Data.npy')
+    obs_data, obs_mean, obs_std = Get_data_NormPara(input_dir=ground_observation_data_dir,input_file=ground_observation_data_infile)
+    bias_data, bias_mean, bias_std = Get_data_NormPara(input_dir=geophysical_biases_data_dir,input_file=geophysical_biases_data_infile)
+    bias_data, bias_max, bias_min  = Get_data_MaxMinPara(input_dir=geophysical_biases_data_dir,input_file=geophysical_biases_data_infile)
+    geo_data = np.load(geophysical_species_data_dir+geophysical_species_data_infile)
+    population_data = np.load(population_data_dir+population_data_infile)
     ### Initialize the CV R2 arrays for all datasets
     
     #MultiyearForMultiAreasList = [['NA'],['NA'],['NA','EU'],['NA','EU','AS','GL']]## Each model test on which areas
@@ -2078,7 +2078,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     txtoutfile = txt_outdir + 'Spatial_CV_'+ typeName +'_' + version + '_' + str(Area) + '_' + str(nchannel) + 'Channel_' + str(width) + 'x' + str(width) + special_name + '.csv'
 
     output_text(outfile=txtoutfile,status='w', Areas=Areas, Area_beginyears=Area_beginyears, endyear=endyears[-1],test_CV_R2=test_CV_R2,train_CV_R2=train_CV_R2, geo_CV_R2=geo_CV_R2,
-                RMSE_CV_R2=RMSE_CV_R2,slope_CV_R2=slope_CV_R2,PWAModel=PWAModel, PWAMonitors=PWAMonitors)
+                RMSE_CV_R2=RMSE_CV_R2,rRMSE_CV_R2=rRMSE_CV_R2,PWM_rRMSE_CV_R2=PWM_rRMSE_CV_R2,slope_CV_R2=slope_CV_R2,PWAModel=PWAModel, PWAMonitors=PWAMonitors)
     
     save_loss_accuracy(model_outdir=model_outdir,TrainingOrTesting='Training',loss=train_loss,accuracy=train_acc,typeName=typeName,epoch=epoch,nchannel=nchannel,special_name=special_name,width=width,height=width)
     save_loss_accuracy(model_outdir=model_outdir,TrainingOrTesting='Testing', loss=test_loss, accuracy=test_acc, typeName=typeName,epoch=epoch,nchannel=nchannel,special_name=special_name,width=width,height=width)
