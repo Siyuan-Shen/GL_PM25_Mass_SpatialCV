@@ -248,7 +248,7 @@ class SigmoidMSELoss_WithExpGeoSitesNumberLogPenalties(nn.Module):
         geophysical = geophysical * GeoPM25_std + GeoPM25_mean
         SitesNumber = SitesNumber * SitesNumber_std + SitesNumber_mean
         
-        #Penalty1 = torch.sum((1/SitesNumber)*torch.relu(-input - geophysical))
+        #Penalty1 = torch.sum((1/SitesNumber)* torch.relu(-input - geophysical))
         Penalty2 = torch.sum((self.lambda1*torch.exp(-self.lambda2*torch.pow(SitesNumber,4)))*torch.relu(torch.abs(torch.log(1+input/geophysical)) - np.log(1.0+self.gamma)))
 
         print('MSELoss: ', MSE_Loss, '\nSymmetric Penalty2: ', Penalty2)
@@ -258,7 +258,7 @@ class SigmoidMSELoss_WithExpGeoSitesNumberLogPenalties(nn.Module):
         return Loss
     
 def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TOTAL_EPOCHS, GeoPM25_mean, GeoPM25_std,
-          SitesNumber_mean, SitesNumber_std):
+        ):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     #accelerator = Accelerator()
@@ -324,7 +324,8 @@ def train(model, X_train, y_train, X_test, y_test, BATCH_SIZE, learning_rate, TO
             optimizer.zero_grad()  # Set grads to zero
             outputs = model(images) #dimension: Nx1
             outputs = torch.squeeze(outputs)
-            #print(outputs)
+            #pr
+            # int(outputs)
             # print('output.shape,labels.shape :', outputs, labels)
             ## Calculate Loss Func
             loss = criterion(outputs, labels, images[:,16,5,5],GeoPM25_mean,GeoPM25_std)#,images[:,-1,5,5],SitesNumber_mean,SitesNumber_std)

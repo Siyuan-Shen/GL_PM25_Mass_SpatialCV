@@ -19,7 +19,7 @@ def output_text(outfile:str,status:str,Areas:list,Area_beginyears:dict,endyear:i
                 test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2,rRMSE_CV_R2,PWM_rRMSE_CV_R2, slope_CV_R2, PWAModel, PWAMonitors):
     
     MONTH = ['Annual','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    test_CV_R2_Alltime, train_CV_R2_Alltime, geo_CV_R2_Alltime, RMSE_CV_R2_Alltime, rRMSE_CV_R2_Alltime,PWM_rRMSE_CV_R2_Alltime, slope_CV_R2_Alltime, PWAModel_Alltime, PWAMonitors_Alltime = calculate_Alltime_Statistics_results(Areas,Area_beginyears,endyear,test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2, slope_CV_R2, PWAModel, PWAMonitors)
+    test_CV_R2_Alltime, train_CV_R2_Alltime, geo_CV_R2_Alltime, RMSE_CV_R2_Alltime, rRMSE_CV_R2_Alltime,PWM_rRMSE_CV_R2_Alltime, slope_CV_R2_Alltime, PWAModel_Alltime, PWAMonitors_Alltime = calculate_Alltime_Statistics_results(Areas,Area_beginyears,endyear,test_CV_R2, train_CV_R2, geo_CV_R2, RMSE_CV_R2,rRMSE_CV_R2,PWM_rRMSE_CV_R2,slope_CV_R2, PWAModel, PWAMonitors)
 
     with open(outfile,status) as csvfile:
         writer = csv.writer(csvfile)

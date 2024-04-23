@@ -2,7 +2,7 @@ import torch
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
-from .utils import pretrained_get_area_index
+from .utils import pretrained_get_area_index,geophysical_biases_data_dir,geophysical_biases_data_infile,ground_observation_data_dir,ground_observation_data_infile
 
 
 
@@ -135,31 +135,30 @@ def Normlize_Testing_Datasets(true_input:np.array):
 
 
 def Learning_Object_Datasets(bias:bool,unit_normalize_bias:bool,Normalized_PM25Bias:bool,Normlized_PM25:bool,Absolute_PM25:bool, Log_PM25):
-    input_dir = '/my-projects/Projects/MLCNN_PM25_2021/data/'
     if bias == True:
-        test_infile = input_dir + 'true_data.npy'
+        test_infile = geophysical_biases_data_dir + geophysical_biases_data_infile
         true_input  = np.load(test_infile)
     elif unit_normalize_bias == True:
-        test_infile = input_dir + 'true_data.npy'
+        test_infile = geophysical_biases_data_dir + geophysical_biases_data_infile
         bias_data   = np.load(test_infile)
         min_bias    = np.min(bias_data)
         max_bias    = np.max(bias_data)
         true_input  = (bias_data - min_bias)/np.abs(max_bias - min_bias)
     elif Normalized_PM25Bias == True:
-        test_infile = input_dir + 'true_data.npy'
+        test_infile = geophysical_biases_data_dir + geophysical_biases_data_infile
         bias_data  = np.load(test_infile)
         bias_mean  = np.mean(bias_data)
         bias_std   = np.std(bias_data)
         true_input = (bias_data - bias_mean) / bias_std
     elif Normlized_PM25 == True:
-        obs_data = np.load(input_dir + 'obsPM25.npy')
+        obs_data = np.load(ground_observation_data_dir + ground_observation_data_infile)
         obs_mean = np.mean(obs_data)
         obs_std = np.std(obs_data)
         true_input = (obs_data - obs_mean) / obs_std
     elif Absolute_PM25 == True:
-        true_input = np.load(input_dir + 'obsPM25.npy')
+        true_input = np.load(ground_observation_data_dir + ground_observation_data_infile)
     elif Log_PM25 == True:
-        obs_data = np.load(input_dir + 'obsPM25.npy')
+        obs_data = np.load(ground_observation_data_dir + ground_observation_data_infile)
         true_input = np.log(obs_data+1)
     return true_input
 

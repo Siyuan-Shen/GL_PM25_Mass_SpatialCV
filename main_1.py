@@ -72,13 +72,13 @@ channel_name = ['EtaAOD_Bias','EtaCoastal','EtaMixing','EtaSGAOD_Bias','EtaSGTOP
 channel_index = channel_index
 nchannel = len(channel_index)
 
-
+train_infile = training_infile
 #######################################################################################
 ##                             Input and output Directories                          ##
 #######################################################################################
 
 input_dir = ground_observation_data_dir
-train_infile = training_infile
+
 
 
 #######################################################################################

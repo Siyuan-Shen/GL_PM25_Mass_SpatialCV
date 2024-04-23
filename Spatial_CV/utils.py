@@ -225,7 +225,7 @@ def get_area_index(extent:np.array,test_index)->np.array:
 
 
 def regional_group(extent):
-    input_dir = '/my-projects/Projects/MLCNN_PM25_2021/data/'
+    input_dir = '/my-projects/Projects/MLCNN_PM25_2021/data/monthly_observations/'
     sitelat_infile = input_dir + 'sitelat.npy'
     sitelon_infile = input_dir + 'sitelon.npy'
     site_lon_array = np.load(sitelon_infile)
@@ -268,7 +268,7 @@ def get_nearest_test_distance(area_test_index,area_train_index):
         area_train_index (numpy): Training index
     return: nearest distances for testing datasets. len(area_test_index)
     """
-    input_dir = '/my-projects/Projects/MLCNN_PM25_2021/data/'
+    input_dir = '/my-projects/Projects/MLCNN_PM25_2021/data/monthly_observations/'
     sitelat_infile = input_dir + 'sitelat.npy'
     sitelon_infile = input_dir + 'sitelon.npy'
     site_lon = np.load(sitelon_infile)
