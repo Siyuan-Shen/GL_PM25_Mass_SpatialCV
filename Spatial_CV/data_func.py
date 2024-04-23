@@ -226,8 +226,8 @@ def calculate_Alltime_Statistics_results(Areas:list,Area_beginyears:dict,endyear
                 temp_train_CV_R2_Alltime = np.append(temp_train_CV_R2_Alltime, train_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
                 temp_geo_CV_R2_Alltime   = np.append(temp_geo_CV_R2_Alltime, geo_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
                 temp_RMSE_CV_R2_Alltime  = np.append(temp_RMSE_CV_R2_Alltime, RMSE_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
-                temp_rRMSE_CV_R2_Alltime  = np.append(temp_rRMSE_CV_R2_Alltime, temp_rRMSE_CV_R2_Alltime[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
-                temp_PWM_rRMSE_CV_R2_Alltime  = np.append(temp_PWM_rRMSE_CV_R2_Alltime, temp_PWM_rRMSE_CV_R2_Alltime[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
+                temp_rRMSE_CV_R2_Alltime  = np.append(temp_rRMSE_CV_R2_Alltime, rRMSE_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
+                temp_PWM_rRMSE_CV_R2_Alltime  = np.append(temp_PWM_rRMSE_CV_R2_Alltime, PWM_rRMSE_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
                 temp_slope_CV_R2_Alltime = np.append(temp_slope_CV_R2_Alltime, slope_CV_R2[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
                 temp_PWAModel_Alltime    = np.append(temp_PWAModel_Alltime, PWAModel[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
                 temp_PWAMonitors_Alltime = np.append(temp_PWAMonitors_Alltime, PWAMonitors[iarea][str(Area_beginyears[iarea]+iyear)][imonth])
@@ -253,8 +253,8 @@ def get_longterm_array(area, imonth, beginyear, endyear, final_data_recording,ob
         MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         for iyear in range(endyear-beginyear+1):
             for imonth in range(len(MONTH)):
-                final_longterm_data += final_data_recording[str(beginyear+iyear)][MONTH[imonth]]
-                obs_longterm_data   += obs_data_recording[str(beginyear+iyear)][MONTH[imonth]]
+                final_longterm_data += final_data_recording[area][str(beginyear+iyear)][MONTH[imonth]]
+                obs_longterm_data   += obs_data_recording[area][str(beginyear+iyear)][MONTH[imonth]]
                 count += 1
         final_longterm_data = final_longterm_data/count
         obs_longterm_data   = obs_longterm_data/count

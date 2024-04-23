@@ -1934,8 +1934,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
     train_input,train_mean, train_std = Normlize_Training_Datasets(train_input,channel_index)
     GeoPM25_mean = train_mean[16,int((width-1)/2),int((width-1)/2)]
     GeoPM25_std  = train_std[16,int((width-1)/2),int((width-1)/2)]
-    SitesNumber_mean = train_mean[31,int((width-1)/2),int((width-1)/2)]
-    SitesNumber_std  = train_std[31,int((width-1)/2),int((width-1)/2)]
+    
     train_input = train_input[:,channel_index,:,:]
     typeName = get_typeName()
     count = 0
@@ -1958,7 +1957,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             cnn_model.to(device)
             torch.manual_seed(21)
-            train_loss, train_acc, test_loss, test_acc = train(cnn_model, X_train, y_train, X_test, y_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std,SitesNumber_mean=SitesNumber_mean,SitesNumber_std=SitesNumber_std) 
+            train_loss, train_acc, test_loss, test_acc = train(cnn_model, X_train, y_train, X_test, y_test,batch_size,learning_rate, num_epochs,GeoPM25_mean=GeoPM25_mean,GeoPM25_std=GeoPM25_std) 
            
             # *------------------------------------------------------------------------------*#
             ## Save Model results.
@@ -2096,6 +2095,7 @@ def MultiyearMultiAreas_AVD_SpatialCrossValidation_CombineWithGeophysicalPM25(tr
                                                                     obs_data_recording=obs_data_recording)
         regression_plot(plot_obs_pm25 = longterm_obs_data,plot_pre_pm25=longterm_final_data,version=version,channel=nchannel,special_name=special_name,area_name=iarea,beginyear=Area_beginyears[iarea],endyear=endyear[-1],
                         extentlim = 2.2 * np.mean(longterm_obs_data))
+        
     return txtoutfile
 
 

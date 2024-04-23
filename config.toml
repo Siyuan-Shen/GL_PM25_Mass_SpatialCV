@@ -5,20 +5,20 @@
 [Pathway.observations-dir]
 
 ground_observation_data_dir  = '/my-projects/Projects/MLCNN_PM25_2021/data/monthly_observations/' 
-ground_observation_data_infile = 'obsPM25_199801-202112_total-11497.npy'
+ground_observation_data_infile = 'obsPM25_199801-201912_total-10870.npy'
 
-geophysical_species_data_dir = '/my-projects/Projects/PM25_Speices_DL_2023/data/monthly_geophysical/'
-geophysical_species_data_infile = 'geoPM25_199801-202112_total-11497.npy'
+geophysical_species_data_dir = '/my-projects/Projects/MLCNN_PM25_2021/data/monthly_geophysicalPM/'
+geophysical_species_data_infile = 'geoPM25_199801-201912_total-10870.npy'
 
-geophysical_biases_data_dir  = '/my-projects/Projects/PM25_Speices_DL_2023/data/monthly_biases/'
-geophysical_biases_data_infile = 'truedata_199801-202112_total-11497.npy'
+geophysical_biases_data_dir  = '/my-projects/Projects/MLCNN_PM25_2021/data/monthly_biases/'
+geophysical_biases_data_infile = 'truedata_199801-201912_total-10870.npy'
 
-population_data_dir  = '/my-projects/Projects/PM25_Speices_DL_2023/data/monthly_population/'
-population_data_infile = 'population_199801-202112_total-11497.npy'
+population_data_dir  = '/my-projects/Projects/MLCNN_PM25_2021/data/monthly_population/'
+population_data_infile = 'population_199801-201912_total-10870.npy'
 
 [Pathway.TrainingModule-dir]
 
-training_infile = '/my-projects/Projects/MLCNN_PM25_2021/data/CNN_Training_data_NCWH_11x11_channel33_start1998_InterpolateVariables_GFED4EMI.npy'
+training_infile = '/my-projects/Projects/MLCNN_PM25_2021/data/CNN_Training_data_NCWH_11x11_channel31_start1998_1998-2019_10870sites_OldVersion-Geo-GC-OldMethods.npy'
 model_outdir    = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Testing_Evaluation/'
 
 [Pathway.Results-dir]
@@ -40,8 +40,8 @@ Loss_Accuracy_outdir = '/my-projects/Projects/MLCNN_PM25_2021/code/Training_Test
 [Training-Settings.identity]
 
 version      = 'v2.0.0'
-special_name = '_Optiaml_Model'
-total_sites_number = 11497
+special_name = '_Optiaml_Model_OldVersion-Geo-GC-OldMethods'
+total_sites_number = 10870
 
 [Training-Settings.hyper-parameters]
 
@@ -108,12 +108,12 @@ Spatial_CV_LossAccuracy_plot_Switch = true
 
 kfold   = 10
 repeats = 1
-beginyears = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021]
-endyears   = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021]
+beginyears = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]#,2020,2021,2022]
+endyears   = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]#,2020,2021,2022]
 
 training_area = 'GL'
 Test_Areas    = ['GL','NA','AS','EU']
-MultiyearForMultiAreasList = [['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA','EU'],['NA','EU'],['NA','EU'],['NA','EU'],['NA','EU'],['NA','EU','AS','GL'],['NA','EU','AS','GL'],['NA','EU','AS','GL'],['NA','EU','AS','GL'],['NA','EU','AS','GL'],['NA','EU','AS','GL'],['NA','EU','AS','GL']]## Each model test on which areas
+MultiyearForMultiAreasList = [['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA'],['NA','EU'],['NA','EU'],['NA','EU'],['NA','EU'],['NA','EU'],['NA','EU','AS','GL'],['NA','EU','AS','GL'],['NA','EU','AS','GL'],['NA','EU','AS','GL'],['NA','EU','AS','GL']]#,['NA','EU','AS','GL'],['NA','EU','AS','GL'],['NA','EU','AS','GL']]## Each model test on which areas
 
 Area_beginyears.NA = 2001
 Area_beginyears.EU = 2010
