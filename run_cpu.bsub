@@ -1,0 +1,39 @@
+#!/bin/bash
+#BSUB -q rvmartin
+#BSUB -n 8
+#BSUB -W 168:00
+#BSUB -R "rusage[mem=150GB] span[hosts=1] select[port8543=1]"
+#BSUB -a 'docker(syword/python3-pytorch:2024.05)'
+#BSUB -J ' "1.7.0 Self Isolated BLCO test 90"'
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /s.siyuan/Map
+#BSUB -u s.siyuan@wustl.edu
+#BSUB -o job_output/job-%J-output.txt
+
+# Set up runtime environment
+
+. /opt/conda/bin/activate
+/bin/true
+pause_time=$((RANDOM % 121 + 30))
+echo "Pausing for $pause_time seconds..."
+sleep $pause_time
+
+Buffer_size=[90]
+sed -i '/\[BLCO\-CrossValidation\]/,/^\[/{/Buffer_size/s/=.*/= '"$Buffer_size"'/}' config.toml
+# beginyears_endyears=[2006,2007]
+# Estimation_years=[[2006],[2007]]
+# sed -i '/\[Estimation\-Settings\.Training_Settings\]/,/^\[/{/beginyears/s/=.*/= '"$beginyears_endyears"'/;/endyears/s/=.*/= '"$beginyears_endyears"'/;}' config.toml
+# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_beginyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_endyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estimation_years/s/=.*/= '"$Estimation_years"'/}' config.toml
+# sed -i '/\[Estimation\-Settings\.Visualization_Settings\]/,/^\[/{/Map_Plot_YEARS/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+
+cd /my-projects/Projects/PM25_Speices_DL_2023/code/Training_Evaluation_Estimation/PM25/v1.7.0
+python3 main.py
+
+
+# NVIDIAA100_SXM4_80GB
+# NVIDIAA40
+# NVIDIAA100_SXM4_40GB
+# TeslaV100_SXM2_32G

@@ -1,0 +1,427 @@
+
+#########################################################################################################################################################
+[Pathway]
+
+[Pathway.observations-dir]
+
+ground_observation_data_dir                           = '/my-projects2/Projects/MLCNN_PM25_2021/data/monthly_observation/Observations_from_CompileGM-20240801-Monthly_ALLFILLPM25_NoDuplicates/' 
+geophysical_species_data_dir                          = '/my-projects2/Projects/MLCNN_PM25_2021/data/monthly_geophysical/Observations_from_CompileGM-20240801-Monthly_ALLFILLPM25_NoDuplicates/'
+geophysical_biases_data_dir                           = '/my-projects2/Projects/MLCNN_PM25_2021/data/monthly_biases/Observations_from_CompileGM-20240801-Monthly_ALLFILLPM25_NoDuplicates/'
+ground_observation_data_infile                        = '{}_monthly_observations.nc'
+geophysical_species_data_infile                       = '{}_monthly_geophysical_concentration.nc'
+geophysical_biases_data_infile                        = '{}_monthly_biases_concentration.nc'
+
+[Pathway.TrainingModule-dir]
+
+training_infile                                       = '/my-projects2/Projects/MLCNN_PM25_2021/data/TrainingDatasets/{}/Observations_from_CompileGM-20240801-Monthly_ALLFILLPM25_NoDuplicates/{}-cnn_TrainingData_44channels_11x11_199801-202212.nc'
+model_outdir                                          = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
+
+[Pathway.Results-dir]
+
+txt_outdir                                            = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
+
+[Pathway.Config-outdir]
+
+Config_outdir                                         = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
+
+[Pathway.Figures-dir]
+
+Loss_Accuracy_outdir                                  = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
+Estimation_Map_outdir                                 = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
+Uncertainty_Map_outdir                                = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
+SHAP_Analysis_outdir                                  = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
+[Pathway.Estimation-dir]
+
+Estimation_outdir                                     = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
+Uncertainty_outdir                                    = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
+#########################################################################################################################################################
+
+[Spatial-CrossValidation]
+
+Spatial_CrossValidation_Switch                        = true
+Spatial_CV_LossAccuracy_plot_Switch                   = true
+
+[Spatial-CrossValidation.Training_Settings]
+
+Spatial_CV_test_only_Switch                           = false  #False ==> Default. This Switch is for only run specific test time coverage. Have to train first.
+kfold                                                 = 10
+repeats                                               = 1
+beginyears                                            = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022]#[2000,2002,2004,2006,2008,2010,2012,2014]#,2017,2018,2019,2020,2021,2022]
+endyears                                              = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022]#[2001,2003,2005,2007,2009,2011,2013,2016]#[2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016]#,2017,2018,2019,2020,2021,2022]
+training_months                                       = [[9,10,11,0,1,2,3,4,5,6,7,8]] #[[0,1,2,3,4,5,6,7,8,9,10,11]]#[[0,1,11],[2,3,4],[5,6,7],[8,9,10]] #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]] 
+test_beginyears                                       = [2000,2000]
+test_endyears                                         = [2016,2022]
+additional_test_regions                               = ['East_Asia','Eastern_Europe','High_income_North_America','Western_Europe']
+
+[Spatial-CrossValidation.Visualization_Settings]
+
+regression_plot_switch                                = true
+every_point_begin_years                               = 2000
+every_point_end_years                                 = 2022
+
+[Spatial-CrossValidation.Forced-Slope-Unity]
+
+ForcedSlopeUnity                                      = true # True: force the slope to unity and offset to zero with Training datasets
+EachMonthForcedSlopeUnity                             = true # True: force the slope to unity and offset to zero by each year, each month; False: by each month, but all-year average 
+
+[Spatial-CrossValidation.SHAP_Analysis_Settings]
+
+SHAP_Analysis_switch                                  = false
+SHAP_Analysis_Calculation_Switch                      = true
+SHAP_Analysis_visualization_Switch                    = true
+SHAP_Analysis_background_number                       = 1000 # Typical 100-1000, do not feed all data in it.
+SHAP_Analysis_test_number                             = 200
+SHAP_Analysis_plot_type                               = 'beeswarm' # 'beeswarm'; 
+
+#########################################################################################################################################################
+
+[BLOO-CrossValidation]
+
+BLOO_CrossValidation_Switch                           = false
+Buffer_size                                           = [200]# ,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200]
+
+[BLOO-CrossValidation.TrainingSettings]
+
+Spatial_CV_test_only_Switch                           = false  #This Switch is for only run specific test time coverage. Have to train first.
+kfold                                                 = 2
+repeats                                               = 1
+beginyears                                            = [2000]#,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
+endyears                                              = [2001]#,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
+training_months                                       = [[9,10,11,0,1,2],[3,4,5,6,7,8]] # [[0,1,11],[2,3,4],[5,6,7],[8,9,10]] #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]] 
+test_beginyears                                       = [2000]
+test_endyears                                         = [2022]
+additional_test_regions                               = []
+
+#########################################################################################################################################################
+
+[BLCO-CrossValidation]
+
+BLCO_CrossValidation_Switch                           = false
+Utilize_SelfIsolated_Sites_BLCO_Switch                = true
+Buffer_size                                           = [80]
+
+[BLCO-CrossValidation.TrainingSettings]
+
+Spatial_CV_test_only_Switch                           = false  #This Switch is for only run specific test time coverage. Have to train first.
+seeds_number                                          = 10
+kfold                                                 = 10 # larger than seeds number
+repeats                                               = 1
+beginyears                                            = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022]
+endyears                                              = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022]
+training_months                                       = [[8,9,10,11,0,1,2,3,4,5,6,7]]#[[9,10,11,0,1,2],[3,4,5,6,7,8]]# [[0,1,11],[2,3,4],[5,6,7],[8,9,10]] #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]]
+test_beginyears                                       = [2000,2000]
+test_endyears                                         = [2016,2022]
+additional_test_regions                               = ['Canada','Contiguous United States','Midwestern United States','Northeastern United States',
+                                                        'Northern North America','Northwestern United States','Southern United States','Southwestern United States']
+
+[BLCO-CrossValidation.visualization_Settings]
+
+Test_Train_Buffers_Distributions_plot                 = true
+#########################################################################################################################################################
+
+[FixNumber-SpatialCrossValidation]
+
+FixNumber_CrossValidation_Switch                      = false
+
+[FixNumber-SpatialCrossValidation.TrainingSettings]
+
+Spatial_CV_test_only_Switch                           = false  #This Switch is for only run specific test time coverage. Have to train first.
+kfold                                                 = 30
+repeats                                               = 1
+beginyears                                            = [2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
+endyears                                              = [2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
+training_months                                       = [[0,1,11],[2,3,4],[5,6,7],[8,9,10]] #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]]
+test_beginyears                                       = [2000]
+test_endyears                                         = [2022]
+additional_test_regions                               = ['']
+fixednumber_test_sites                                = []
+fixednumber_train_sites                               = []
+
+#########################################################################################################################################################
+
+[Sensitivity_Test-Settings]
+
+Sensitivity_Test_Switch                               = false
+Sensitivity_plot_Switch                               = false
+
+[Sensitivity_Test-Settings.Training_Settings]
+
+Spatial_CV_test_only_Switch                           = false  #This Switch is for only run specific test time coverage. Have to train first.
+kfold                                                 = 2
+repeats                                               = 1
+beginyears                                            = [2000]#,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016]#,2017,2018,2019]
+endyears                                              = [2000]#,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016]#,2017,2018,2019]
+training_months                                       = [[0,1,11],[2,3,4],[5,6,7],[8,9,10]] #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]]
+test_beginyears                                       = [2000]
+test_endyears                                         = [2022]
+additional_test_regions                               = ['']
+Sensitivity_Test_Variables                            = [['EtaAOD_Bias']]#, ['EtaCoastal'], ['EtaMixing'], ['EtaSGAOD_Bias'], ['EtaSGTOPO_Bias'], ['AOD'], ['ETA'], ['GeoPM25'],
+                                                       #['GeoNH4'],['GeoNIT'],['GeoSO4'],['GeoBC'],['GeoOM'],['GeoDUST'],['GeoSS'],
+                                                       #['NA_CNN_PM25'],#'GL_CNN_PM25'
+                                                       #['GC_PM25'], ['GC_NH4'], ['GC_SO4'], ['GC_NIT'], ['GC_SOA'], ['GC_OC'], ['GC_OM'], ['GC_BC'], ['GC_DST'],['GC_SSLT'],
+                                                       #['NH3_anthro_emi'],['SO2_anthro_emi'], ['NO_anthro_emi'], ['OC_anthro_emi'], ['BC_anthro_emi'],  ['N2O_anthro_emi'],['NMVOC_anthro_emi'],
+                                                       #['DST_offline_emi'], ['SSLT_offline_emi'],
+                                                       #['PBLH'], ['RH'], ['T2M'], ['U10M'], ['V10M'],['PRECTOT'],
+                                                       #['Urban_Builtup_Lands'],# 'Croplands',#'Crop_Nat_Vege_Mos', 'Permanent_Wetlands', 'Croplands', 
+                                                       #['Month_of_Year'],
+                                                       #['Lat'], ['Lon'],['elevation'] #'S1','S2','S3',#'S1','S2','S3','  'Lat', 'Lon',
+                                                        #'Population'
+                                                       # ]
+
+#########################################################################################################################################################
+
+[Estimation-Settings]
+
+Estimation_Switch                                     = false
+Train_model_Switch                                    = false
+Map_estimation_Switch                                 = false
+Estimation_visualization_Switch                       = false
+Estimation_PWMPM_Cal_Switch                           = false
+Derive_combinedGeo_MapData_Switch                     = false
+
+[Estimation-Settings.Training_Settings]
+
+beginyears                                            = [2006,2007]
+endyears                                              = [2006,2007]
+training_months                                       = [[9,10,11,0,1,2,3,4,5,6,7,8]]  #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]]
+
+[Estimation-Settings.Map_Estimation_Settings]
+
+Estiamtion_trained_beginyears                         = [2006,2007]
+Estiamtion_trained_endyears                           = [2006,2007]
+Estiamtion_trained_months                             = [[9,10,11,0,1,2,3,4,5,6,7,8]]  #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]] # Must be same order of Estimation-Settings.Training_Settings.training_months
+Estimation_years                                      = [[2006],[2007]]
+Estiamtion_months                                     = [[9,10,11,0,1,2,3,4,5,6,7,8]] #[[0,1,11],[2,3,4],[5,6,7],[8,9,10]]
+Extent                                                = [10.055,69.945,-169.945,-40.055]
+Estimation_ForcedSlopeUnity                           = true
+
+[Estimation-Settings.Visualization_Settings]
+
+Map_Plot_Switch                                       = true       # Switch for plotting the map of estimated concentration. 
+ForcedSlopeUnity_Map_Plot_Switch                      = true
+Map_Plot_YEARS                                        = [2006,2007]
+Map_Plot_MONTHS                                       = ['01','02','03','04','05','06','07','08','09','10','11','12']
+Map_Plot_Area                                         = 'NA'
+Map_Plot_Extent                                       = [10.055,69.945,-169.945,-50.055]
+
+[Estimation-Settings.CombineWithGeophysical_Settings]
+
+Coefficient_start_distance                            = 130
+
+[Estimation-Settings.PWM-PM_Calculation_Settings]
+
+Monthly_Analysis_Switch                               = false
+Annual_Analysis_Switch                                = true
+NorthAmerica_Analysis_Switch                          = true
+UnitedStates_Analysis_Switch                          = false
+Canada_Analysis_Switch                                = false
+Analysis_YEARS                                        = [1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022]
+Analysis_MONTH                                        = [0,1,2,3,4,5,6,7,8,9,10,11]
+
+#########################################################################################################################################################
+
+[Uncertainty-Settings]
+
+Uncertainty_Switch                                    = false
+Derive_BLISCO_LOWESS_Uncertainty_Switch               = false
+Derive_distances_map_Switch                           = false
+Derive_rRMSE_map_Switch                               = true
+Derive_absolute_Uncertainty_map_Switch                = false
+Uncertainty_visualization_Switch                      = true
+
+[Uncertainty-Settings.BLISCO_LOWESS_Uncertainty_Settings]
+nearby_sites_distances_mode                            = 'mean' # 'mean' or 'median' 
+number_of_nearby_sites_forAverage                     = 5
+BLISCO_beginyear                                      = 2000 # Check the BLISCO results
+BLISCO_endyear                                        = 2022 # Check the BLISCO results
+BLISCO_kfolds                                         = 10
+BLISCO_seeds_numbers                                  = 10
+Buffer_radii_forUncertainty                           = [0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200] # For loading datasets from BLISCO 
+Max_distances_for_Bins                                = 500
+Number_of_Bins                                        = 101
+Low_percentile_remove                                 = 5
+High_percentile_remove                                = 95
+LOWESS_frac                                           = 0.3
+[Uncertainty-Settings.Map_Estimation_Settings]
+
+Estimation_years                                      = [2011,2012,2013,2014,2015,2016,2017]#,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
+Estiamtion_months                                     = ['01','02','03','04','05','06','07','08','09','10','11','12']
+
+[Uncertainty-Settings.Visualization_Settings]
+
+Uncertainty_Map_plot                                  = false
+Uncertainty_Plot_YEARS                                = [2011,2012,2013,2014,2015,2016,2017]#,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019]
+Uncertainty_Plot_Extent                               = [10.055,69.945,-169.945,-50.055]
+Uncertainty_Plot_MONTHS                               = ['01','02','03','04','05','06','07','08','09','10','11','12']
+Uncertainty_Plot_Area                                 = 'NA'
+
+Uncertainty_BLISCO_LOWESS_relationship_plot           = true
+
+
+
+#########################################################################################################################################################
+[Training-Settings]
+
+[Training-Settings.identity]
+
+version                                               = 'v1.0.0'
+special_name                                          = '_Test_2000-2022' #'_ResNet_1111_GeoMSE_P1-10d0_Gamma-2d5_P2-3d5_OneYearModel_ForcedSlopeUnity_2000-2022_test'
+
+[Training-Settings.learning-objective]
+
+species                                               = 'PM25' # ['PM25', 'NH4', 'SO4', 'NO3', 'OM', 'BC', 'DUST', 'SS' ]
+
+# Only one of these can be true. Default is bias.
+bias                                                  = true   # learning objectives: bias = ground-based species observation - geophysical species concentration estimation
+normalize_bias                                        = false
+normalize_species                                     = false
+absolute_species                                      = false 
+log_species                                           = false
+
+##########################################################
+# Net Structure Settings. Set one of them ture.
+
+[Training-Settings.net_structure_settings]
+
+############# Two Combine Models; Classified by variables
+TwoCombineModels.Settings                             = false # Only Available to ResNet and ResNet_MLP; one of those two structures settings must be true.
+TwoCombineModels.Variable                             = 'GeoSO4'
+TwoCombineModels.threshold                            = 4.0
+
+ResNet.Settings                                       = true
+ResNet.Blocks                                         = 'BasicBlock'
+ResNet.blocks_num                                     = [1,1,1,1]
+
+#############
+
+ResNet_MLP.Settings                                   = false
+ResNet_MLP.Blocks                                     = 'Bottleneck'
+ResNet_MLP.blocks_num                                 = [1,1,1,1]
+
+#############
+
+ResNet_Classification.Settings                        = false
+ResNet_Classification.Blocks                          = 'BasicBlock'
+ResNet_Classification.blocks_num                      = [1,1,0,1]
+ResNet_Classification.left_bin                        = -5.0
+ResNet_Classification.right_bin                       = 5.0
+ResNet_Classification.bins_number                     = 101
+
+#############
+ResNet_MultiHeadNet.Settings                          = false
+ResNet_MultiHeadNet.Blocks                            = 'BasicBlock'
+ResNet_MultiHeadNet.blocks_num                        = [1,1,0,1]
+ResNet_MultiHeadNet.left_bin                          = -5.0
+ResNet_MultiHeadNet.right_bin                         = 5.0
+ResNet_MultiHeadNet.bins_number                       = 101
+ResNet_MultiHeadNet.regression_portion                = 0.5
+ResNet_MultiHeadNet.classifcation_portion             = 0.5
+
+#############
+LateFusion.Settings                                   = false
+LateFusion.Blocks                                     = 'Bottleneck'
+LateFusion.blocks_num                                 = [1,1,1,1]
+LateFusion.initial_channels                           = ['EtaAOD_Bias', 'EtaCoastal', 'EtaMixing', 'EtaSGAOD_Bias', 'EtaSGTOPO_Bias', 'AOD',  'GeoPM25','ETA',
+                                                       'GeoNH4','GeoNIT','GeoSO4','GeoBC','GeoOM','GeoDUST','GeoSS',
+                                                       'NA_CNN_PM25',#'GL_CNN_PM25',#
+                                                       'GC_PM25', 'GC_NH4', 'GC_SO4', 'GC_NIT', 'GC_SOA', 'GC_OC', 'GC_OM', 'GC_BC', 'GC_DST','GC_SSLT',
+                                                       'NH3_anthro_emi','NO_anthro_emi','SO2_anthro_emi', #'OC_anthro_emi', 'BC_anthro_emi', 'N2O_anthro_emi','NMVOC_anthro_emi',
+                                                       'DST_offline_emi', 'SSLT_offline_emi',
+                                                       'RH', 'T2M', 'U10M', 'V10M','PRECTOT','PBLH', 
+                                                       'Urban_Builtup_Lands',#'Croplands','Crop_Nat_Vege_Mos', #'Permanent_Wetlands', 
+                                                    
+                                                       ] 
+LateFusion.LateFusion_channels                         = ['Lat', 'Lon','elevation','Month_of_Year',]
+
+#############
+MultiHeadLateFusion.Settings                           = false
+MultiHeadLateFusion.Blocks                             = 'BasicBlock'
+MultiHeadLateFusion.blocks_num                         = [1,1,1,1]
+MultiHeadLateFusion.initial_channels                   = ['EtaAOD_Bias', 'EtaCoastal', 'EtaMixing', 'EtaSGAOD_Bias', 'EtaSGTOPO_Bias', 'AOD', 'ETA', 'GeoPM25',
+                                                        'GeoNH4','GeoNIT','GeoSO4','GeoBC','GeoOM','GeoDUST','GeoSS',
+                                                        'NA_CNN_PM25',#'GL_CNN_PM25'
+                                                        'GC_PM25', 'GC_NH4', 'GC_SO4', 'GC_NIT', 'GC_SOA', 'GC_OC', 'GC_OM', 'GC_BC', 'GC_DST','GC_SSLT',
+                                                        'NH3_anthro_emi','SO2_anthro_emi', 'NO_anthro_emi',#'OC_anthro_emi', 'BC_anthro_emi',  # 'N2O_anthro_emi','NMVOC_anthro_emi',
+                                                        'DST_offline_emi', 'SSLT_offline_emi',
+                                                        'PBLH', 'RH', 'T2M', 'U10M', 'V10M','PRECTOT',
+                                                        'Urban_Builtup_Lands',# 'Croplands',#'Crop_Nat_Vege_Mos', 'Permanent_Wetlands', 'Croplands', 
+                                                       #,#'S1','S2','S3',' 
+                                                        #'Population'
+                                                       ]               
+MultiHeadLateFusion.LateFusion_channels                = [ 'Lat', 'Lon','elevation','Month_of_Year', ]
+MultiHeadLateFusion.left_bin                           = -10.0
+MultiHeadLateFusion.right_bin                          = 10.0
+MultiHeadLateFusion.bins_number                        = 201
+MultiHeadLateFusion.regression_portion                 = 0.5
+MultiHeadLateFusion.classifcation_portion              = 0.5
+
+
+[Training-Settings.optimizer]
+
+Adam.Settings                                         = true
+Adam.beta0                                            = 0.9
+Adam.beta1                                            = 0.999
+Adam.eps                                              = 1e-8
+
+
+[Training-Settings.learning_rate]
+
+learning_rate0                                        = 0.01
+
+ExponentialLR.Settings                                = false
+ExponentialLR.gamma                                   = 0.9
+
+CosineAnnealingLR.Settings                            = true
+CosineAnnealingLR.T_max                               = 10
+CosineAnnealingLR.eta_min                             = 1e-8
+
+CosineAnnealingRestartsLR.Settings                    = false
+CosineAnnealingRestartsLR.T_0                         = 10
+CosineAnnealingRestartsLR.T_mult                      = 2
+CosineAnnealingRestartsLR.eta_min                     = 0
+
+[Training_Settings.activation_func]
+
+activation_func_name                                  = 'relu'
+ReLU.Settings                                         = false
+Tanh.Settings                                         = false
+GeLU.Settings                                         = true 
+Sigmoid.Settings                                      = false
+
+
+[Training-Settings.hyper-parameters]
+
+epoch                                                 = 71
+batchsize                                             = 128
+
+channel_names                                         =['EtaAOD_Bias', 'EtaCoastal', 'EtaMixing', 'EtaSGAOD_Bias',  'AOD',  'GeoPM25','ETA','EtaSGTOPO_Bias',
+                                                       'GC_PM25', 'GC_NH4', 'GC_SO4',  'GC_SOA', 'GC_OC', 'GC_BC', 'GC_DST','GC_SSLT','GC_NIT', 'GC_OM',
+                                                       'SO2_anthro_emi','NH3_anthro_emi','NO_anthro_emi', 'OC_anthro_emi', 'BC_anthro_emi',#'N2O_anthro_emi','NMVOC_anthro_emi',# 
+                                                       'DST_offline_emi','SSLT_offline_emi',
+                                                       'RH', 'T2M', 'U10M', 'V10M','PRECTOT','PBLH', 
+                                                       'Urban_Builtup_Lands',#'Croplands','Crop_Nat_Vege_Mos','Permanent_Wetlands', 
+                                                        'Lat', 'Lon','elevation'
+                                                        #'Population'
+                                                       ] 
+
+[Training-Settings.Loss-Functions]
+
+Loss_type                                             = 'Adj_GeoMSE'           # MSE; GeoMSE;Adj_GeoMSE; CrossEntropyLoss; MultiHead_Loss; <-- Regression Type for all other models
+Classification_loss_type                              = 'CrossEntropyLoss' # Only for MultiHeadLateFusion, ResNet_classification and ResNet_MultiHeadNet. 
+
+ResNet_MultiHeadNet_regression_loss_coefficient       = 1 # This is used to decide the coefficient of regression loss in ResNet_MultiHeadNet 
+ResNet_MultiHeadNet_classfication_loss_coefficient    = 1 # This is used to decide the coefficient of classfication loss in ResNet_MultiHeadNet 
+Adj_GeoMSE_alpha                                      = 0.005
+Adj_GeoMSE_beta                                       = 8
+GeoMSE_Lamba1_Penalty1                                = 10.0  # This is for GeoMSE Penalty1 - Constrain form negative side.
+GeoMSE_Lamba2_Penalty2                                = 0.2   # This is for GeoMSE Penalty2 - Constrain form positive side.
+GeoMSE_Gamma                                          = 3.0   # This is for GeoMSE Penalty2 ratio. 
+[Training-Settings.CombineWithGeophysical]
+
+combine_with_GeophysicalSpeceis_Switch                = false
+cutoff_size                                           = 130
+
+
+[Training-Settings.Data_Augmentation]
+
+Data_Augmentation_Settings                            = false                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
