@@ -1,0 +1,35 @@
+#!/bin/bash
+#BSUB -q general
+#BSUB -R "rusage[mem=600GB] span[hosts=1] select[gpuhost && port8543=1]"
+#BSUB -G compute-rvmartin
+#BSUB -gpu "num=1:j_exclusive=no"
+#BSUB -a 'docker(syword/python3-pytorch:2024.05)'
+#BSUB -J "PM25 V6"
+#BSUB -g /s.siyuan/Test
+#BSUB -N
+#BSUB -u s.siyuan@wustl.edu
+#BSUB -o job_output/job-%J-output.txt
+
+/bin/true
+# pause_time=$((RANDOM % 61 + 30))
+# echo "Pausing for $pause_time seconds..."
+# sleep $pause_time
+
+# Buffer_size=[80]
+# sed -i '/\[BLCO\-CrossValidation\]/,/^\[/{/Buffer_size/s/=.*/= '"$Buffer_size"'/}' config.toml
+# beginyears_endyears=[2006,2007]
+# Estimation_years=[[2006],[2007]]
+# sed -i '/\[Estimation\-Settings\.Training_Settings\]/,/^\[/{/beginyears/s/=.*/= '"$beginyears_endyears"'/;/endyears/s/=.*/= '"$beginyears_endyears"'/;}' config.toml
+# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_beginyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_endyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estimation_years/s/=.*/= '"$Estimation_years"'/}' config.toml
+# sed -i '/\[Estimation\-Settings\.Visualization_Settings\]/,/^\[/{/Map_Plot_YEARS/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+
+cd /my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/PM25/v1.0.0
+python3 main.py
+
+
+# NVIDIAA100_SXM4_80GB
+# NVIDIAA40
+# NVIDIAA100_SXM4_40GB
+# TeslaV100_SXM2_32G
