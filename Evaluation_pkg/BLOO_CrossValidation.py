@@ -103,7 +103,7 @@ def BLOO_AVD_Spatial_CrossValidation(buffer_radius, width, height, sitesnumber, 
                         if combine_with_GeophysicalSpeceis_Switch:
                             nearest_distance = get_nearest_test_distance(area_test_index=test_index,area_train_index=train_index,site_lat=lat,site_lon=lon)
                             coeficient = get_coefficients(nearest_site_distance=nearest_distance,cutoff_size=cutoff_size,beginyear=beginyears[imodel_year],
-                                                endyear = endyears[imodel_year])
+                                                endyear = endyears[imodel_year],months=training_months[imodel_month])
                             final_data = (1.0-coeficient)*final_data + coeficient * geophysical_species[yearly_test_Yindex]
                         if ForcedSlopeUnity:
                             final_data = ForcedSlopeUnity_Func(train_final_data=train_final_data,train_obs_data=SPECIES_OBS[yearly_train_Yindex]
@@ -246,8 +246,8 @@ def Original_BLOO_AVD_Spatial_CrossValidation(buffer_radius, width, height, site
                 train_final_data = Get_final_output(Training_Prediction, geophysical_species,bias,normalize_bias,normalize_species,absolute_species,log_species,mean, std,yearly_train_Yindex)
                 if combine_with_GeophysicalSpeceis_Switch:
                     nearest_distance = get_nearest_test_distance(area_test_index=test_index,area_train_index=train_index,site_lat=lat,site_lon=lon)
-                    coeficient = get_coefficients(nearest_site_distance=nearest_distance,cutoff_size=cutoff_size,beginyear=beginyears[imodel],
-                                              endyear = endyears[imodel])
+                    coeficient = get_coefficients(nearest_site_distance=nearest_distance,cutoff_size=cutoff_size,beginyear=beginyears[imodel_year],
+                                                endyear = endyears[imodel_year],months=training_months[imodel_month])
                     final_data = (1.0-coeficient)*final_data + coeficient * geophysical_species[yearly_test_Yindex]
                 if ForcedSlopeUnity:
                     final_data = ForcedSlopeUnity_Func(train_final_data=train_final_data,train_obs_data=SPECIES_OBS[yearly_train_Yindex]

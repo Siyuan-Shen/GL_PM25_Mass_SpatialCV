@@ -606,7 +606,7 @@ def get_nearest_test_distance(area_test_index,area_train_index, site_lon, site_l
     
     return nearest_site_distance
 
-def get_coefficients(nearest_site_distance,cutoff_size,beginyear,endyear):
+def get_coefficients(nearest_site_distance,cutoff_size,beginyear,endyear,months):
     """This function is used to calculate the coefficient of the combine with Geophysical PM2.5
 
     Args:
@@ -620,8 +620,8 @@ def get_coefficients(nearest_site_distance,cutoff_size,beginyear,endyear):
     coefficient = (nearest_site_distance - cutoff_size)/(nearest_site_distance+0.0000001)
     coefficient[np.where(coefficient<0.0)]=0.0
     coefficient = np.square(coefficient)
-    coefficients = np.zeros((12 * (endyear - beginyear + 1) * len(nearest_site_distance)), dtype=int)  
-    for i in range(12 * (endyear - beginyear + 1)):  
+    coefficients = np.zeros((len(months) * (endyear - beginyear + 1) * len(nearest_site_distance)), dtype=int)  
+    for i in range(len(months) * (endyear - beginyear + 1)):  
         coefficients[i * len(nearest_site_distance):(i + 1) * len(nearest_site_distance)] = coefficient
     
     return coefficients
