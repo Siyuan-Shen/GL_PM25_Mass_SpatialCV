@@ -25,7 +25,7 @@
 # sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estimation_years/s/=.*/= '"$Estimation_years"'/}' config.toml
 # sed -i '/\[Estimation\-Settings\.Visualization_Settings\]/,/^\[/{/Map_Plot_YEARS/s/=.*/= '"$beginyears_endyears"'/}' config.toml
 
-cd /my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/PM25/v1.0.0
+cd /my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/PM25/V6.02.03
 python3 main.py
 
 

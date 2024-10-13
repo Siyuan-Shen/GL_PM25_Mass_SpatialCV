@@ -13,7 +13,7 @@ geophysical_biases_data_infile                        = '{}_monthly_biases_conce
 
 [Pathway.TrainingModule-dir]
 
-training_infile                                       = '/my-projects2/Projects/MLCNN_PM25_2021/data/TrainingDatasets/{}/Observations_from_CompileGM-20240801-Monthly_ALLFILLPM25_NoDuplicates/{}-cnn_TrainingData_44channels_11x11_199801-202212.nc'
+training_infile                                       = '/my-projects2/Projects/MLCNN_PM25_2021/data/TrainingDatasets/{}/Observations_from_CompileGM-20240801-Monthly_ALLFILLPM25_NoDuplicates/{}-cnn_TrainingData_44channels_11x11_199801-202312.nc'
 model_outdir                                          = '/my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/'
 
 [Pathway.Results-dir]
@@ -46,18 +46,18 @@ Spatial_CV_LossAccuracy_plot_Switch                   = true
 Spatial_CV_test_only_Switch                           = false  #False ==> Default. This Switch is for only run specific test time coverage. Have to train first.
 kfold                                                 = 10
 repeats                                               = 1
-beginyears                                            = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022]#[2000,2002,2004,2006,2008,2010,2012,2014]#,2017,2018,2019,2020,2021,2022]
-endyears                                              = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022]#[2001,2003,2005,2007,2009,2011,2013,2016]#[2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016]#,2017,2018,2019,2020,2021,2022]
+beginyears                                            = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023]#[2000,2002,2004,2006,2008,2010,2012,2014]#,2017,2018,2019,2020,2021,2022]
+endyears                                              = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023]#[2001,2003,2005,2007,2009,2011,2013,2016]#[2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016]#,2017,2018,2019,2020,2021,2022]
 training_months                                       = [[9,10,11,0,1,2,3,4,5,6,7,8]] #[[0,1,2,3,4,5,6,7,8,9,10,11]]#[[0,1,11],[2,3,4],[5,6,7],[8,9,10]] #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]] 
 test_beginyears                                       = [2000,2000]
-test_endyears                                         = [2016,2022]
+test_endyears                                         = [2019,2023]
 additional_test_regions                               = ['East_Asia','Eastern_Europe','High_income_North_America','Western_Europe']
 
 [Spatial-CrossValidation.Visualization_Settings]
 
 regression_plot_switch                                = true
 every_point_begin_years                               = 2000
-every_point_end_years                                 = 2022
+every_point_end_years                                 = 2023
 
 [Spatial-CrossValidation.Forced-Slope-Unity]
 
@@ -264,8 +264,8 @@ Uncertainty_BLISCO_LOWESS_relationship_plot           = true
 
 [Training-Settings.identity]
 
-version                                               = 'v1.0.0'
-special_name                                          = '_Test_2000-2022' #'_ResNet_1111_GeoMSE_P1-10d0_Gamma-2d5_P2-3d5_OneYearModel_ForcedSlopeUnity_2000-2022_test'
+version                                               = 'V6.02.03'
+special_name                                          = '_OldHyperparameters' #'_ResNet_1111_GeoMSE_P1-10d0_Gamma-2d5_P2-3d5_OneYearModel_ForcedSlopeUnity_2000-2022_test'
 
 [Training-Settings.learning-objective]
 
