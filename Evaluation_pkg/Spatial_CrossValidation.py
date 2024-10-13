@@ -95,7 +95,7 @@ def AVD_Spatial_CrossValidation(width, height, sitesnumber,start_YYYY, TrainingD
                         if combine_with_GeophysicalSpeceis_Switch:
                             nearest_distance = get_nearest_test_distance(area_test_index=test_index,area_train_index=train_index,site_lat=lat,site_lon=lon)
                             coeficient = get_coefficients(nearest_site_distance=nearest_distance,cutoff_size=cutoff_size,beginyear=beginyears[imodel_year],
-                                                endyear = endyears[imodel_year])
+                                                endyear = endyears[imodel_year],months=training_months[imodel_month])
                             final_data = (1.0-coeficient)*final_data + coeficient * geophysical_species[yearly_test_Yindex]
                         if ForcedSlopeUnity:
                             final_data = ForcedSlopeUnity_Func(train_final_data=train_final_data,train_obs_data=SPECIES_OBS[yearly_train_Yindex]
