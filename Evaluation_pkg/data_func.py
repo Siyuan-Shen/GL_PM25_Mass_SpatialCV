@@ -123,7 +123,7 @@ def ForcedSlopeUnity_Func(train_final_data,train_obs_data,test_final_data,train_
 
 
 
-def calculate_Statistics_results(test_beginyear,test_endyear:int,final_data_recording, obs_data_recording, geo_data_recording, training_final_data_recording, training_obs_data_recording,testing_population_data_recording,masked_array_index):
+def calculate_Statistics_results(test_beginyear,test_endyear:int,final_data_recording, obs_data_recording, geo_data_recording, training_final_data_recording, training_obs_data_recording,testing_population_data_recording,masked_array_index,Area):
     MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     Season_MONTH = [['Mar', 'Apr', 'May'], ['Jun', 'Jul', 'Aug'], ['Sep', 'Oct', 'Nov'], ['Dec','Jan', 'Feb']]
     Seasons = ['MAM','JJA','SON','DJF']
@@ -186,7 +186,7 @@ def calculate_Statistics_results(test_beginyear,test_endyear:int,final_data_reco
                     All_points_population_data_recording[imonth] = np.append(All_points_population_data_recording[imonth],testing_population_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index])
 
                     ### Monthly Statistics Calculation for AVD Spatial CV
-                    print('Area: {}, Year: {}, Month: {}'.format('NA', test_beginyear+iyear, imonth))
+                    print('Area: {}, Year: {}, Month: {}'.format(Area, test_beginyear+iyear, imonth))
                     test_CV_R2[str(test_beginyear+iyear)][imonth] = linear_regression(final_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index], obs_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index])
                     train_CV_R2[str(test_beginyear+iyear)][imonth] = linear_regression(training_final_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index], training_obs_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index])
                     geo_CV_R2[str(test_beginyear+iyear)][imonth] = linear_regression(geo_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index], obs_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index])
@@ -238,7 +238,7 @@ def calculate_Statistics_results(test_beginyear,test_endyear:int,final_data_reco
                 All_points_population_data_recording['Annual'] = np.append(All_points_population_data_recording['Annual'],testing_population_data_recording[str(test_beginyear+iyear)]['Annual'][masked_array_index])
 
                 #### Calculate Annual Statistics for AVD Spatial CV
-                print('Area: {}, Year: {}, Month: {}'.format('NA', test_beginyear+iyear, 'Annual'))
+                print('Area: {}, Year: {}, Month: {}'.format(Area, test_beginyear+iyear, 'Annual'))
                 test_CV_R2[str(test_beginyear+iyear)]['Annual'] = linear_regression(final_data_recording[str(test_beginyear+iyear)]['Annual'][masked_array_index], obs_data_recording[str(test_beginyear+iyear)]['Annual'][masked_array_index])
                 train_CV_R2[str(test_beginyear+iyear)]['Annual'] = linear_regression(training_final_data_recording[str(test_beginyear+iyear)]['Annual'][masked_array_index], training_obs_data_recording[str(test_beginyear+iyear)]['Annual'][masked_array_index])
                 geo_CV_R2[str(test_beginyear+iyear)]['Annual'] = linear_regression(geo_data_recording[str(test_beginyear+iyear)]['Annual'][masked_array_index], obs_data_recording[str(test_beginyear+iyear)]['Annual'][masked_array_index])
@@ -278,7 +278,7 @@ def calculate_Statistics_results(test_beginyear,test_endyear:int,final_data_reco
                     All_points_train_obs_data_recording[Seasons[iseason]] = np.append(All_points_train_obs_data_recording[Seasons[iseason]],temp_training_obs_data_recording[masked_array_index])
                     All_points_population_data_recording[Seasons[iseason]] = np.append(All_points_population_data_recording[Seasons[iseason]],temp_testing_population_data_recording[masked_array_index])
                     ### Calculate Seasonal Statistics for AVD Spatial CV
-                    print('Area: {}, Year: {}, Season: {}'.format('NA', test_beginyear+iyear, Seasons[iseason]))
+                    print('Area: {}, Year: {}, Season: {}'.format(Area, test_beginyear+iyear, Seasons[iseason]))
                     test_CV_R2[str(test_beginyear+iyear)][Seasons[iseason]] = linear_regression(temp_final_data_recording[masked_array_index], temp_obs_data_recording[masked_array_index])
                     train_CV_R2[str(test_beginyear+iyear)][Seasons[iseason]] = linear_regression(temp_training_final_data_recording[masked_array_index], temp_training_obs_data_recording[masked_array_index])
                     geo_CV_R2[str(test_beginyear+iyear)][Seasons[iseason]] = linear_regression(temp_geo_data_recording[masked_array_index], temp_obs_data_recording[masked_array_index])
@@ -309,7 +309,7 @@ def calculate_Statistics_results(test_beginyear,test_endyear:int,final_data_reco
     else:
         for iyear in range(test_endyear-test_beginyear+1):
                 for imonth in MONTH:
-                    print('Area: {}, Year: {}, Month: {}'.format('NA', test_beginyear+iyear, imonth))
+                    print('Area: {}, Year: {}, Month: {}'.format(Area, test_beginyear+iyear, imonth))
                     test_CV_R2[str(test_beginyear+iyear)][imonth] = 0
                     train_CV_R2[str(test_beginyear+iyear)][imonth] = 0#linear_regression(training_final_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index], training_obs_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index])
                     geo_CV_R2[str(test_beginyear+iyear)][imonth] = 0#linear_regression(geo_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index], obs_data_recording[str(test_beginyear+iyear)][imonth][masked_array_index])
@@ -356,7 +356,7 @@ def calculate_Statistics_results(test_beginyear,test_endyear:int,final_data_reco
     return test_CV_R2, train_CV_R2, geo_CV_R2, RMSE, NRMSE, PWM_NRMSE, slopes, PWAModel, PWAMonitors, len(masked_array_index)
 
 
-def calculate_Alltime_Statistics_results(test_beginyear:dict,test_endyear:int,test_CV_R2, train_CV_R2, geo_CV_R2, RMSE, NRMSE,PWM_NRMSE, slope,PWAModel,PWAMonitors ):
+def calculate_Alltime_Statistics_results(test_beginyear:dict,test_endyear:int,test_CV_R2, train_CV_R2, geo_CV_R2, RMSE, NRMSE,PWM_NRMSE, slope,PWAModel,PWAMonitors,Area):
     MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec','Annual','MAM','JJA','SON','DJF']
     test_CV_R2_Alltime, train_CV_R2_Alltime, geo_CV_R2_Alltime, RMSE_Alltime, NRMSE_Alltime, PWM_NRMSE_Alltime, slope_Alltime,PWAModel_Alltime, PWAMonitors_Alltime = initialize_AVD_CV_Alltime_dict()
     
@@ -371,7 +371,7 @@ def calculate_Alltime_Statistics_results(test_beginyear:dict,test_endyear:int,te
             temp_PWAModel_Alltime     = np.array([],dtype=np.float64)
             temp_PWAMonitors_Alltime  = np.array([],dtype=np.float64)
             for iyear in range(test_endyear-test_beginyear+1):
-                print('Area: {}, Year: {}, Month: {}'.format('NA', test_beginyear+iyear, imonth))
+                print('Area: {}, Year: {}, Month: {}'.format(Area, test_beginyear+iyear, imonth))
                 temp_test_CV_R2_Alltime  = np.append(temp_test_CV_R2_Alltime, test_CV_R2[str(test_beginyear+iyear)][imonth])
                 temp_train_CV_R2_Alltime = np.append(temp_train_CV_R2_Alltime, train_CV_R2[str(test_beginyear+iyear)][imonth])
                 temp_geo_CV_R2_Alltime   = np.append(temp_geo_CV_R2_Alltime, geo_CV_R2[str(test_beginyear+iyear)][imonth])
