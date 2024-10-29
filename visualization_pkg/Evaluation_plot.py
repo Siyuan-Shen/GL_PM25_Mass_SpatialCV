@@ -32,7 +32,7 @@ figheight = height*2 + vmargin*2
 
 def shap_value_plot(shap_values_with_feature_names:shap._explanation.Explanation,plot_type:str,outfile:str):
     if plot_type == 'beeswarm':
-        shap.plots.beeswarm(shap_values_with_feature_names, show=False)
+        shap.plots.beeswarm(shap_values_with_feature_names, show=False,max_display=11)
         plt.xlabel('Impact on {} bias (ug/m3)'.format(species))
         plt.savefig(outfile,format='png',dpi=1000, bbox_inches='tight')
         plt.close()

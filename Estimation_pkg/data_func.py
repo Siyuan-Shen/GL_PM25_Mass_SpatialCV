@@ -29,11 +29,8 @@ def get_extent_index(extent)->np.array:
     :return:
         lat_index, lon_index
     '''
-    indir = '/my-projects/Projects/PM25_Speices_DL_2023/data/input_variables_map/'
-    lat_infile = indir + 'tSATLAT_NA.npy'
-    lon_infile = indir + 'tSATLON_NA.npy'
-    SATLAT = np.load(lat_infile)
-    SATLON = np.load(lon_infile)
+    SATLAT = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLAT.npy')
+    SATLON = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLON.npy')
     lat_index = np.where((SATLAT >= extent[0])&(SATLAT<=extent[1]))
     lon_index = np.where((SATLON >= extent[2])&(SATLON<=extent[3]))
     lat_index = np.squeeze(np.array(lat_index))
@@ -47,8 +44,8 @@ def get_GL_extent_index(extent)->np.array:
     :return:
         lat_index, lon_index
     '''
-    SATLAT = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/tSATLAT.npy')
-    SATLON = np.load('/my-projects/Projects/MLCNN_PM25_2021/data/tSATLON.npy')
+    SATLAT = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLAT.npy')
+    SATLON = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLON.npy')
     lat_index = np.where((SATLAT >= extent[0])&(SATLAT<=extent[1]))
     lon_index = np.where((SATLON >= extent[2])&(SATLON<=extent[3]))
     lat_index = np.squeeze(np.array(lat_index))
@@ -58,6 +55,7 @@ def get_GL_extent_index(extent)->np.array:
 def get_landtype(YYYY,extent)->np.array:
     #landtype_infile = '/my-projects/Projects/MLCNN_PM25_2021/data/inputdata/Other_Variables_MAP_INPUT/{}/MCD12C1_LandCoverMap_{}.npy'.format(YYYY,YYYY)
     #landtype = np.load(landtype_infile)
+    '''
     Mask_indir = '/my-projects/mask/NA_Masks/Cropped_NA_Masks/'
 
     Contiguous_US_data = nc.Dataset(Mask_indir+'Cropped_REGIONMASK-Contiguous United States.nc')
@@ -69,20 +67,20 @@ def get_landtype(YYYY,extent)->np.array:
     landtype = Contiguous_US_mask + Canada_mask + Alaska_mask
     lat_index,lon_index = get_extent_index(extent=extent)
     '''
-    #landtype_infile = '/my-projects/mask/Land_Ocean_Mask/NewLandMask-0.01.mat'
-    #LandMask = mat.loadmat(landtype_infile)
-    #MASKp1 = LandMask['MASKp1']
-    #MASKp2 = LandMask['MASKp2']
-    #MASKp3 = LandMask['MASKp3']
-    #MASKp4 = LandMask['MASKp4']
-    #MASKp5 = LandMask['MASKp5']
-    #MASKp6 = LandMask['MASKp6']
-    #MASKp7 = LandMask['MASKp7']
-    #MASKp_land = MASKp1 +MASKp2 + MASKp3 + MASKp4 + MASKp5 + MASKp6 + MASKp7 
-    #landtype = np.zeros((13000,36000),dtype=np.float32)
-    #landtype = MASKp_land
-    #lat_index,lon_index = get_extent_index(extent=extent)
-    '''
+    landtype_infile = '/my-projects/mask/Land_Ocean_Mask/NewLandMask-0.01.mat'
+    LandMask = mat.loadmat(landtype_infile)
+    MASKp1 = LandMask['MASKp1']
+    MASKp2 = LandMask['MASKp2']
+    MASKp3 = LandMask['MASKp3']
+    MASKp4 = LandMask['MASKp4']
+    MASKp5 = LandMask['MASKp5']
+    MASKp6 = LandMask['MASKp6']
+    MASKp7 = LandMask['MASKp7']
+    MASKp_land = MASKp1 +MASKp2 + MASKp3 + MASKp4 + MASKp5 + MASKp6 + MASKp7 
+    landtype = np.zeros((13000,36000),dtype=np.float32)
+    landtype = MASKp_land
+    lat_index,lon_index = get_extent_index(extent=extent)
+    
     output = np.zeros((len(lat_index),len(lon_index)), dtype=int)
 
     for ix in range(len(lat_index)):
@@ -104,7 +102,7 @@ def Get_coefficient_map():
 
 def Combine_CNN_GeophysicalSpecies(CNN_Species,coefficient,
                                 YYYY,MM):
-   GeophysicalSpecies = load_map_data('Geo{}'.format(species),YYYY=YYYY,MM=MM)
+   GeophysicalSpecies = load_map_data(channel_names=['Geo{}'.format(species)],YYYY=YYYY,MM=MM)
    Cropped_GeophysicalSpecies = crop_mapdata(init_map=GeophysicalSpecies,extent=Extent)
    Combined_Species = (1.0-coefficient)*CNN_Species + coefficient * Cropped_GeophysicalSpecies
    return Combined_Species

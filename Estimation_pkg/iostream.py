@@ -29,11 +29,8 @@ def load_trained_model_forEstimation(model_outdir, typeName, version, species, n
 
 def load_map_data(channel_names, YYYY, MM):
     inputfiles = inputfiles_table(YYYY=YYYY,MM=MM)
-    indir = '/my-projects/Projects/PM25_Speices_DL_2023/data/input_variables_map/'
-    lat_infile = indir + 'tSATLAT_NA.npy'
-    lon_infile = indir + 'tSATLON_NA.npy'
-    SATLAT = np.load(lat_infile)
-    SATLON = np.load(lon_infile)
+    SATLAT = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLAT.npy')
+    SATLON = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLON.npy')
     output = np.zeros((len(channel_names), len(SATLAT), len(SATLON)))
     loading_time_start = time.time()
     for i in range(len(channel_names)):
