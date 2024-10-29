@@ -71,7 +71,7 @@ Analysis_MONTH                                        = PWM_PM_Calculation_Setti
 #######################################################################################################################
 
 
-AVD_version                         = 'Observations_from_CompileGM-20240801-Monthly_ALLFILLPM25_NoDuplicates'
+AVD_version                         = 'Observations_from_CompileGM-20241019-Monthly_ALLFILLPM25_NoDuplicates'
 Observation_indir                   = '/my-projects2/Projects/MLCNN_PM25_2021/data/monthly_observation/{}/'.format(AVD_version)
 
 GeoPM25_AOD_ETA_input_indir         = '/my-projects2/Projects/MLCNN_PM25_2021/data/input_variables_map/GeoPM25_AOD_ETA_input/'
@@ -124,8 +124,8 @@ def inputfiles_table(YYYY, MM):
         'NMVOC_anthro_emi'   : Anthropogenic_Emissions_input_indir + '{}/NMVOC-em-anthro_CMIP_v2023-04_CEDS_Total_001x001_GL_{}{}.npy'.format(YYYY,YYYY,MM),
 
         ##################### [Variables from Offline Natural Emissions] ###################
-        'DST_offline_emi'    : Offline_Emissions_input_indir + '{}/DST-em-EMI_Total_001x001_GL_{}{}.npy'.format(YYYY,YYYY,MM),
-        'SSLT_offline_emi'   : Offline_Emissions_input_indir + '{}/SSLT-em-EMI_Total_001x001_GL_{}{}.npy'.format(YYYY,YYYY,MM),
+        'DST_offline_emi'    : Offline_Emissions_input_indir + '{}/DST-em-EMI_Total_001x001_NA_{}{}.npy'.format(YYYY,YYYY,MM),
+        'SSLT_offline_emi'   : Offline_Emissions_input_indir + '{}/SSLT-em-EMI_Total_001x001_NA_{}{}.npy'.format(YYYY,YYYY,MM),
         
         ##################### [Variables from GFED4 Dry Matter Emissions] ###################
 
