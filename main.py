@@ -77,8 +77,9 @@ if __name__ == '__main__':
                                  side_stream_nchannel_names=side_channel_names)
     if BLOO_CrossValidation_Switch:
         cfg_outdir = Config_outdir + '{}/{}/Results/results-BLOOCV/configuration-files/'.format(species, version)
-        width, height, sitesnumber,start_YYYY, TrainingDatasets = load_TrainingVariables(nametags=channel_names)
+        
         for buffer_radius in BLOO_Buffer_size:
+            width, height, sitesnumber,start_YYYY, TrainingDatasets = load_TrainingVariables(nametags=channel_names)
             if not os.path.isdir(cfg_outdir):
                 os.makedirs(cfg_outdir)
             cfg_outfile = cfg_outdir + 'config_BLOO_SpatialCV_{}km-buffer_{}_{}_{}_{}Channel_{}x{}{}.toml'.format(buffer_radius,typeName,species,version,nchannel,width,height,special_name)
@@ -94,8 +95,9 @@ if __name__ == '__main__':
             cfg_outdir = Config_outdir + '{}/{}/Results/results-SelfIsolated_BLCOCV/configuration-files/'.format(species, version)
         else:
             cfg_outdir = Config_outdir + '{}/{}/Results/results-BLCOCV/configuration-files/'.format(species, version)
-        width, height, sitesnumber,start_YYYY, TrainingDatasets = load_TrainingVariables(nametags=channel_names)
+        
         for buffer_radius in BLCO_Buffer_size:
+            width, height, sitesnumber,start_YYYY, TrainingDatasets = load_TrainingVariables(nametags=channel_names)
             if not os.path.isdir(cfg_outdir):
                 os.makedirs(cfg_outdir)
             if utilize_self_isolated_sites:
@@ -111,8 +113,9 @@ if __name__ == '__main__':
 
     if FixNumber_Spatial_CrossValidation_Switch:
         cfg_outdir = Config_outdir + '{}/{}/Results/results-FixNumberCV/configuration-files/'.format(species, version)
-        width, height, sitesnumber,start_YYYY, TrainingDatasets = load_TrainingVariables(nametags=channel_names)
+        
         for i in range(len(Fixednumber_test_sites)):
+            width, height, sitesnumber,start_YYYY, TrainingDatasets = load_TrainingVariables(nametags=channel_names)
             if not os.path.isdir(cfg_outdir):
                 os.makedirs(cfg_outdir)
             cfg_outfile = cfg_outdir + 'config_FixNumber_SpatialCV_{}-test-sites_{}-train-sites_{}_{}_{}_{}Channel_{}x{}{}.toml'.format(Fixednumber_test_sites[i],Fixednumber_train_sites[i],typeName,species,version,nchannel,width,height,special_name)
