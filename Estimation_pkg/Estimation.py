@@ -69,7 +69,7 @@ def Estimation_Func(total_channel_names,mainstream_channel_names,side_channel_na
                 for imodel_month in range(len(Estiamtion_months)):
                     for imonth in Estiamtion_months[imodel_month]:
                         MM = ['01','02','03','04','05','06','07','08','09','10','11','12']
-                        CNN_Species = load_estimation_map_data(YYYY=YEAR,MM=MM[imonth],SPECIES=species,version=version,
+                        CNN_Species, lat, lon = load_estimation_map_data(YYYY=YEAR,MM=MM[imonth],SPECIES=species,version=version,
                                                            special_name=special_name)
                         Combined_species = Combine_CNN_GeophysicalSpecies(CNN_Species=CNN_Species,coefficient=coefficients,YYYY=YEAR,MM=MM[imonth])
                         save_combinedGeo_map_data(final_data=Combined_species,YYYY=YEAR,MM=MM[imonth],extent=Extent,
