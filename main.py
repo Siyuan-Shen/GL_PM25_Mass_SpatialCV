@@ -17,6 +17,8 @@ from Estimation_pkg.Quality_Control import Calculate_Regional_PWM_PM_Components
 from Estimation_pkg.utils import *
 from Uncertainty_pkg.uncertainty_estimation import Derive_Estimation_Uncertainty
 from Uncertainty_pkg.utils import Uncertainty_Switch
+from Official_Data_pkg.utils import *
+from Official_Data_pkg.Official_data_func import derive_official_mapdata
 
 cfg = toml.load('./config.toml')
 pprint.pprint(cfg)
@@ -174,3 +176,6 @@ if __name__ == '__main__':
         f = open(cfg_outfile,'w')
         toml.dump(cfg, f)
         f.close()
+
+    if Derive_OfficialData_Switch:
+        derive_official_mapdata()

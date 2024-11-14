@@ -15,10 +15,10 @@ def crop_mapdata(init_map,extent):
     left_lon   = extent[2]
     right_lon  = extent[3]
 
-    lat_start_index = int((bottom_lat - 10.005)* 100)
-    lon_start_index = int((left_lon + 169.995) * 100 )
-    lat_end_index = int((top_lat - 10.005) * 100 )
-    lon_end_index = int((right_lon + 169.995)*100 )
+    lat_start_index = round((bottom_lat + 59.995)* 100)
+    lon_start_index = round((left_lon + 179.995) * 100 )
+    lat_end_index = round((top_lat + 59.995) * 100 )
+    lon_end_index = round((right_lon + 179.995)*100 )
     cropped_mapdata = init_map[lat_start_index:lat_end_index+1,lon_start_index:lon_end_index+1]
     return cropped_mapdata
 
@@ -103,7 +103,11 @@ def Get_coefficient_map():
 def Combine_CNN_GeophysicalSpecies(CNN_Species,coefficient,
                                 YYYY,MM):
    GeophysicalSpecies = load_map_data(channel_names=['Geo{}'.format(species)],YYYY=YYYY,MM=MM)
+   GeophysicalSpecies = np.squeeze(GeophysicalSpecies)
    Cropped_GeophysicalSpecies = crop_mapdata(init_map=GeophysicalSpecies,extent=Extent)
+   print('coefficient shape: {},'.format(coefficient.shape))
+   print('CNN_Species shape: {},'.format(CNN_Species.shape))
+   print('Cropped_GeophysicalSpecies shape: {}'.format(Cropped_GeophysicalSpecies.shape))
    Combined_Species = (1.0-coefficient)*CNN_Species + coefficient * Cropped_GeophysicalSpecies
    return Combined_Species
 

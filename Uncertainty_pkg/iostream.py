@@ -79,7 +79,7 @@ def load_rRMSE_map_data( MM:str, version:str, special_name):
     return SPECIES_Map, lat, lon
 
 def load_pixels_nearest_sites_distances_map():
-    indir = '/my-projects/Projects/PM25_Speices_DL_2023/data/Pixels2sites_distances/'
+    indir = '/my-projects2/Projects/MLCNN_PM25_2021/data/Pixels2sites_distances/'
     infile = indir + '{}_nearest_site_distances_forEachPixel.nc'.format(species)
     MapData = nc.Dataset(infile)
     Distance_Map = MapData.variables['Distance'][:]
@@ -96,25 +96,19 @@ def load_absolute_uncertainty_map_data(YYYY:str, MM:str, version:str, special_na
     SPECIES_Map = np.array(SPECIES_Map)
     return SPECIES_Map, lat, lon
 
-def load_NA_GeoLatLon():
-    indir = '/my-projects/Projects/PM25_Speices_DL_2023/data/input_variables_map/'
-    lat_infile = indir + 'tSATLAT_NA.npy'
-    lon_infile = indir + 'tSATLON_NA.npy'
-    NA_GeoLAT = np.load(lat_infile)
-    NA_GeoLON = np.load(lon_infile)
-    return NA_GeoLAT, NA_GeoLON
+def load_GL_GeoLatLon():
+    SATLAT = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLAT.npy')
+    SATLON = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLON.npy')
+    return SATLAT, SATLON
 
-def load_NA_GeoLatLon_Map():
-    indir = '/my-projects/Projects/PM25_Speices_DL_2023/data/input_variables_map/'
-    lat_infile = indir + 'tSATLAT_NA_MAP.npy'
-    lon_infile = indir + 'tSATLON_NA_MAP.npy'
-    NA_GeoLAT_MAP = np.load(lat_infile)
-    NA_GeoLON_MAP = np.load(lon_infile)
-    return NA_GeoLAT_MAP, NA_GeoLON_MAP
+def load_GL_GeoLatLon_Map():
+    SATLAT_MAP = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLAT_MAP.npy')
+    SATLON_MAP = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLON_MAP.npy')
+    return SATLAT_MAP, SATLON_MAP
 
 
 def save_nearest_site_distances_forEachPixel(nearest_distance_map,extent_lat,extent_lon):
-    outdir = '/my-projects/Projects/PM25_Speices_DL_2023/data/Pixels2sites_distances/'
+    outdir = '/my-projects2/Projects/MLCNN_PM25_2021/data/Pixels2sites_distances/'
     if not os.path.isdir(outdir):
         os.makedirs(outdir)
     outfile = outdir + '{}_nearest_site_distances_forEachPixel.nc'.format(species)
