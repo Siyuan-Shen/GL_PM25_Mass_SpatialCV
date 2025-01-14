@@ -54,8 +54,8 @@ def load_Population_MapData(YYYY,MM):
     infile = inputfiles['Population']
     tempdata = np.load(infile)
     output = tempdata
-    lat = np.linspace(10.005,69.995,6000)
-    lon = np.linspace(-169.995,-40.005,13000)
+    lat = np.linspace(-59.995,69.995,13000)
+    lon = np.linspace(-179.995,179.995,36000)
     return output,lat,lon
     
 def load_monthly_obs_data_forEstimationMap(species:str):
@@ -64,8 +64,8 @@ def load_monthly_obs_data_forEstimationMap(species:str):
     SPECIES_OBS = data.variables[species][:]
     SPECIES_OBS = np.array(SPECIES_OBS)
 
-    lat = data.variables["lat"][:]
-    lon = data.variables["lon"][:]
+    lat = data.variables["latitude"][:]
+    lon = data.variables["longitude"][:]
     lat = np.array(lat)
     lon = np.array(lon)
 

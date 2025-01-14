@@ -37,7 +37,7 @@ class SelfDesigned_LossFunction(nn.Module):
             MSE_loss = F.mse_loss(sigmoid_coefficient*model_output,sigmoid_coefficient*target)
             Penalty1 = self.GeoMSE_Lamba1_Penalty1 * torch.mean(torch.relu(-model_output - geophsical_species)) # To force the model output larger than -geophysical_species
             Penalty2 = self.GeoMSE_Lamba2_Penalty2 * torch.mean(torch.relu(model_output - self.GeoMSE_Gamma * geophsical_species)) # To force the model output larger than -geophysical_species
-            loss = MSE_loss +Penalty2 +  Penalty1
+            loss = MSE_loss + Penalty2 +  Penalty1
             print('Total loss: {}, MSE Loss: {}, Penalty 1: {}, Penalty 2: {}'.format(loss, MSE_loss, Penalty1, Penalty2))
             return loss
            

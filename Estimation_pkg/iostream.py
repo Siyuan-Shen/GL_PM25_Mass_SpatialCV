@@ -73,6 +73,16 @@ def load_Annual_estimation_map_data(YYYY:str,SPECIES:str, version:str, special_n
     SPECIES_Map = np.array(SPECIES_Map)
     return SPECIES_Map, lat, lon
 
+def load_GeoCombinedPM25_map_data(YYYY:str, MM:str, SPECIES:str, version:str, special_name):
+    indir = Estimation_outdir + '{}/{}/Map_Estimation/Combined_withGeo/{}/'.format(SPECIES,version,YYYY)
+    infile = indir + 'Combined-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
+    MapData = nc.Dataset(infile)
+    lat = MapData.variables['lat'][:]
+    lon = MapData.variables['lon'][:]
+    SPECIES_Map = MapData.variables[SPECIES][:]
+    SPECIES_Map = np.array(SPECIES_Map)
+    return SPECIES_Map, lat, lon
+
 def load_ForcedSlope_forEstimation(model_indir, typeName, version, species, nchannel, special_name,beginyear, endyear, month_index,width, height):
     indir = model_indir + '{}/{}/Results/Estimation-ForcedSlopeUnity_Dicts/'.format(species, version)
     MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -222,12 +232,15 @@ def save_ForcedSlopeUnity_final_map_data(final_data:np.array, YYYY:str, MM:str, 
     PM25[:] = final_data
     return
 
-def save_combinedGeo_map_data(final_data:np.array, YYYY:str, MM:str, extent:list, SPECIES:str, version:str, special_name):
+def save_combinedGeo_map_data(final_data:np.array, YYYY:str, MM:str, extent:list, SPECIES:str, version:str, special_name, forced_Unity):
     outdir = Estimation_outdir + '{}/{}/Map_Estimation/Combined_withGeo/{}/'.format(SPECIES,version,YYYY)
     
     if not os.path.isdir(outdir):
                 os.makedirs(outdir)
-    outfile = outdir + 'Combined-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
+    if forced_Unity:
+         outfile = outdir + 'CombinedForcedUnity-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
+    else:
+        outfile = outdir + 'Combined-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
     lat_size = final_data.shape[0]
     lon_size = final_data.shape[1]
     lat_delta = 0.01
