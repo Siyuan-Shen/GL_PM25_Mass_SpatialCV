@@ -232,12 +232,15 @@ def save_ForcedSlopeUnity_final_map_data(final_data:np.array, YYYY:str, MM:str, 
     PM25[:] = final_data
     return
 
-def save_combinedGeo_map_data(final_data:np.array, YYYY:str, MM:str, extent:list, SPECIES:str, version:str, special_name):
+def save_combinedGeo_map_data(final_data:np.array, YYYY:str, MM:str, extent:list, SPECIES:str, version:str, special_name, forced_Unity):
     outdir = Estimation_outdir + '{}/{}/Map_Estimation/Combined_withGeo/{}/'.format(SPECIES,version,YYYY)
     
     if not os.path.isdir(outdir):
                 os.makedirs(outdir)
-    outfile = outdir + 'Combined-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
+    if forced_Unity:
+         outfile = outdir + 'CombinedForcedUnity-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
+    else:
+        outfile = outdir + 'Combined-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
     lat_size = final_data.shape[0]
     lon_size = final_data.shape[1]
     lat_delta = 0.01

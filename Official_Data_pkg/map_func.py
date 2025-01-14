@@ -31,7 +31,7 @@ def Padding_Global_MapData():
         for imonth in MONTH:
 
             # load initial Geo Combined Map Estimation
-            temp_map_data,lat,lon = load_ForcedSlopeUnity_estimation_map_data(YYYY=iyear,MM=imonth,SPECIES=species,version=version,special_name=special_name)
+            temp_map_data,lat,lon = load_GeoCombinedPM25_map_data(YYYY=iyear,MM=imonth,SPECIES=species,version=version,special_name=special_name)
             Monthly_Official_Output = np.zeros((padding_lat_length,padding_lon_length),dtype=np.float32)
             print('shape of temp_map_data: {},'.format(temp_map_data.shape))
             print('shape of Monthly_Official_Output: {},'.format(Monthly_Official_Output.shape,))
