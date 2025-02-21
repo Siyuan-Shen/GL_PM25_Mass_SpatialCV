@@ -16,7 +16,7 @@ Padding_fine_Global_Mapdata_Switch = cfg['OfficialData-Settings']['Padding_fine_
 Crop_fine_Mapdata_regions_Switch = cfg['OfficialData-Settings']['Crop_fine_Mapdata_regions_Switch']
 Convert_fine2coarse_Mapdata_Switch = cfg['OfficialData-Settings']['Convert_fine2coarse_Mapdata_Switch']
 Official_output_data_version = cfg['OfficialData-Settings']['Official_output_data_version']
-
+Use_ForcedSlopeUnity_Switch = cfg['OfficialData-Settings']['Use_ForcedSlopeUnity_Switch']
 ############################ Padding Settings ################################
 
 Padding_fine_Global_Mapdata_Settings = cfg['OfficialData-Settings']['Padding_fine_Global_Mapdata'] 

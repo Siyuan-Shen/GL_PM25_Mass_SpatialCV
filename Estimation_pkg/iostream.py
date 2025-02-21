@@ -73,9 +73,12 @@ def load_Annual_estimation_map_data(YYYY:str,SPECIES:str, version:str, special_n
     SPECIES_Map = np.array(SPECIES_Map)
     return SPECIES_Map, lat, lon
 
-def load_GeoCombinedPM25_map_data(YYYY:str, MM:str, SPECIES:str, version:str, special_name):
+def load_GeoCombinedPM25_map_data(YYYY:str, MM:str, SPECIES:str, version:str, special_name,forced_Unity):
     indir = Estimation_outdir + '{}/{}/Map_Estimation/Combined_withGeo/{}/'.format(SPECIES,version,YYYY)
-    infile = indir + 'Combined-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
+    if forced_Unity:
+        infile = indir + 'CombinedForcedUnity-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
+    else:
+        infile = indir + 'Combined-{}km-Geo{}_{}_{}_{}{}{}.nc'.format(Coefficient_start_distance,SPECIES,SPECIES,version,YYYY,MM,special_name)
     MapData = nc.Dataset(infile)
     lat = MapData.variables['lat'][:]
     lon = MapData.variables['lon'][:]
