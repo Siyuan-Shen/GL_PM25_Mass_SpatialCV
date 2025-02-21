@@ -14,13 +14,20 @@ def Padding_Global_MapData():
     padding_lon_length = round(100*(Official_Global_Mapdata_Extent[3] - Official_Global_Mapdata_Extent[2]))+1
 
     # Initialize Annual Output directory
-    Annual_outdir = Official_MapData_outdir + '{}/FineResolution/{}/Annual/'.format(Official_output_data_version,'GL')
+    if Use_ForcedSlopeUnity_Switch:
+        Annual_outdir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Annual/'.format(Official_output_data_version,'GL')
+    else:
+        Annual_outdir = Official_MapData_outdir + '{}/FineResolution/{}/Annual/'.format(Official_output_data_version,'GL')
     if not os.path.isdir(Annual_outdir):
         os.makedirs(Annual_outdir)
     
     for iyear in Padding_fine_Global_Mapdata_Years:
         # Initialize Monthly Output directory
-        Monthly_outdir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+        if Use_ForcedSlopeUnity_Switch:
+            Monthly_outdir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+        else:
+            Monthly_outdir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+        
         if not os.path.isdir(Monthly_outdir):
             os.makedirs(Monthly_outdir)
 
@@ -31,7 +38,7 @@ def Padding_Global_MapData():
         for imonth in MONTH:
 
             # load initial Geo Combined Map Estimation
-            temp_map_data,lat,lon = load_GeoCombinedPM25_map_data(YYYY=iyear,MM=imonth,SPECIES=species,version=version,special_name=special_name)
+            temp_map_data,lat,lon = load_GeoCombinedPM25_map_data(YYYY=iyear,MM=imonth,SPECIES=species,version=version,special_name=special_name,forced_Unity=Use_ForcedSlopeUnity_Switch)
             Monthly_Official_Output = np.zeros((padding_lat_length,padding_lon_length),dtype=np.float32)
             print('shape of temp_map_data: {},'.format(temp_map_data.shape))
             print('shape of Monthly_Official_Output: {},'.format(Monthly_Official_Output.shape,))
@@ -64,7 +71,10 @@ def crop_MapData():
         for iyear in Crop_fine_Mapdata_regions_Years:
             
             # load Annual Official GLobal Data
-            Annual_indir = Official_MapData_outdir + '{}/FineResolution/{}/Annual/'.format(Official_output_data_version,'GL')
+            if Use_ForcedSlopeUnity_Switch:
+                Annual_indir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Annual/'.format(Official_output_data_version,'GL')
+            else:
+                Annual_indir = Official_MapData_outdir + '{}/FineResolution/{}/Annual/'.format(Official_output_data_version,'GL')
             Annual_infile = Annual_indir + '{}.CNNPM25.GL.{}{}-{}{}.nc'.format(Official_output_data_version,iyear,MONTH[0],iyear,MONTH[-1])
             Annual_mapdata, lat, lon = load_Official_datasets(infile=Annual_infile)
 
@@ -85,14 +95,20 @@ def crop_MapData():
     if Crop_fine_Mapdata_regions_Monthly_output_switch:
         for iyear in Crop_fine_Mapdata_regions_Years:
             # load Monthly Official GLobal Data
-            Monthly_indir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+            if Use_ForcedSlopeUnity_Switch:
+                Monthly_indir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+            else:
+                Monthly_indir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
             for imonth in MONTH:
                 Monthly_infile  = Monthly_indir + '{}.CNNPM25.GL.{}{}-{}{}.nc'.format(Official_output_data_version,iyear,imonth,iyear,imonth)
                 Monthly_mapdata, lat, lon = load_Official_datasets(infile=Monthly_infile)
                 for iregion in range(len(Crop_fine_Mapdata_regions)):
 
                     # Initialize Monthly Output directory
-                    Monthly_outdir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,Crop_fine_Mapdata_regions[iregion],iyear)
+                    if Use_ForcedSlopeUnity_Switch:
+                        Monthly_outdir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Monthly/{}/'.format(Official_output_data_version,Crop_fine_Mapdata_regions[iregion],iyear)
+                    else:
+                        Monthly_outdir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,Crop_fine_Mapdata_regions[iregion],iyear)
                     if not os.path.isdir(Monthly_outdir):
                         os.makedirs(Monthly_outdir)
                     

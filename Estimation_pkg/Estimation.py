@@ -39,12 +39,9 @@ def Estimation_Func(total_channel_names,mainstream_channel_names,side_channel_na
             for imodel_month in range(len(Estiamtion_trained_months)):
                 model = load_trained_month_based_model_forEstimation(model_outdir=model_outdir,typeName=typeName,version=version,species=species, nchannel=len(total_channel_names),special_name=special_name,
                                                              beginyear=Estiamtion_trained_beginyears[imodel_year],endyear=Estiamtion_trained_endyears[imodel_year], month_index=Estiamtion_trained_months[imodel_month], width=width, height=height)
-                if Estimation_ForcedSlopeUnity:
-                    ForcedSlopeUnity_Dictionary_forEstimation = load_ForcedSlope_forEstimation(model_indir=model_outdir,typeName=typeName,version=version,species=species, nchannel=len(total_channel_names),special_name=special_name,
-                                                             beginyear=Estiamtion_trained_beginyears[imodel_year],endyear=Estiamtion_trained_endyears[imodel_year], month_index=Estiamtion_trained_months[imodel_month], width=width, height=height)
                 for YEAR in Estimation_years[imodel_year]:
                     for imonth in Estiamtion_months[imodel_month]:
-                        print('YEAR: {}, MONTH: {}'.format(YEAR,MM[imonth]))
+                        print('Map Estimating YEAR: {}, MONTH: {}'.format(YEAR,MM[imonth]))
                         map_input = load_map_data(channel_names=total_channel_names,YYYY=YEAR,MM=MM[imonth])
                         final_map_data = map_predict(inputmap=map_input,model=model,train_mean=input_mean,train_std=input_std,extent=Extent,width=width,nchannel=len(total_channel_names),YYYY=YEAR,MM=MM[imonth],
                                                     total_channel_names=total_channel_names,main_stream_channel_names=mainstream_channel_names,side_channel_names=side_channel_names)
@@ -52,11 +49,25 @@ def Estimation_Func(total_channel_names,mainstream_channel_names,side_channel_na
                                                         normalize_bias=normalize_bias,normalize_species=normalize_species,absolute_species=absolute_species,
                                                         log_species=log_species,mean=mean,std=std)
                         save_final_map_data(final_data=final_map_data,YYYY=YEAR,MM=MM[imonth],extent=Extent,SPECIES=species,version=version,special_name=special_name)
-                        if Estimation_ForcedSlopeUnity:
-                            temp_offset = ForcedSlopeUnity_Dictionary_forEstimation['offset'][str(YEAR)][MONTH[imonth]]
-                            temp_slope  = ForcedSlopeUnity_Dictionary_forEstimation['slope'][str(YEAR)][MONTH[imonth]]
-                            final_map_data -= temp_offset
-                            final_map_data /= temp_slope
+                        
+    if Estimation_ForcedSlopeUnity:
+        width, height, sitesnumber,start_YYYY, TrainingDatasets = load_TrainingVariables(nametags=total_channel_names)
+        Initial_Normalized_TrainingData, input_mean, input_std = normalize_Func(inputarray=TrainingDatasets)
+        true_input, mean, std = Learning_Object_Datasets(bias=bias,Normalized_bias=normalize_bias,Normlized_Speices=normalize_species,Absolute_Species=absolute_species,Log_PM25=log_species,species=species)
+        MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        MM = ['01','02','03','04','05','06','07','08','09','10','11','12']
+        for imodel_year in range(len(Estiamtion_trained_beginyears)):
+            for imodel_month in range(len(Estiamtion_trained_months)):
+                ForcedSlopeUnity_Dictionary_forEstimation = load_ForcedSlope_forEstimation(model_indir=model_outdir,typeName=typeName,version=version,species=species, nchannel=len(total_channel_names),special_name=special_name,
+                                                             beginyear=Estiamtion_trained_beginyears[imodel_year],endyear=Estiamtion_trained_endyears[imodel_year], month_index=Estiamtion_trained_months[imodel_month], width=width, height=height)
+                for YEAR in Estimation_years[imodel_year]:
+                    for imonth in Estiamtion_months[imodel_month]:
+                        final_map_data = load_estimation_map_data(YYYY=YEAR,MM=MM[imonth],SPECIES=species,version=version,special_name=special_name)
+                        print('Forced Slope YEAR: {}, MONTH: {}'.format(YEAR,MM[imonth]))
+                        temp_offset = ForcedSlopeUnity_Dictionary_forEstimation['offset'][str(YEAR)][MONTH[imonth]]
+                        temp_slope  = ForcedSlopeUnity_Dictionary_forEstimation['slope'][str(YEAR)][MONTH[imonth]]
+                        final_map_data -= temp_offset
+                        final_map_data /= temp_slope
                         save_ForcedSlopeUnity_final_map_data(final_data=final_map_data,YYYY=YEAR,MM=MM[imonth],extent=Extent,SPECIES=species,
                                                              version=version,special_name=special_name)
                         del map_input, final_map_data
