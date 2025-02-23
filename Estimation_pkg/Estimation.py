@@ -50,6 +50,8 @@ def Estimation_Func(total_channel_names,mainstream_channel_names,side_channel_na
                                                         log_species=log_species,mean=mean,std=std)
                         save_final_map_data(final_data=final_map_data,YYYY=YEAR,MM=MM[imonth],extent=Extent,SPECIES=species,version=version,special_name=special_name)
                         
+        del width, height, sitesnumber,start_YYYY, TrainingDatasets 
+        gc.collect()
     if Estimation_ForcedSlopeUnity:
         width, height, sitesnumber,start_YYYY, TrainingDatasets = load_TrainingVariables(nametags=total_channel_names)
         Initial_Normalized_TrainingData, input_mean, input_std = normalize_Func(inputarray=TrainingDatasets)
@@ -62,7 +64,7 @@ def Estimation_Func(total_channel_names,mainstream_channel_names,side_channel_na
                                                              beginyear=Estiamtion_trained_beginyears[imodel_year],endyear=Estiamtion_trained_endyears[imodel_year], month_index=Estiamtion_trained_months[imodel_month], width=width, height=height)
                 for YEAR in Estimation_years[imodel_year]:
                     for imonth in Estiamtion_months[imodel_month]:
-                        final_map_data = load_estimation_map_data(YYYY=YEAR,MM=MM[imonth],SPECIES=species,version=version,special_name=special_name)
+                        final_map_data, lat, lon = load_estimation_map_data(YYYY=YEAR,MM=MM[imonth],SPECIES=species,version=version,special_name=special_name)
                         print('Forced Slope YEAR: {}, MONTH: {}'.format(YEAR,MM[imonth]))
                         temp_offset = ForcedSlopeUnity_Dictionary_forEstimation['offset'][str(YEAR)][MONTH[imonth]]
                         temp_slope  = ForcedSlopeUnity_Dictionary_forEstimation['slope'][str(YEAR)][MONTH[imonth]]
@@ -70,8 +72,10 @@ def Estimation_Func(total_channel_names,mainstream_channel_names,side_channel_na
                         final_map_data /= temp_slope
                         save_ForcedSlopeUnity_final_map_data(final_data=final_map_data,YYYY=YEAR,MM=MM[imonth],extent=Extent,SPECIES=species,
                                                              version=version,special_name=special_name)
-                        del map_input, final_map_data
+                        del final_map_data
                         gc.collect()
+        del width, height, sitesnumber,start_YYYY, TrainingDatasets 
+        gc.collect()
 
     if Derive_combinedGeo_MapData_Switch:
         coefficients = Get_coefficient_map()

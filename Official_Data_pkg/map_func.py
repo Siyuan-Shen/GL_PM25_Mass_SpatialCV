@@ -81,7 +81,10 @@ def crop_MapData():
             for iregion in range(len(Crop_fine_Mapdata_regions)):
 
                 # Initialize Annual Output directory
-                Annual_outdir = Official_MapData_outdir + '{}/FineResolution/{}/Annual/'.format(Official_output_data_version,Crop_fine_Mapdata_regions[iregion])
+                if Use_ForcedSlopeUnity_Switch:
+                    Annual_outdir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Annual/'.format(Official_output_data_version,Crop_fine_Mapdata_regions[iregion])
+                else:
+                    Annual_outdir = Official_MapData_outdir + '{}/FineResolution/{}/Annual/'.format(Official_output_data_version,Crop_fine_Mapdata_regions[iregion])
                 if not os.path.isdir(Annual_outdir):
                     os.makedirs(Annual_outdir)
                 # Get cropping index and crop init mapdata
@@ -99,6 +102,7 @@ def crop_MapData():
                 Monthly_indir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
             else:
                 Monthly_indir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+            
             for imonth in MONTH:
                 Monthly_infile  = Monthly_indir + '{}.CNNPM25.GL.{}{}-{}{}.nc'.format(Official_output_data_version,iyear,imonth,iyear,imonth)
                 Monthly_mapdata, lat, lon = load_Official_datasets(infile=Monthly_infile)

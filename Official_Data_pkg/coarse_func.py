@@ -11,7 +11,11 @@ def Convert_mapdata_fine2coarse_resolution():
         for iyear in Convert_fine2coarse_Mapdata_Years:
             for iregion in range(len(Convert_Coarse_Mapdata_regions)):
                 # load Annual Official Regional Data with fine resolution
-                Annual_indir = Official_MapData_outdir + '{}/FineResolution/{}/Annual/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion])
+                if Use_ForcedSlopeUnity_Switch:
+                    Annual_indir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Annual/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion])
+                else:
+                    Annual_indir = Official_MapData_outdir + '{}/FineResolution/{}/Annual/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion])
+            
                 Annual_infile = Annual_indir + '{}.CNNPM25.{}.{}{}-{}{}.nc'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear,MONTH[0],iyear,MONTH[-1])
                 Annual_mapdata, lat, lon = load_Official_datasets(infile=Annual_infile)
 
@@ -19,7 +23,11 @@ def Convert_mapdata_fine2coarse_resolution():
                 Coarse_PM25_Map, Coarse_lat, Coarse_lon = convert_Fine2Coarse_Resolution(Convert_Coarse_Mapdata_Extents[iregion],Annual_mapdata)
 
                 # Save Converted Mapdata
-                Annual_outdir = Official_MapData_outdir + '{}/CoarseResolution/{}/Annual/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion])
+                if Use_ForcedSlopeUnity_Switch:
+                    Annual_outdir = Official_MapData_outdir + '{}/CoarseResolution-Forced_Slope/{}/Annual/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion])
+                else:
+                    Annual_outdir = Official_MapData_outdir + '{}/CoarseResolution/{}/Annual/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion])
+                                
                 if not os.path.isdir(Annual_outdir):
                     os.makedirs(Annual_outdir)
                 Annual_outfile = Annual_outdir + '{}.CNNPM25.0p10.{}.{}{}-{}{}.nc'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear,MONTH[0],iyear,MONTH[-1])
@@ -31,7 +39,11 @@ def Convert_mapdata_fine2coarse_resolution():
             for imonth in MONTH:
                 for iregion in range(len(Convert_Coarse_Mapdata_regions)):
                     # load Monthly Official Regional Data with fine resolution
-                    Monthly_indir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear)
+                    if Use_ForcedSlopeUnity_Switch:
+                        Monthly_indir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Monthly/{}/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear)
+                    else:
+                        Monthly_indir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear)
+                    
                     Monthly_infile = Monthly_indir + '{}.CNNPM25.{}.{}{}-{}{}.nc'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear,imonth,iyear,imonth)
                     Monthly_mapdata, lat, lon = load_Official_datasets(infile=Monthly_infile)
 
@@ -39,7 +51,10 @@ def Convert_mapdata_fine2coarse_resolution():
                     Coarse_PM25_Map, Coarse_lat, Coarse_lon = convert_Fine2Coarse_Resolution(Convert_Coarse_Mapdata_Extents[iregion],Monthly_mapdata)
 
                     # Save Converted Mapdata
-                    Monthly_outdir = Official_MapData_outdir + '{}/CoarseResolution/{}/Monthly/{}/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear)
+                    if Use_ForcedSlopeUnity_Switch:
+                        Monthly_outdir = Official_MapData_outdir + '{}/CoarseResolution-Forced_Slope/{}/Monthly/{}/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear)
+                    else:
+                        Monthly_outdir = Official_MapData_outdir + '{}/CoarseResolution/{}/Monthly/{}/'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear)
                     if not os.path.isdir(Monthly_outdir):
                         os.makedirs(Monthly_outdir)
                     Monthly_outfile = Monthly_outdir + '{}.CNNPM25.0p10.{}.{}{}-{}{}.nc'.format(Official_output_data_version,Convert_Coarse_Mapdata_regions[iregion],iyear,imonth,iyear,imonth)
