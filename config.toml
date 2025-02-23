@@ -176,22 +176,22 @@ Sensitivity_Test_Variables                            = [['EtaAOD_Bias']]#, ['Et
 Estimation_Switch                                     = true
 Train_model_Switch                                    = false
 Map_estimation_Switch                                 = false
-Estimation_visualization_Switch                       = true
+Estimation_visualization_Switch                       = false
 Estimation_PWMPM_Cal_Switch                           = false
 Derive_combinedGeo_MapData_Switch                     = true
 
 [Estimation-Settings.Training_Settings]
 
-beginyears                                            = [2009]
-endyears                                              = [2009]
+beginyears                                            = [2001]
+endyears                                              = [2001]
 training_months                                       = [[0,1,2,3,4,5,6,7,8,9,10,11]]#[[8,9,10],[11,0,1],[2,3,4],[5,6,7]]  #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]]
 
 [Estimation-Settings.Map_Estimation_Settings]
 
-Estiamtion_trained_beginyears                         = [2009]
-Estiamtion_trained_endyears                           = [2009]
+Estiamtion_trained_beginyears                         = [2001]
+Estiamtion_trained_endyears                           = [2001]
 Estiamtion_trained_months                             = [[0,1,2,3,4,5,6,7,8,9,10,11]] #[[8,9,10],[11,0,1],[2,3,4],[5,6,7]]  #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]] # Must be same order of Estimation-Settings.Training_Settings.training_months
-Estimation_years                                      = [[2009]]
+Estimation_years                                      = [[2001]]
 Estiamtion_months                                     = [[0,1,2,3,4,5,6,7,8,9,10,11]] #[[8,9,10],[11,0,1],[2,3,4],[5,6,7]] #[[0,1,11],[2,3,4],[5,6,7],[8,9,10]]
 Extent                                                = [-59.945,69.945,-179.945,179.945]
 Estimation_ForcedSlopeUnity                           = true
@@ -200,7 +200,7 @@ Estimation_ForcedSlopeUnity                           = true
 
 Map_Plot_Switch                                       = true       # Switch for plotting the map of estimated concentration. 
 ForcedSlopeUnity_Map_Plot_Switch                      = true
-Map_Plot_YEARS                                        = [2009]
+Map_Plot_YEARS                                        = [2001]
 Map_Plot_MONTHS                                       = ['01','02','03','04','05','06','07','08','09','10','11','12']
 Map_Plot_Area                                         = 'GL'
 Map_Plot_Extent                                       = [-59.945,69.945,-179.945,179.945]
@@ -232,14 +232,14 @@ Official_output_data_version                          = 'V6GL02.03'
 
 [OfficialData-Settings.Padding_fine_Global_Mapdata]
 
-Padding_fine_Global_Mapdata_Years                     = [2009]
+Padding_fine_Global_Mapdata_Years                     = [2001]
 Annual_output_switch                                  = true
 Monthly_output_switch                                 = true
 Official_Global_Mapdata_Extent                        = [-59.995,69.995,-179.995,179.995]
 
 [OfficialData-Settings.Crop_fine_Mapdata_regions]
 
-Crop_fine_Mapdata_regions_Years                       = [2009]
+Crop_fine_Mapdata_regions_Years                       = [2001]
 Annual_output_switch                                  = true
 Monthly_output_switch                                 = true
 Crop_fine_Mapdata_regions                             = ['NA','EU','AS','Nigeria']#
@@ -247,7 +247,7 @@ Crop_fine_Mapdata_Extents                             = [[10.005,69.995,-169.995
 
 [OfficialData-Settings.Convert_fine2coarse_Mapdata]
 
-Convert_fine2coarse_Mapdata_Years                     = [2009]
+Convert_fine2coarse_Mapdata_Years                     = [2001]
 Annual_output_switch                                  = true
 Monthly_output_switch                                 = true
 Convert_Coarse_Mapdata_regions                        = ['GL','NA','EU','AS','Nigeria']#
