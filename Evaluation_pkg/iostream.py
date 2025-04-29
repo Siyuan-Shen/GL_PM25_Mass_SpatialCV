@@ -8,7 +8,32 @@ from Evaluation_pkg.utils import *
 from Evaluation_pkg.data_func import *
 from Training_pkg.utils import *
 
+def load_GL_extent_Mask(region_name):
+    dic = {
+        'GL': [-60.0,70.0,-179.95,179.95],
+        'NA': [25.0, 55.0, -135.0, -65.0],
+        'SA': [-60.00, 25.0, -179.90, -33.0],
+        'EU': [35.0, 60.0, -33.0, 35.0],
+        'AF': [-60.0, 35.0, -39.0, 61.0],
+        'AS': [-10.0, 45.00, 45.0, 145],
+        'AU': [-60.0, 0.0, 61.0, 179.90],
+    }
+    lat = np.linspace(-59.995,69.995,13000)
+    lon = np.linspace(-179.995,179.995,36000)
+    extent = dic[region_name]
+    lat_min, lat_max = extent[0], extent[1]
+    lon_min, lon_max = extent[2], extent[3]
+    mask_map = np.zeros((len(lat), len(lon)), dtype=bool)
+    lat_start_index = np.where(lat >= lat_min)[0][0]
+    lat_end_index = np.where(lat <= lat_max)[0][-1] + 1
+    lon_start_index = np.where(lon >= lon_min)[0][0]
+    lon_end_index = np.where(lon <= lon_max)[0][-1] + 1
+    # Set the mask for the specified region to True
+    mask_map[lat_start_index:lat_end_index, lon_start_index:lon_end_index] = 1
+    return mask_map, lat, lon
+
 def load_GL_Mask_data(region_name):
+    
     Mask_indir = '/my-projects/mask/Masks/'
     try:
         dataset = mat.loadmat(Mask_indir+'City_Masks_{}_0.01.mat'.format(region_name))

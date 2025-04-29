@@ -96,20 +96,6 @@ def every_point_regression_plot(plot_obs_pm25:np.array,plot_pre_pm25:np.array,
     ax.set_ylabel('Estimated {} concentration ($\mu g/m^3$)'.format(species), fontsize=32)
     ax.tick_params(axis='both', which='major', labelsize=28)
 
-    ax.text(0, extentlim - 0.05 * extentlim, '$R^2 = $ {}'.format(R2), style='italic', fontsize=32)
-    ax.text(0, extentlim - (0.05 + 0.064) * extentlim, '$RMSE = $' + str(RMSE)+'$\mu g/m^3$', style='italic', fontsize=32)
-    if b1 > 0.0:
-        ax.text(0, extentlim - (0.05 + 0.064 * 2) * extentlim, 'y = {}x {} {}'.format(abs(b1),return_sign(b0),abs(b0)) , style='italic',
-            fontsize=32)
-    elif b1 == 0.0:
-        ax.text(0, extentlim - (0.05 + 0.064 * 2) * extentlim, 'y = ' + str(b0), style='italic',
-            fontsize=32)
-    else:
-        ax.text(0, extentlim - (0.05 + 0.064 * 2) * extentlim, 'y=-{}x {} {}'.format(abs(b1),return_sign(b0),abs(b0)) , style='italic',
-            fontsize=32)
-
-    ax.text(0, extentlim - (0.05 + 0.064 * 3) * extentlim, 'N = ' + str(len(every_point_plot_obs_pm25)), style='italic',
-            fontsize=32)
     cbar = plt.colorbar(im, cax=cbar_ax, orientation='vertical', shrink=1.0, ticks=[1, 10, 100,1000])
     cbar.ax.set_yticklabels(['1', '10', r'$10^2$',r'$10^3$'], fontsize=24)
     cbar.set_label('Number of points', fontsize=28)
