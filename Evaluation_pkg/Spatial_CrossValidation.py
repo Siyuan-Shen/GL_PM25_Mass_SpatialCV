@@ -142,7 +142,7 @@ def AVD_Spatial_CrossValidation(width, height, sitesnumber,start_YYYY, TrainingD
         AVD_output_text(outfile=txt_outfile,status='w', Area='Global',test_beginyears=test_beginyear,test_endyears=test_endyear,test_CV_R2=test_CV_R2, train_CV_R2=train_CV_R2, geo_CV_R2=geo_CV_R2, RMSE=RMSE, NRMSE=NRMSE,PMW_NRMSE=PWM_NRMSE,
                             slope=slope,PWM_Model=PWAModel,PWM_Monitors=PWAMonitors,regional_number=regional_number)
     for iregion in additional_test_regions:
-        mask_map, mask_lat, mask_lon = load_GL_Mask_data(region_name=iregion)
+        mask_map, mask_lat, mask_lon = load_GL_extent_Mask(region_name=iregion)
         masked_array_index = find_masked_latlon(mask_map=mask_map,mask_lat=mask_lat,mask_lon=mask_lon,test_lat=lat_test_recording,test_lon=lon_test_recording)
         for iyear in range(len(test_beginyears)):
             test_beginyear = test_beginyears[iyear]

@@ -52,7 +52,7 @@ endyears                                              = [2000,2001,2002,2003,200
 training_months                                       = [[0,1,2,3,4,5,6,7,8,9,10,11]]#[[8,9,10],[11,0,1],[2,3,4],[5,6,7]] #[[0,1,11],[2,3,4],[5,6,7],[8,9,10]] #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]] 
 test_beginyears                                       = [2010,2010,2015,2015,2000,2000]
 test_endyears                                         = [2019,2023,2019,2023,2019,2023]
-additional_test_regions                               = ['East_Asia','Eastern_Europe','High_income_North_America','South_Asia','Western_Europe']
+additional_test_regions                               = ['NA','EU','AS']#['East_Asia','Eastern_Europe','High_income_North_America','South_Asia','Western_Europe']
 
 [Spatial-CrossValidation.Visualization_Settings]
 
@@ -174,7 +174,7 @@ Sensitivity_Test_Variables                            = [['EtaAOD_Bias']]#, ['Et
 [Estimation-Settings]
 
 Estimation_Switch                                     = true
-Train_model_Switch                                    = false
+Train_model_Switch                                    = true
 Map_estimation_Switch                                 = false
 Estimation_visualization_Switch                       = false
 Estimation_PWMPM_Cal_Switch                           = false
@@ -182,16 +182,16 @@ Derive_combinedGeo_MapData_Switch                     = true
 
 [Estimation-Settings.Training_Settings]
 
-beginyears                                            = [2001]
-endyears                                              = [2001]
+beginyears                                            = [2023]
+endyears                                              = [2023]
 training_months                                       = [[0,1,2,3,4,5,6,7,8,9,10,11]]#[[8,9,10],[11,0,1],[2,3,4],[5,6,7]]  #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]]
 
 [Estimation-Settings.Map_Estimation_Settings]
 
-Estiamtion_trained_beginyears                         = [2001]
-Estiamtion_trained_endyears                           = [2001]
+Estiamtion_trained_beginyears                         = [2023]
+Estiamtion_trained_endyears                           = [2023]
 Estiamtion_trained_months                             = [[0,1,2,3,4,5,6,7,8,9,10,11]] #[[8,9,10],[11,0,1],[2,3,4],[5,6,7]]  #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]] # Must be same order of Estimation-Settings.Training_Settings.training_months
-Estimation_years                                      = [[2001]]
+Estimation_years                                      = [[2023]]
 Estiamtion_months                                     = [[0,1,2,3,4,5,6,7,8,9,10,11]] #[[8,9,10],[11,0,1],[2,3,4],[5,6,7]] #[[0,1,11],[2,3,4],[5,6,7],[8,9,10]]
 Extent                                                = [-59.945,69.945,-179.945,179.945]
 Estimation_ForcedSlopeUnity                           = true
@@ -200,7 +200,7 @@ Estimation_ForcedSlopeUnity                           = true
 
 Map_Plot_Switch                                       = true       # Switch for plotting the map of estimated concentration. 
 ForcedSlopeUnity_Map_Plot_Switch                      = true
-Map_Plot_YEARS                                        = [2001]
+Map_Plot_YEARS                                        = [2023]
 Map_Plot_MONTHS                                       = ['01','02','03','04','05','06','07','08','09','10','11','12']
 Map_Plot_Area                                         = 'GL'
 Map_Plot_Extent                                       = [-59.945,69.945,-179.945,179.945]
@@ -227,19 +227,19 @@ Derive_OfficialData_Switch                            = true
 Padding_fine_Global_Mapdata_Switch                    = true # output global official map data
 Crop_fine_Mapdata_regions_Switch                      = true
 Convert_fine2coarse_Mapdata_Switch                    = true
-Use_ForcedSlopeUnity_Switch                           = true
+Use_ForcedSlopeUnity_Switch                           = false
 Official_output_data_version                          = 'V6GL02.03'
 
 [OfficialData-Settings.Padding_fine_Global_Mapdata]
 
-Padding_fine_Global_Mapdata_Years                     = [2001]
+Padding_fine_Global_Mapdata_Years                     = [2023]
 Annual_output_switch                                  = true
 Monthly_output_switch                                 = true
 Official_Global_Mapdata_Extent                        = [-59.995,69.995,-179.995,179.995]
 
 [OfficialData-Settings.Crop_fine_Mapdata_regions]
 
-Crop_fine_Mapdata_regions_Years                       = [2001]
+Crop_fine_Mapdata_regions_Years                       = [2023]
 Annual_output_switch                                  = true
 Monthly_output_switch                                 = true
 Crop_fine_Mapdata_regions                             = ['NA','EU','AS','Nigeria']#
@@ -247,7 +247,7 @@ Crop_fine_Mapdata_Extents                             = [[10.005,69.995,-169.995
 
 [OfficialData-Settings.Convert_fine2coarse_Mapdata]
 
-Convert_fine2coarse_Mapdata_Years                     = [2001]
+Convert_fine2coarse_Mapdata_Years                     = [2023]
 Annual_output_switch                                  = true
 Monthly_output_switch                                 = true
 Convert_Coarse_Mapdata_regions                        = ['GL','NA','EU','AS','Nigeria']#
@@ -427,11 +427,11 @@ Sigmoid.Settings                                      = false
 
 [Training-Settings.hyper-parameters]
 
-epoch                                                 = 71
+epoch                                                 = 51
 batchsize                                             = 128
 
 channel_names                                         =['EtaAOD_Bias', 'EtaCoastal', 'EtaMixing', 'EtaSGAOD_Bias',  'AOD',  'GeoPM25','ETA','EtaSGTOPO_Bias',
-                                                       'GC_PM25', 'GC_NH4', 'GC_SO4',  'GC_SOA', 'GC_OC', 'GC_BC', 'GC_DST','GC_SSLT','GC_NIT', 'GC_OM',
+                                                       'GC_PM25', 'GC_NH4', 'GC_SO4',  'GC_SOA', 'GC_BC', 'GC_DST','GC_SSLT','GC_NIT', 'GC_OM',# 'GC_OC',
                                                        'SO2_anthro_emi','NH3_anthro_emi','NO_anthro_emi', 'OC_anthro_emi', 'BC_anthro_emi',#'N2O_anthro_emi','NMVOC_anthro_emi',# 
                                                        'DST_offline_emi','SSLT_offline_emi',
                                                        'RH', 'T2M', 'U10M', 'V10M','PRECTOT','PBLH', 
@@ -448,7 +448,7 @@ Classification_loss_type                              = 'CrossEntropyLoss' # Onl
 ResNet_MultiHeadNet_regression_loss_coefficient       = 1 # This is used to decide the coefficient of regression loss in ResNet_MultiHeadNet 
 ResNet_MultiHeadNet_classfication_loss_coefficient    = 1 # This is used to decide the coefficient of classfication loss in ResNet_MultiHeadNet 
 Adj_GeoMSE_alpha                                      = 0.005
-Adj_GeoMSE_beta                                       = 8
+Adj_GeoMSE_beta                                       = 12
 GeoMSE_Lamba1_Penalty1                                = 1280.0  # This is for GeoMSE Penalty1 - Constrain from negative side.
 GeoMSE_Lamba2_Penalty2                                = 25.6   # This is for GeoMSE Penalty2 - Constrain from positive side.
 GeoMSE_Gamma                                          = 3.0   # This is for GeoMSE Penalty2 ratio. 

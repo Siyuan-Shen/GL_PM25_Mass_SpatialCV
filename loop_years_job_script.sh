@@ -5,14 +5,13 @@ start_year=1998
 end_year=2023
 
 # Job script file
-job_script="run_gpu.bsub"
+job_script="run_cpu.bsub"
 
 # Loop through the years
 for year in $(seq $start_year $end_year); do
     # Update beginyears_endyears and Estimation_years dynamically
     beginyears_endyears="[$year]"
     Estimation_years="[[$year]]"
-    Wait_time=
 
     # Create a temporary modified script
     modified_script="modified_job_script_${year}.bsub"
@@ -24,7 +23,7 @@ for year in $(seq $start_year $end_year); do
     sed -i "s/^#BSUB -J .*/#BSUB -J \"V6.02.03 Annual data ${year}\"/" $modified_script
 
     # Update the pause_time calculation
-    sed -i "s/^pause_time=\$((RANDOM % 10 .*/pause_time=\$((RANDOM % 30 + (${year} - ${start_year}) * 180))/" $modified_script
+    sed -i "s/^pause_time=\$((RANDOM % 30 .*/pause_time=\$((RANDOM % 30 + (${year} - ${start_year}) * 180))/" $modified_script
 
     # Submit the modified script using bsub
     echo "Submitting job for year $year..."
@@ -34,8 +33,8 @@ for year in $(seq $start_year $end_year); do
     
 
     # Pause for 90 seconds before the next submission
-    echo "Waiting for 10 seconds before the next job..."
-    sleep 10
+    # echo "Waiting for 10 seconds before the next job..."
+    # sleep 1
 
     rm $modified_script
 done

@@ -73,8 +73,9 @@ Analysis_MONTH                                        = PWM_PM_Calculation_Setti
 
 AVD_version                         = 'Observations_from_CompileGM-20241019-Monthly_ALLFILLPM25_NoDuplicates'
 Observation_indir                   = '/my-projects2/Projects/MLCNN_PM25_2021/data/monthly_observation/{}/'.format(AVD_version)
+GeoPM25_AOD_ETA_version             = 'gPM25-20240604'
 
-GeoPM25_AOD_ETA_input_indir         = '/my-projects2/Projects/MLCNN_PM25_2021/data/input_variables_map/GeoPM25_AOD_ETA_input/'
+GeoPM25_AOD_ETA_input_indir         = '/my-projects2/Projects/MLCNN_PM25_2021/data/input_variables_map/GeoPM25_AOD_ETA_input/{}/'.format(GeoPM25_AOD_ETA_version)
 GEOS_Chem_input_indir               = '/my-projects2/Projects/MLCNN_PM25_2021/data/input_variables_map/GEOS-Chem_input/'
 Anthropogenic_Emissions_input_indir = '/my-projects2/Projects/MLCNN_PM25_2021/data/input_variables_map/Anthropogenic_Emissions_input/'
 Offline_Emissions_input_indir       = '/my-projects2/Projects/MLCNN_PM25_2021/data/input_variables_map/Offline_Emissions_input/'
