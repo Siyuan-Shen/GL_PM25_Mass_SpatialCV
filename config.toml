@@ -99,7 +99,7 @@ additional_test_regions                               = []
 
 BLCO_CrossValidation_Switch                           = false
 Utilize_SelfIsolated_Sites_BLCO_Switch                = true
-Buffer_size                                           = [80]
+Buffer_size                                           = [90]
 
 [BLCO-CrossValidation.TrainingSettings]
 
@@ -175,35 +175,35 @@ Sensitivity_Test_Variables                            = [['EtaAOD_Bias']]#, ['Et
 
 Estimation_Switch                                     = true
 Train_model_Switch                                    = true
-Map_estimation_Switch                                 = false
-Estimation_visualization_Switch                       = false
+Map_estimation_Switch                                 = true
+Estimation_visualization_Switch                       = true
 Estimation_PWMPM_Cal_Switch                           = false
 Derive_combinedGeo_MapData_Switch                     = true
 
 [Estimation-Settings.Training_Settings]
 
-beginyears                                            = [2023]
-endyears                                              = [2023]
+beginyears                                            = [2017]
+endyears                                              = [2017]
 training_months                                       = [[0,1,2,3,4,5,6,7,8,9,10,11]]#[[8,9,10],[11,0,1],[2,3,4],[5,6,7]]  #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]]
 
 [Estimation-Settings.Map_Estimation_Settings]
 
-Estiamtion_trained_beginyears                         = [2023]
-Estiamtion_trained_endyears                           = [2023]
+Estiamtion_trained_beginyears                         = [2017]
+Estiamtion_trained_endyears                           = [2017]
 Estiamtion_trained_months                             = [[0,1,2,3,4,5,6,7,8,9,10,11]] #[[8,9,10],[11,0,1],[2,3,4],[5,6,7]]  #[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]] # Must be same order of Estimation-Settings.Training_Settings.training_months
-Estimation_years                                      = [[2023]]
+Estimation_years                                      = [[2017]]
 Estiamtion_months                                     = [[0,1,2,3,4,5,6,7,8,9,10,11]] #[[8,9,10],[11,0,1],[2,3,4],[5,6,7]] #[[0,1,11],[2,3,4],[5,6,7],[8,9,10]]
-Extent                                                = [-59.945,69.945,-179.945,179.945]
+Extent                                                = [-59.945,69.945,-179.945,179.945]#[20,24,85,89]
 Estimation_ForcedSlopeUnity                           = true
 
 [Estimation-Settings.Visualization_Settings]
 
 Map_Plot_Switch                                       = true       # Switch for plotting the map of estimated concentration. 
-ForcedSlopeUnity_Map_Plot_Switch                      = true
-Map_Plot_YEARS                                        = [2023]
+ForcedSlopeUnity_Map_Plot_Switch                      = false
+Map_Plot_YEARS                                        = [2017]
 Map_Plot_MONTHS                                       = ['01','02','03','04','05','06','07','08','09','10','11','12']
 Map_Plot_Area                                         = 'GL'
-Map_Plot_Extent                                       = [-59.945,69.945,-179.945,179.945]
+Map_Plot_Extent                                       = [-59.945,69.945,-179.945,179.945]#[20,24,85,89]#
 
 [Estimation-Settings.CombineWithGeophysical_Settings]
 
@@ -223,23 +223,24 @@ Analysis_MONTH                                        = [0,1,2,3,4,5,6,7,8,9,10,
 
 [OfficialData-Settings]
 
-Derive_OfficialData_Switch                            = true
+Derive_OfficialData_Switch                            = false
 Padding_fine_Global_Mapdata_Switch                    = true # output global official map data
 Crop_fine_Mapdata_regions_Switch                      = true
 Convert_fine2coarse_Mapdata_Switch                    = true
+Plot_OfficialData_Switch                              = true
 Use_ForcedSlopeUnity_Switch                           = false
-Official_output_data_version                          = 'V6GL02.03'
+Official_output_data_version                          = 'V6GL02.03a'
 
 [OfficialData-Settings.Padding_fine_Global_Mapdata]
 
-Padding_fine_Global_Mapdata_Years                     = [2023]
+Padding_fine_Global_Mapdata_Years                     = [2017]
 Annual_output_switch                                  = true
 Monthly_output_switch                                 = true
 Official_Global_Mapdata_Extent                        = [-59.995,69.995,-179.995,179.995]
 
 [OfficialData-Settings.Crop_fine_Mapdata_regions]
 
-Crop_fine_Mapdata_regions_Years                       = [2023]
+Crop_fine_Mapdata_regions_Years                       = [2017]
 Annual_output_switch                                  = true
 Monthly_output_switch                                 = true
 Crop_fine_Mapdata_regions                             = ['NA','EU','AS','Nigeria']#
@@ -247,13 +248,19 @@ Crop_fine_Mapdata_Extents                             = [[10.005,69.995,-169.995
 
 [OfficialData-Settings.Convert_fine2coarse_Mapdata]
 
-Convert_fine2coarse_Mapdata_Years                     = [2023]
+Convert_fine2coarse_Mapdata_Years                     = [2017]
 Annual_output_switch                                  = true
 Monthly_output_switch                                 = true
 Convert_Coarse_Mapdata_regions                        = ['GL','NA','EU','AS','Nigeria']#
 Convert_Coarse_Mapdata_Extents                        = [[-59.95,69.95,-179.95,179.95],[10.05,69.95,-169.95,-40.05],[35.05,59.95,-14.95,39.95],[-9.95,59.95,65.05,144.95],[3.005,14.995,2.005,15.995]]#
 
-
+[OfficialData-Settings.Plot_OfficialData]
+Annual_plot_Switch                                    = true
+Monthly_plot_Switch                                   = true
+Plot_OfficialData_Years                               = [2021]
+Plot_OfficialData_MONTHS                              = ['07','08','09']#['01','02','03','04','05','06','07','08','09','10','11','12']
+Plot_OfficialData_Area                                = ['GL','NA','EU','AS','Nigeria']#
+Plot_OfficialData_Extent                              = [[-59.995,69.995,-179.995,179.995],[10.005,69.995,-169.995,-40.005],[35.005,59.995,-14.995,39.995],[-9.995,59.995,65.005,144.995],[3.005,14.995,2.005,15.995]]#[]#
 #########################################################################################################################################################
 
 [Uncertainty-Settings]
@@ -300,8 +307,8 @@ Uncertainty_BLISCO_LOWESS_relationship_plot           = true
 
 [Training-Settings.identity]
 
-version                                               = 'V6.02.03'
-special_name                                          = '_OldHyperparameters_AnnualModels_AVD20241019_Lambda1-1280_Lambda2-25d6' #'_ResNet_1111_GeoMSE_P1-10d0_Gamma-2d5_P2-3d5_OneYearModel_ForcedSlopeUnity_2000-2022_test'
+version                                               = 'V6.02.03-test'
+special_name                                          = '_OldHyperparameters_AnnualModels_AVD20241019_Lambda1-12800_Lambda2-25d6_padding_replicate' #'_ResNet_1111_GeoMSE_P1-10d0_Gamma-2d5_P2-3d5_OneYearModel_ForcedSlopeUnity_2000-2022_test'
 
 [Training-Settings.learning-objective]
 
@@ -318,6 +325,8 @@ log_species                                           = false
 # Net Structure Settings. Set one of them ture.
 
 [Training-Settings.net_structure_settings]
+CovLayer_padding_mode                                 = 'replicate' # 'replicate' or 'reflect' or 'zeros' or 'circular'
+Pooling_padding_mode                                  = 'replicate' # 'replicate' or 'reflect' or 'constant' or 'circular'
 
 ############# Two Combine Models; Classified by variables
 TwoCombineModels.Settings                             = false # Only Available to ResNet and ResNet_MLP; one of those two structures settings must be true.
@@ -327,6 +336,10 @@ TwoCombineModels.threshold                            = 4.0
 ResNet.Settings                                       = true
 ResNet.Blocks                                         = 'BasicBlock'
 ResNet.blocks_num                                     = [1,1,1,1]
+
+NoDownSampleResNet.Settings                           = false
+NoDownSampleResNet.Blocks                             = 'BasicBlock'
+NoDownSampleResNet.blocks_num                         = [1,1,1,1]
 
 #############
 
@@ -420,14 +433,14 @@ CosineAnnealingRestartsLR.eta_min                     = 0
 
 activation_func_name                                  = 'relu'
 ReLU.Settings                                         = false
-Tanh.Settings                                         = false
-GeLU.Settings                                         = true 
+Tanh.Settings                                         = true
+GeLU.Settings                                         = false 
 Sigmoid.Settings                                      = false
-
-
+Mish.Settings                                         = false
+ELU.Settings                                          = false
 [Training-Settings.hyper-parameters]
 
-epoch                                                 = 51
+epoch                                                 = 71
 batchsize                                             = 128
 
 channel_names                                         =['EtaAOD_Bias', 'EtaCoastal', 'EtaMixing', 'EtaSGAOD_Bias',  'AOD',  'GeoPM25','ETA','EtaSGTOPO_Bias',
@@ -449,7 +462,7 @@ ResNet_MultiHeadNet_regression_loss_coefficient       = 1 # This is used to deci
 ResNet_MultiHeadNet_classfication_loss_coefficient    = 1 # This is used to decide the coefficient of classfication loss in ResNet_MultiHeadNet 
 Adj_GeoMSE_alpha                                      = 0.005
 Adj_GeoMSE_beta                                       = 12
-GeoMSE_Lamba1_Penalty1                                = 1280.0  # This is for GeoMSE Penalty1 - Constrain from negative side.
+GeoMSE_Lamba1_Penalty1                                = 12800  # This is for GeoMSE Penalty1 - Constrain from negative side.
 GeoMSE_Lamba2_Penalty2                                = 25.6   # This is for GeoMSE Penalty2 - Constrain from positive side.
 GeoMSE_Gamma                                          = 3.0   # This is for GeoMSE Penalty2 ratio. 
 

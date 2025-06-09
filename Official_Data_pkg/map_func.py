@@ -2,17 +2,84 @@ import numpy as np
 import os
 from Official_Data_pkg.utils import *
 from Official_Data_pkg.iostream import save_Official_datasets,load_Official_datasets
-from Estimation_pkg.iostream import load_GeoCombinedPM25_map_data,load_estimation_map_data,load_ForcedSlope_forEstimation,load_ForcedSlopeUnity_estimation_map_data
+from Estimation_pkg.iostream import load_GeoCombinedPM25_map_data,load_map_data,load_estimation_map_data,load_ForcedSlope_forEstimation,load_ForcedSlopeUnity_estimation_map_data
 from Estimation_pkg.utils import Extent
+from Estimation_pkg.data_func import get_landtype
 from Training_pkg.utils import *
+from visualization_pkg.Estimation_plot import Plot_Species_Map_Figures
+from visualization_pkg.iostream import load_monthly_obs_data_forEstimationMap, load_Population_MapData
 
+def Plot_OfficialData():
+    """This function is used to plot official data."""  
+    SPECIES_OBS, site_lat, site_lon  = load_monthly_obs_data_forEstimationMap(species=species)
+    if Annual_plot_Switch:
+        for iyear in Plot_OfficialData_Years:
+            Population_Map, Pop_lat, Pop_lon = load_Population_MapData(YYYY=iyear,MM='01')
+            if Use_ForcedSlopeUnity_Switch:
+                Annual_indir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Annual/'.format(Official_output_data_version,'GL')
+                outdir = Official_MapData_outdir + 'Figures/{}/FineResolution-Forced_Slope/{}/Annual/'.format(Official_output_data_version,'GL')
+                if not os.path.isdir(outdir):
+                    os.makedirs(outdir)
+                outfile = outdir + '{}.CNNPM25.GL.{}{}-{}{}.png'.format(Official_output_data_version,iyear,Plot_OfficialData_Months[0],iyear,Plot_OfficialData_Months[-1])
+                Annual_infile = Annual_indir + '{}.CNNPM25.GL.{}{}-{}{}.nc'.format(Official_output_data_version,iyear,Plot_OfficialData_Months[0],iyear,Plot_OfficialData_Months[-1])
+                Annual_mapdata, lat, lon = load_Official_datasets(infile=Annual_infile)
+                Plot_Species_Map_Figures(PM25_Map=Annual_mapdata,PM25_LAT=lat,PM25_LON=lon,PM25_Sites=SPECIES_OBS,PM25_Sites_LAT=site_lat,PM25_Sites_LON=site_lon,
+                                         Population_Map=Population_Map,population_Lat=Pop_lat,population_Lon=Pop_lon,YYYY=iyear,MM=Plot_OfficialData_Months[0],extent=Plot_OfficialData_Extent,
+                                         outfile=outfile)
+            
+            Annual_indir = Official_MapData_outdir + '{}/FineResolution/{}/Annual/'.format(Official_output_data_version,'GL')
+            Annual_infile = Annual_indir + '{}.CNNPM25.GL.{}{}-{}{}.nc'.format(Official_output_data_version,iyear,Plot_OfficialData_Months[0],iyear,Plot_OfficialData_Months[-1])
+            Annual_mapdata, lat, lon = load_Official_datasets(infile=Annual_infile)
+            outdir = Official_MapData_outdir + 'Figures/{}/FineResolution/{}/Annual/'.format(Official_output_data_version,'GL')
+            if not os.path.isdir(outdir):
+                os.makedirs(outdir)
+            outfile = outdir + '{}.CNNPM25.GL.{}{}-{}{}.png'.format(Official_output_data_version,iyear,Plot_OfficialData_Months[0],iyear,Plot_OfficialData_Months[-1])
+            Plot_Species_Map_Figures(PM25_Map=Annual_mapdata,PM25_LAT=lat,PM25_LON=lon,PM25_Sites=SPECIES_OBS,PM25_Sites_LAT=site_lat,PM25_Sites_LON=site_lon,
+                                         Population_Map=Population_Map,population_Lat=Pop_lat,population_Lon=Pop_lon,YYYY=iyear,MM=Plot_OfficialData_Months[0],extent=Plot_OfficialData_Extent,
+                                         outfile=outfile)
+            
+
+    if Monthly_plot_Switch:
+        SPECIES_OBS, site_lat, site_lon  = load_monthly_obs_data_forEstimationMap(species=species)
+        for iyear in Plot_OfficialData_Years:
+            Population_Map, Pop_lat, Pop_lon = load_Population_MapData(YYYY=iyear,MM='01')
+            Monthly_indir = Official_MapData_outdir + '{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+            outdir = Official_MapData_outdir + 'Figures/{}/FineResolution/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+            if not os.path.isdir(outdir):
+                os.makedirs(outdir)
+            
+            for imonth in Plot_OfficialData_Months:
+                Monthly_infile  = Monthly_indir + '{}.CNNPM25.GL.{}{}-{}{}.nc'.format(Official_output_data_version,iyear,imonth,iyear,imonth)
+                Monthly_mapdata, lat, lon = load_Official_datasets(infile=Monthly_infile)
+                outfile = outdir + '{}.CNNPM25.GL.{}{}-{}{}.png'.format(Official_output_data_version,iyear,imonth,iyear,imonth)
+                Plot_Species_Map_Figures(PM25_Map=Monthly_mapdata,PM25_LAT=lat,PM25_LON=lon,PM25_Sites=SPECIES_OBS,PM25_Sites_LAT=site_lat,PM25_Sites_LON=site_lon,
+                                         Population_Map=Population_Map,population_Lat=Pop_lat,population_Lon=Pop_lon,YYYY=iyear,MM=imonth,extent=Plot_OfficialData_Extent,
+                                         outfile=outfile)
+                
+            if Use_ForcedSlopeUnity_Switch:
+                Monthly_indir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+                outdir = Official_MapData_outdir + 'Figures/{}/FineResolution-Forced_Slope/{}/Monthly/{}/'.format(Official_output_data_version,'GL',iyear)
+                if not os.path.isdir(outdir):
+                    os.makedirs(outdir)
+                for imonth in Plot_OfficialData_Months:
+                    Monthly_infile  = Monthly_indir + '{}.CNNPM25.GL.{}{}-{}{}.nc'.format(Official_output_data_version,iyear,imonth,iyear,imonth)
+                    Monthly_mapdata, lat, lon = load_Official_datasets(infile=Monthly_infile)
+                    outfile = outdir + '{}.CNNPM25.GL.{}{}-{}{}.png'.format(Official_output_data_version,iyear,imonth,iyear,imonth)
+                    Plot_Species_Map_Figures(PM25_Map=Monthly_mapdata,PM25_LAT=lat,PM25_LON=lon,PM25_Sites=SPECIES_OBS,PM25_Sites_LAT=site_lat,PM25_Sites_LON=site_lon,
+                                         Population_Map=Population_Map,population_Lat=Pop_lat,population_Lon=Pop_lon,YYYY=iyear,MM=imonth,extent=Plot_OfficialData_Extent,
+                                         outfile=outfile)
+
+    return
+    
 
 def Padding_Global_MapData():
     MONTH = ['01','02','03','04','05','06','07','08','09','10','11','12']
     # Get official map data latitude and longtitude length
     padding_lat_length = round(100*(Official_Global_Mapdata_Extent[1] - Official_Global_Mapdata_Extent[0]))+1
     padding_lon_length = round(100*(Official_Global_Mapdata_Extent[3] - Official_Global_Mapdata_Extent[2]))+1
-
+    landmask_index = get_landtype(YYYY='2020',extent=Official_Global_Mapdata_Extent)
+    landmask = np.where(landmask_index>0)
+    oceanmask = np.where(landmask_index==0)
     # Initialize Annual Output directory
     if Use_ForcedSlopeUnity_Switch:
         Annual_outdir = Official_MapData_outdir + '{}/FineResolution-Forced_Slope/{}/Annual/'.format(Official_output_data_version,'GL')
@@ -36,7 +103,7 @@ def Padding_Global_MapData():
             Annual_Official_Output = np.zeros((padding_lat_length,padding_lon_length),dtype=np.float32)
         
         for imonth in MONTH:
-
+            temp_geomap_data = load_map_data(YYYY=iyear,MM=imonth,channel_names='GeoPM25')
             # load initial Geo Combined Map Estimation
             temp_map_data,lat,lon = load_GeoCombinedPM25_map_data(YYYY=iyear,MM=imonth,SPECIES=species,version=version,special_name=special_name,forced_Unity=Use_ForcedSlopeUnity_Switch)
             Monthly_Official_Output = np.zeros((padding_lat_length,padding_lon_length),dtype=np.float32)
@@ -44,9 +111,12 @@ def Padding_Global_MapData():
             print('shape of Monthly_Official_Output: {},'.format(Monthly_Official_Output.shape,))
             print('shape of cropped Monthly_Official_Output: {}'.format(Monthly_Official_Output[round((Extent[0]-Official_Global_Mapdata_Extent[0])*100):(round((Extent[1]-Official_Global_Mapdata_Extent[0])*100)+1),
                                     round((Extent[2]-Official_Global_Mapdata_Extent[2])*100):(round((Extent[3]-Official_Global_Mapdata_Extent[2])*100)+1)].shape))
-            # Edge padding
+            # Edge padding and filled some minus pixels
             Monthly_Official_Output[round((Extent[0]-Official_Global_Mapdata_Extent[0])*100):(round((Extent[1]-Official_Global_Mapdata_Extent[0])*100)+1),
                                     round((Extent[2]-Official_Global_Mapdata_Extent[2])*100):(round((Extent[3]-Official_Global_Mapdata_Extent[2])*100)+1)] = temp_map_data
+            GeoFill_index = np.where(np.where(Monthly_Official_Output[landmask]<0))
+            Monthly_Official_Output[landmask][GeoFill_index] = temp_geomap_data[landmask][GeoFill_index]
+            Monthly_Official_Output[oceanmask] = -999.9
             # Monthly Saving
             if Padding_fine_Global_Mapdata_Monthly_output_switch:
                 monthly_outfile = Monthly_outdir + '{}.CNNPM25.GL.{}{}-{}{}.nc'.format(Official_output_data_version,iyear,imonth,iyear,imonth)

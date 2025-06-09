@@ -1,4 +1,4 @@
-from Official_Data_pkg.map_func import Padding_Global_MapData, crop_MapData
+from Official_Data_pkg.map_func import Padding_Global_MapData, crop_MapData,Plot_OfficialData
 from Official_Data_pkg.coarse_func import Convert_mapdata_fine2coarse_resolution
 from Official_Data_pkg.utils import *
 
@@ -9,3 +9,6 @@ def derive_official_mapdata():
         crop_MapData()
     if Convert_fine2coarse_Mapdata_Switch:
         Convert_mapdata_fine2coarse_resolution()
+    
+    if Plot_OfficialData_Switch:
+        Plot_OfficialData()

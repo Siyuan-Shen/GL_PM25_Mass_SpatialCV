@@ -41,14 +41,26 @@ def Estimation_Func(total_channel_names,mainstream_channel_names,side_channel_na
                                                              beginyear=Estiamtion_trained_beginyears[imodel_year],endyear=Estiamtion_trained_endyears[imodel_year], month_index=Estiamtion_trained_months[imodel_month], width=width, height=height)
                 for YEAR in Estimation_years[imodel_year]:
                     for imonth in Estiamtion_months[imodel_month]:
-                        print('Map Estimating YEAR: {}, MONTH: {}'.format(YEAR,MM[imonth]))
-                        map_input = load_map_data(channel_names=total_channel_names,YYYY=YEAR,MM=MM[imonth])
-                        final_map_data = map_predict(inputmap=map_input,model=model,train_mean=input_mean,train_std=input_std,extent=Extent,width=width,nchannel=len(total_channel_names),YYYY=YEAR,MM=MM[imonth],
-                                                    total_channel_names=total_channel_names,main_stream_channel_names=mainstream_channel_names,side_channel_names=side_channel_names)
-                        final_map_data = map_final_output(output=final_map_data,extent=Extent,YYYY=YEAR,MM=MM[imonth],SPECIES=species,bias=bias,
-                                                        normalize_bias=normalize_bias,normalize_species=normalize_species,absolute_species=absolute_species,
-                                                        log_species=log_species,mean=mean,std=std)
-                        save_final_map_data(final_data=final_map_data,YYYY=YEAR,MM=MM[imonth],extent=Extent,SPECIES=species,version=version,special_name=special_name)
+                        outdir = Estimation_outdir + '{}/{}/Map_Estimation/{}/'.format(species,version,YEAR)
+                        outfile = outdir + '{}_{}_{}{}{}.nc'.format(species,version,YEAR,MM,special_name)
+
+                        if os.path.exists(outfile):
+                            print('Map Estimation YEAR: {}, MONTH: {} already exists'.format(YEAR,MM[imonth]))
+                            continue
+                        else:
+                            print('Map Estimating YEAR: {}, MONTH: {}'.format(YEAR,MM[imonth]))
+                            map_input = load_map_data(channel_names=total_channel_names,YYYY=YEAR,MM=MM[imonth])
+                            final_map_data = map_predict(inputmap=map_input,model=model,train_mean=input_mean,train_std=input_std,extent=Extent,width=width,nchannel=len(total_channel_names),YYYY=YEAR,MM=MM[imonth],
+                                                        total_channel_names=total_channel_names,main_stream_channel_names=mainstream_channel_names,side_channel_names=side_channel_names)
+                            del map_input
+                            gc.collect()
+                            final_map_data = map_final_output(output=final_map_data,extent=Extent,YYYY=YEAR,MM=MM[imonth],SPECIES=species,bias=bias,
+                                                            normalize_bias=normalize_bias,normalize_species=normalize_species,absolute_species=absolute_species,
+                                                            log_species=log_species,mean=mean,std=std)
+                            save_final_map_data(final_data=final_map_data,YYYY=YEAR,MM=MM[imonth],extent=Extent,SPECIES=species,version=version,special_name=special_name)
+                            
+                            del final_map_data
+                            gc.collect()
                         
         del width, height, sitesnumber,start_YYYY, TrainingDatasets 
         gc.collect()
@@ -84,11 +96,11 @@ def Estimation_Func(total_channel_names,mainstream_channel_names,side_channel_na
                 for imodel_month in range(len(Estiamtion_months)):
                     for imonth in Estiamtion_months[imodel_month]:
                         MM = ['01','02','03','04','05','06','07','08','09','10','11','12']
-                        CNN_Species, lat, lon = load_ForcedSlopeUnity_estimation_map_data(YYYY=YEAR,MM=MM[imonth],SPECIES=species,version=version,
-                                                           special_name=special_name)
-                        Combined_species = Combine_CNN_GeophysicalSpecies(CNN_Species=CNN_Species,coefficient=coefficients,YYYY=YEAR,MM=MM[imonth])
-                        save_combinedGeo_map_data(final_data=Combined_species,YYYY=YEAR,MM=MM[imonth],extent=Extent,
-                                              SPECIES=species,version=version,special_name=special_name,forced_Unity=True)
+                        #CNN_Species, lat, lon = load_ForcedSlopeUnity_estimation_map_data(YYYY=YEAR,MM=MM[imonth],SPECIES=species,version=version,
+                        #                                   special_name=special_name)
+                        #Combined_species = Combine_CNN_GeophysicalSpecies(CNN_Species=CNN_Species,coefficient=coefficients,YYYY=YEAR,MM=MM[imonth])
+                        #save_combinedGeo_map_data(final_data=Combined_species,YYYY=YEAR,MM=MM[imonth],extent=Extent,
+                        #                      SPECIES=species,version=version,special_name=special_name,forced_Unity=True)
                         
                         CNN_Species, lat, lon = load_estimation_map_data(YYYY=YEAR,MM=MM[imonth],SPECIES=species,version=version,
                                                            special_name=special_name)
