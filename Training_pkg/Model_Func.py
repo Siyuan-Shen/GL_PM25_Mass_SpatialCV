@@ -202,7 +202,7 @@ def train(model, X_train, y_train,X_test,y_test,input_mean, input_std,width,heig
         test_acc.extend(test_acc_LowEnd)
         test_acc.extend(test_acc_FarEnd)
     
-    elif ResNet_setting or ResNet_MLP_setting:
+    elif ResNet_setting or ResNet_MLP_setting or NoDownSample_ResNet_setting:
         for epoch in range(TOTAL_EPOCHS):
             correct = 0
             counts = 0
@@ -625,7 +625,7 @@ def predict(inputarray, model, batchsize,initial_channel_names,mainstream_channe
                 if len(GeoSpecies_FarEnd_index) != 0:
                     temp_output[GeoSpecies_FarEnd_index] = output_FarEnd[GeoSpecies_FarEnd_index]
                 final_output = np.append(final_output,temp_output)
-    elif ResNet_setting or ResNet_MLP_setting:
+    elif ResNet_setting or ResNet_MLP_setting or NoDownSample_ResNet_setting:
         with torch.no_grad():
             for i, image in enumerate(predictinput):
                 image = image.to(device)

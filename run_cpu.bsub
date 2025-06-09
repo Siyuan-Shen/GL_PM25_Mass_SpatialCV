@@ -1,8 +1,8 @@
 #!/bin/bash
-#BSUB -q rvmartin
+#BSUB -q general
 #BSUB -n 8
 #BSUB -W 168:00
-#BSUB -R "rusage[mem=150GB] span[hosts=1] select[port8543=1]"
+#BSUB -R "rusage[mem=600GB] span[hosts=1] select[port8543=1]"
 #BSUB -a 'docker(syword/python3-pytorch:2024.05)'
 #BSUB -J ' "1.7.0 Self Isolated BLCO test 90"'
 #BSUB -N
@@ -15,22 +15,28 @@
 
 . /opt/conda/bin/activate
 /bin/true
-pause_time=$((RANDOM % 121 + 30))
+pause_time=$((RANDOM % 30 + 30))
 echo "Pausing for $pause_time seconds..."
 sleep $pause_time
 
 Buffer_size=[90]
 sed -i '/\[BLCO\-CrossValidation\]/,/^\[/{/Buffer_size/s/=.*/= '"$Buffer_size"'/}' config.toml
-# beginyears_endyears=[2006,2007]
-# Estimation_years=[[2006],[2007]]
-# sed -i '/\[Estimation\-Settings\.Training_Settings\]/,/^\[/{/beginyears/s/=.*/= '"$beginyears_endyears"'/;/endyears/s/=.*/= '"$beginyears_endyears"'/;}' config.toml
-# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_beginyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
-# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_endyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
-# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estimation_years/s/=.*/= '"$Estimation_years"'/}' config.toml
-# sed -i '/\[Estimation\-Settings\.Visualization_Settings\]/,/^\[/{/Map_Plot_YEARS/s/=.*/= '"$beginyears_endyears"'/}' config.toml
 
-cd /my-projects/Projects/PM25_Speices_DL_2023/code/Training_Evaluation_Estimation/PM25/v1.7.0
+beginyears_endyears=[2006,2007]
+Estimation_years=[[2006],[2007]]
+sed -i '/\[Estimation\-Settings\.Training_Settings\]/,/^\[/{/beginyears/s/=.*/= '"$beginyears_endyears"'/;/endyears/s/=.*/= '"$beginyears_endyears"'/;}' config.toml
+sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_beginyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_endyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estimation_years/s/=.*/= '"$Estimation_years"'/}' config.toml
+sed -i '/\[Estimation\-Settings\.Visualization_Settings\]/,/^\[/{/Map_Plot_YEARS/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+sed -i '/\[OfficialData\-Settings\.Padding_fine_Global_Mapdata\]/,/^\[/{/Padding_fine_Global_Mapdata_Years/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+sed -i '/\[OfficialData\-Settings\.Crop_fine_Mapdata_regions\]/,/^\[/{/Crop_fine_Mapdata_regions_Years/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+sed -i '/\[OfficialData\-Settings\.Convert_fine2coarse_Mapdata\]/,/^\[/{/Convert_fine2coarse_Mapdata_Years/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+
+
+cd /my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/PM25/V6.02.03-test
 python3 main.py
+
 
 
 # NVIDIAA100_SXM4_80GB

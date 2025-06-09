@@ -17,6 +17,7 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import matplotlib.ticker as mticker
 import matplotlib.ticker as tick
 import matplotlib.colors as colors
+from matplotlib import ticker
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from Training_pkg.Statistic_Func import Calculate_PWA_PM25
@@ -31,10 +32,17 @@ def Plot_Species_Map_Figures(PM25_Map:np.array,PM25_LAT:np.array,PM25_LON:np.arr
     PM25_Map = np.nan_to_num(PM25_Map, nan=5.0, posinf=3.0, neginf=2.0)
     Cropped_Population_Map = crop_map_data(Population_Map,population_Lat,population_Lon,extent)
     Croppeed_PM25_Map      = crop_map_data(PM25_Map, PM25_LAT, PM25_LON,Extent=extent)
+      
     PWA_PM25 = Calculate_PWA_PM25(Population_array=Cropped_Population_Map, PM25_array=Croppeed_PM25_Map)
+    lat_extent_index = np.where((PM25_LAT >= extent[0]) & (PM25_LAT <= extent[1]))[0]
+    lon_extent_index = np.where((PM25_LON >= extent[2]) & (PM25_LON <= extent[3]))[0]
+    cropped_PM25_LAT = PM25_LAT[lat_extent_index]
+    cropped_PM25_LON = PM25_LON[lon_extent_index]
+    cropped_PM25_Map = PM25_Map[lat_extent_index[0]:lat_extent_index[-1]+1,lon_extent_index[0]:lon_extent_index[-1]+1]
+    
     ax = plt.axes(projection=ccrs.PlateCarree())
     m1 = 0
-    m2 = PWA_PM25*2.5
+    m2 = 40.0
     extent = [extent[2],extent[3],extent[0],extent[1]]
     
     #print('PM25_Lat Dim:',PM25_LAT.shape, 'PM25_Lon Dim:', PM25_LON.shape, 'PM25_Map Dim:', PM25_Map.shape,'PWA: ',PWA_PM25)
@@ -46,8 +54,8 @@ def Plot_Species_Map_Figures(PM25_Map:np.array,PM25_LAT:np.array,PM25_LON:np.arr
     #ax.add_feature(cfeat.COASTLINE,linewidth = 0.15) 
     ax.add_feature(cfeat.LAKES, linewidth   = 0.05)
     ax.add_feature(cfeat.BORDERS, linewidth = 0.1)
-    pcm = plt.pcolormesh(PM25_LON, PM25_LAT,PM25_Map,transform=ccrs.PlateCarree(),
-          cmap = 'YlOrRd',norm=colors.Normalize(vmin = m1, vmax = m2))
+    pcm = plt.pcolormesh(cropped_PM25_LON, cropped_PM25_LAT,cropped_PM25_Map,transform=ccrs.PlateCarree(),
+          cmap = 'RdYlBu_r',norm=colors.PowerNorm(vmin = m1, vmax = m2,gamma=0.4))
     #ax.add_feature(cfeat.OCEAN) 
 
     #RMSE = round(np.sqrt(mean_squared_error(sitePM25[area_index, (yyyy[iyear]-1998)*12+mm[imonth]],
@@ -59,14 +67,16 @@ def Plot_Species_Map_Figures(PM25_Map:np.array,PM25_LAT:np.array,PM25_LON:np.arr
     ax.text(extent[0]+0.01*abs(extent[1]-extent[0]),extent[2]+0.05*abs(extent[3]-extent[2]),'PWM ' + r'$\rm{PM_{2.5} = }$' + str(round(PWA_PM25,1)) +r' $\rm{(\mu g/m^3)}$', style='italic',fontsize = 6)
     ax.text(extent[0]+0.01*abs(extent[1]-extent[0]),extent[2]+0.10*abs(extent[3]-extent[2]),'{} {}'.format(YYYY,MM), style='italic',fontsize = 6)
     
-    plt.scatter(PM25_Sites_LON, PM25_Sites_LAT, c=PM25_Sites, s=0.1,
-                    linewidths=0.1, marker='o', edgecolors='black', vmin=0, vmax=m2,
-                    cmap='YlOrRd',
-                   alpha=0.4)
+    #plt.scatter(PM25_Sites_LON, PM25_Sites_LAT, c=PM25_Sites, s=0.1,
+    #                linewidths=0.1, marker='o', edgecolors='black', vmin=0, vmax=m2,
+    #                cmap='YlOrRd',
+    #               alpha=0.4)
     
     ## Global colorbar parameters fraction=0.35, pad=-1.63, shrink=0.5, aspect=50.0
+    tick_locator = ticker.FixedLocator(locs=[1,5,10,15,20,30,40,50])
     cbar = plt.colorbar(pcm, location = 'right',fraction=0.15, shrink=0.5,aspect=40.0, orientation='vertical', extend='both')
     cbar.ax.tick_params(labelsize=12)
+    cbar.locator = tick_locator
     cbar.set_label('PM$_{2.5}$' + '' + r'$\rm{(\mu g/m^3)}$')
     cbar.ax.xaxis.set_major_formatter(tick.FormatStrFormatter('%.2f'))
     #gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True, linewidth=0.4, color='k', alpha=0.7, linestyle='--')
