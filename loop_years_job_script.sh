@@ -1,24 +1,23 @@
 #!/bin/bash
 
 
-# Define the range for the loop
-# start_year=1998
-# end_year=2010
+##### Define the range for the loop
+start_year=1998
+end_year=2023
 
-# Loop through the years
-# for year in $(seq $start_year $end_year); do
-
-# Define the list of years explicitly
-years=(2000 2001 2004 2005 2006 2007 2012 2013 2015 2017 2019)
-
-system_name='slurm'  # Change this to 'slurm' if using SLURM
+##### Define the list of years explicitly
+# years=(2006 2015)
+# start_year=2006
+system_name='bsub'  # Change this to 'slurm' if using SLURM
 # system_name='slurm'
 
-# Job script file
-job_script="run_gpu.${system_name}"
+##### Job script file
+job_script="run_cpu.${system_name}"
 
-# Loop through the specified years
-for year in "${years[@]}"; do
+##### Loop through the specified years
+# for year in "${years[@]}"; do
+##### Loop through the years
+for year in $(seq $start_year $end_year); do
     # Update beginyears_endyears and Estimation_years dynamically
     beginyears_endyears="[$year]"
     Estimation_years="[[$year]]"

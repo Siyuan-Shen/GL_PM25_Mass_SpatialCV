@@ -228,9 +228,9 @@ class ResNet(nn.Module):
         #x = self.maxpool(x)
 
         x = self.layer0(x)
-        x = F.pad(x,pad=(1,1,1,1),mode=Pooling_padding_mode,value=0)
-        x = self.maxpool(x)
-        # x = self.avgpool1(x)  # output 4x4
+        # x = F.pad(x,pad=(1,1,1,1),mode=Pooling_padding_mode,value=0)
+        # x = self.maxpool(x)
+        x = self.avgpool1(x)  # output 4x4
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
