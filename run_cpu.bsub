@@ -1,8 +1,8 @@
 #!/bin/bash
-#BSUB -q general
+#BSUB -q rvmartin
 #BSUB -n 8
 #BSUB -W 168:00
-#BSUB -R "rusage[mem=600GB] span[hosts=1] select[port8543=1]"
+#BSUB -R "rusage[mem=300GB] span[hosts=1] select[port8543=1]"
 #BSUB -a 'docker(syword/python3-pytorch:2024.05)'
 #BSUB -J ' "1.7.0 Self Isolated BLCO test 90"'
 #BSUB -N
@@ -32,7 +32,7 @@ sed -i '/\[Estimation\-Settings\.Visualization_Settings\]/,/^\[/{/Map_Plot_YEARS
 sed -i '/\[OfficialData\-Settings\.Padding_fine_Global_Mapdata\]/,/^\[/{/Padding_fine_Global_Mapdata_Years/s/=.*/= '"$beginyears_endyears"'/}' config.toml
 sed -i '/\[OfficialData\-Settings\.Crop_fine_Mapdata_regions\]/,/^\[/{/Crop_fine_Mapdata_regions_Years/s/=.*/= '"$beginyears_endyears"'/}' config.toml
 sed -i '/\[OfficialData\-Settings\.Convert_fine2coarse_Mapdata\]/,/^\[/{/Convert_fine2coarse_Mapdata_Years/s/=.*/= '"$beginyears_endyears"'/}' config.toml
-
+sed -i '/\[OfficialData\-Settings\.Plot_OfficialData\]/,/^\[/{/Plot_OfficialData_Years/s/=.*/= '"$beginyears_endyears"'/}' config.toml
 
 cd /my-projects2/Projects/MLCNN_PM25_2021/code/Training_Evaluation_Estimation/PM25/V6.02.03-test
 python3 main.py

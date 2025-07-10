@@ -11,6 +11,8 @@ def crop_map_data(MapData, lat, lon, Extent):
     top_lat    = Extent[1]
     left_lon   = Extent[2]
     right_lon  = Extent[3]
+    print('lat[0]:',lat[0])
+    
     lat_start_index = round((bottom_lat - lat[0])* 100 )
     lon_start_index = round((left_lon - lon[0]) * 100 )
     lat_end_index = round((top_lat - lat[0]) * 100 )

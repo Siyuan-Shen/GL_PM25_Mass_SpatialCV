@@ -5,7 +5,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --gpus=1
-#SBATCH --exclude=c2-gpu-[002,003,009,014,011,015]
+# SBATCH --nodelist=c2-gpu-
+# SBATCH --exclude=c2-gpu-[004,007,011,016]
 #SBATCH --output=job_output/job-%j-output.txt
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=s.siyuan@wustl.edu

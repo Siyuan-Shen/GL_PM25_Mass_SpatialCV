@@ -108,6 +108,8 @@ def Combine_CNN_GeophysicalSpecies(CNN_Species,coefficient,
    print('coefficient shape: {},'.format(coefficient.shape))
    print('CNN_Species shape: {},'.format(CNN_Species.shape))
    print('Cropped_GeophysicalSpecies shape: {}'.format(Cropped_GeophysicalSpecies.shape))
+   LessThanZero_indices = np.where(CNN_Species < 0.0)
+   CNN_Species[LessThanZero_indices] = Cropped_GeophysicalSpecies[LessThanZero_indices]
    Combined_Species = (1.0-coefficient)*CNN_Species + coefficient * Cropped_GeophysicalSpecies
    return Combined_Species
 
