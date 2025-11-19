@@ -29,8 +29,8 @@ def load_trained_model_forEstimation(model_outdir, typeName, version, species, n
 
 def load_map_data(channel_names, YYYY, MM):
     inputfiles = inputfiles_table(YYYY=YYYY,MM=MM)
-    SATLAT = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLAT.npy')
-    SATLON = np.load('/my-projects2/Projects/MLCNN_PM25_2021/data/tSATLON.npy')
+    SATLAT = np.linspace(-59.995,69.995,13000)
+    SATLON = np.linspace(-179.995,179.995,36000)
     output = np.zeros((len(channel_names), len(SATLAT), len(SATLON)))
     loading_time_start = time.time()
     for i in range(len(channel_names)):

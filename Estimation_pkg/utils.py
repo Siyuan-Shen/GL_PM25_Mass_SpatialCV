@@ -104,6 +104,7 @@ def inputfiles_table(YYYY, MM):
 
         ##################### [Variables from GEOS-Chem] ###################
         'GC_PM25'            : GEOS_Chem_input_indir + '{}/PM25_001x001_NA_map_{}{}.npy'.format(YYYY,YYYY,MM),
+        'GC_PM25_newDustScheme'  : GEOS_Chem_input_indir + '{}/PM25_newDustScheme_001x001_GL_map_{}{}.npy'.format(YYYY,YYYY,MM),
         'GC_NH4'             : GEOS_Chem_input_indir + '{}/NH4_001x001_NA_map_{}{}.npy'.format(YYYY,YYYY,MM),
         'GC_SO4'             : GEOS_Chem_input_indir + '{}/SO4_001x001_NA_map_{}{}.npy'.format(YYYY,YYYY,MM),
         'GC_NIT'             : GEOS_Chem_input_indir + '{}/NIT_001x001_NA_map_{}{}.npy'.format(YYYY,YYYY,MM),
@@ -114,7 +115,8 @@ def inputfiles_table(YYYY, MM):
         'GC_DST'             : GEOS_Chem_input_indir + '{}/DST_001x001_NA_map_{}{}.npy'.format(YYYY,YYYY,MM),
         'GC_CoarseDST'       : GEOS_Chem_input_indir + '{}/CoarseDST_001x001_NA_map_{}{}.npy'.format(YYYY,YYYY,MM),
         'GC_SSLT'            : GEOS_Chem_input_indir + '{}/SSLT_001x001_NA_map_{}{}.npy'.format(YYYY,YYYY,MM),
-
+        'GC_DST_NewScheme'   : GEOS_Chem_input_indir + '{}/DST_NewScheme_001x001_GL_map_{}{}.npy'.format(YYYY,YYYY,MM),
+        
         ##################### [Variables from CEDS Emissions] ###################
         'NH3_anthro_emi'     : Anthropogenic_Emissions_input_indir + '{}/NH3-em-anthro_CMIP_v2023-04_CEDS_Total_001x001_GL_{}{}.npy'.format(YYYY,YYYY,MM),
         'SO2_anthro_emi'     : Anthropogenic_Emissions_input_indir + '{}/SO2-em-anthro_CMIP_v2023-04_CEDS_Total_001x001_GL_{}{}.npy'.format(YYYY,YYYY,MM),
